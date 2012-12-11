@@ -1,28 +1,26 @@
 package org.sporm.jpa
 
 import javax.persistence.EntityManager
-import scala.collection.JavaConversions._
 import javax.persistence.criteria.{Predicate, Order}
-
+import scala.collection.JavaConversions._
 
 class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
 
-  val cb = em.getCriteriaBuilder
-  val cq = cb.createQuery(ct)
+  val builder = em.getCriteriaBuilder
+  val query = builder.createQuery(ct)
 
-  val root = cq.from(ct)
+  val root = query.from(ct)
 
   private var orders = List[Order]()
   private var predicates = List[Predicate]()
 
   private def select(): CriteriaQL[T] = {
-    cq.select(root)
+    query.select(root)
     this
   }
 
   def all(): List[T] = {
-    val query = em.createQuery(cq)
-    query.getResultList.toList
+    em.createQuery(query).getResultList.toList
   }
 
   def fetch(): List[T] = {
@@ -30,89 +28,89 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
   }
 
   def fetch(limit: Int, offset: Int): List[T] = {
-    if (!orders.isEmpty) cq.orderBy(orders: _*)
-    if (!predicates.isEmpty) cq.where(predicates: _*)
+    if (!orders.isEmpty) query.orderBy(orders: _*)
+    if (!predicates.isEmpty) query.where(predicates: _*)
 
     try {
-      val query = em.createQuery(cq)
-      if (limit > 0) query.setMaxResults(limit)
-      if (offset > 0) query.setFirstResult(offset)
-      query.getResultList.toList
+      val q = em.createQuery(query)
+      if (limit > 0) q.setMaxResults(limit)
+      if (offset > 0) q.setFirstResult(offset)
+      q.getResultList.toList
     } catch {
       case ex: Exception => println(ex.getMessage); Nil
     }
   }
 
   def single(): Option[T] = {
-    if (!orders.isEmpty) cq.orderBy(orders: _*)
-    if (!predicates.isEmpty) cq.where(predicates: _*)
+    if (!orders.isEmpty) query.orderBy(orders: _*)
+    if (!predicates.isEmpty) query.where(predicates: _*)
 
     try {
-      Some(em.createQuery(cq).getSingleResult)
+      Some(em.createQuery(query).getSingleResult)
     } catch {
       case ex: Exception => println(ex.getMessage); None
     }
   }
 
   def :=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
-    predicates ::= cb.equal(root.get(attrName), attrVal)
+    predicates ::= builder.equal(root.get(attrName), attrVal)
     this
   }
 
 
   def :!=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
-    predicates ::= cb.notEqual(root.get(attrName), attrVal)
+    predicates ::= builder.notEqual(root.get(attrName), attrVal)
     this
   }
 
   def :<:(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cb.lt(root.get(attrName), attrVal)
+    predicates ::= builder.lt(root.get(attrName), attrVal)
     this
   }
 
   def :>:(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cb.gt(root.get(attrName), attrVal)
+    predicates ::= builder.gt(root.get(attrName), attrVal)
     this
   }
 
   def :<=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cb.le(root.get(attrName), attrVal)
+    predicates ::= builder.le(root.get(attrName), attrVal)
     this
   }
 
   def :>=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cb.ge(root.get(attrName), attrVal)
+    predicates ::= builder.ge(root.get(attrName), attrVal)
     this
   }
 
   def or(attrName: String, attrVal: Number): CriteriaQL[T] = {
 
-    predicates ::= cb.ge(root.get(attrName), attrVal)
+    predicates ::= builder.ge(root.get(attrName), attrVal)
     this
   }
 
   def asc(attrName: String): CriteriaQL[T] = {
-    orders ::= cb.asc(root.get(attrName))
+    orders ::= builder.asc(root.get(attrName))
     this
   }
 
   def desc(attrName: String): CriteriaQL[T] = {
-    orders ::= cb.desc(root.get(attrName))
+    orders ::= builder.desc(root.get(attrName))
     this
   }
 
   def like(attrName: String, attrVal: String): CriteriaQL[T] = {
-    predicates ::= cb.like(root.get(attrName).as(classOf[String]), attrVal)
+    predicates ::= builder.like(root.get(attrName).as(classOf[String]), attrVal)
     this
   }
 
   def notLike(attrName: String, attrVal: String): CriteriaQL[T] = {
-    predicates ::= cb.notLike(root.get(attrName).as(classOf[String]), attrVal)
+    predicates ::= builder.notLike(root.get(attrName).as(classOf[String]), attrVal)
     this
   }
 
   def or(f: (CriteriaQL[T]) => List[Predicate]): CriteriaQL[T] = {
-    predicates ::= cb.or(f(this): _*)
+    predicates ::= builder.or(f(this): _*)
     this
   }
 }

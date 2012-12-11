@@ -26,7 +26,9 @@ class BaseService[T](val entity: T) extends JPA {
 }
 
 abstract class JPAModel[T: Manifest] extends JPA {
-  def getType = implicitly[Manifest[T]].runtimeClass
+  def getType = implicitly[Manifest[T]].runtimeClass //2.10+
+
+  //  def getType = implicitly[Manifest[T]].erasure //2.9.2
 
   implicit def generateModel(entity: T) = new BaseService(entity)
 
