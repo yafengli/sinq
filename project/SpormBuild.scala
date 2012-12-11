@@ -21,7 +21,7 @@ object SpormBuild extends Build {
       ),
       libraryDependencies ++= Seq(
         "org.hibernate" % "hibernate-entitymanager" % "4.1.8.Final",
-        "org.hibernate" % "hibernate-c3p0" % "4.1.8.Final",
+        "com.jolbox" % "bonecp" % "0.7.1.RELEASE",
         "postgresql" % "postgresql" % "9.1-901.jdbc4",
         "org.specs2" %% "specs2" % "1.13-SNAPSHOT"
       )
