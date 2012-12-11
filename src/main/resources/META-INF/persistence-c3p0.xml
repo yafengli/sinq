@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+    <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <mapping-file>META-INF/query-models.xml</mapping-file>
+        <class>models.Teacher</class>
+        <class>models.Student</class>
+        <class>models.Book</class>
+        <properties>
+            <!-- hibernate的c3p0连接池配置（需要jar包：c3p0-x.x.x.jar） -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
+            <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+            <property name="hibernate.connection.url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
+            <property name="hibernate.connection.username" value="postgres"/>
+
+            <property name="hibernate.connection.provider_class"
+                      value="org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider"/>
+            <!-- 最小连接数 -->
+            <property name="hibernate.c3p0.min_size" value="5"/>
+            <!-- 最大连接数 -->
+            <property name="hibernate.c3p0.max_size" value="20"/>
+            <!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+            <property name="c3p0.maxIdleTime" value="60"/>
+            <!-- 获得连接的超时时间,如果超过这个时间,会抛出异常，单位毫秒 -->
+            <property name="hibernate.c3p0.timeout" value="3000"/>
+            <!-- 最大的PreparedStatement的数量 -->
+            <property name="hibernate.c3p0.max_statements" value="3000"/>
+            <!-- 每隔120秒检查连接池里的空闲连接 ，单位是秒-->
+            <property name="hibernate.c3p0.idle_test_period" value="120"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+        </properties>
+
+    </persistence-unit>
+</persistence>
