@@ -1,7 +1,7 @@
 package models
 
 import javax.persistence._
-import org.sporm.jpa.JPAModel
+import org.koala.sporm.jpa.JPQLModel
 
 /**
  * User: YaFengLi
@@ -30,4 +30,4 @@ case class Book(var name: String, var price: Int) {
 
 }
 
-object Book extends JPAModel[Book]
+object Book extends JPQLModel[Book]

@@ -1,36 +1,13 @@
-package org.sporm.jpa
+package org.koala.sporm.jpa
 
 import scala.collection.JavaConversions._
 
-class BaseService[T](val entity: T) extends JPA {
+abstract class JPQLModel[T: Manifest] extends JPA {
+  private def getType = implicitly[Manifest[T]].runtimeClass //2.10+
 
-  def insert() {
-    withTransaction {
-      _.persist(entity)
-    }
-  }
+  //private def getType = implicitly[Manifest[T]].erasure //2.9.2
 
-  def update() {
-    withTransaction {
-      em =>
-        em.merge(entity)
-    }
-  }
-
-  def delete() {
-    withTransaction {
-      em =>
-        em.remove(em.merge(entity))
-    }
-  }
-}
-
-abstract class JPAModel[T: Manifest] extends JPA {
-  def getType = implicitly[Manifest[T]].runtimeClass //2.10+
-
-  //  def getType = implicitly[Manifest[T]].erasure //2.9.2
-
-  implicit def generateModel(entity: T) = new BaseService(entity)
+  implicit def generateModel(entity: T) = new BaseModelOpts[T](entity)
 
   def get(id: Any): Option[T] = {
     withEntityManager {
@@ -38,30 +15,8 @@ abstract class JPAModel[T: Manifest] extends JPA {
     }.asInstanceOf[Option[T]]
   }
 
-  def find(qs: String, ops: Array[Any], offset: Int, limit: Int, order: String, desc: String): Option[List[T]] = {
-    withEntityManager {
-      em =>
-        try {
-          val query = em.createQuery(qs)
-          if (offset > 0) query.setFirstResult(offset)
-          if (limit > 0) query.setMaxResults(limit)
-
-          ops.toList match {
-            case Nil =>
-            case list: List[Any] => for (i <- 1 to list.size) {
-              query.setParameter(i, list(i - 1))
-            }
-          }
-          query.getResultList.toList.asInstanceOf[List[T]]
-        } catch {
-          case e: Exception => e.printStackTrace()
-          Nil
-        }
-    }
-  }
-
-
-  def find(qs: String, ops: Array[Any], offset: Int, limit: Int): Option[List[T]] = {
+  /** QL API */
+  def find(qs: String, ops: Array[Any], limit: Int, offset: Int): Option[List[T]] = {
     withEntityManager {
       em =>
         try {
@@ -85,10 +40,6 @@ abstract class JPAModel[T: Manifest] extends JPA {
 
   def find(qs: String, ops: Array[Any]): Option[List[T]] = {
     find(qs, ops, -1, -1)
-  }
-
-  def findAll(): Option[List[T]] = {
-    find("select t from %s t".format(getType.getCanonicalName), Array(), -1, -1)
   }
 
   def count(qs: String, ops: Array[Any]): Option[Long] = {
@@ -117,5 +68,22 @@ abstract class JPAModel[T: Manifest] extends JPA {
 
   def count(qs: String): Option[Long] = {
     count(qs, Array())
+  }
+
+  /** Criteria API */
+  def fetch(ct: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
+    fetch(ct, -1, -1)(call)
+  }
+
+  def fetch(ct: Class[T], limit: Int, offset: Int)(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
+    withEntityManager {
+      em => call(CriteriaQL(em, ct)).fetch(limit, offset)
+    }
+  }
+
+  def single(ct: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
+    withEntityManager {
+      em => call(CriteriaQL(em, ct)).single()
+    }
   }
 }

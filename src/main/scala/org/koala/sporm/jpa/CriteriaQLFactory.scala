@@ -1,4 +1,4 @@
-package org.sporm.jpa
+package org.koala.sporm.jpa
 
 import javax.persistence.EntityManager
 import javax.persistence.criteria.{Predicate, Order}
@@ -19,10 +19,6 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
     this
   }
 
-  def all(): List[T] = {
-    em.createQuery(query).getResultList.toList
-  }
-
   def fetch(): List[T] = {
     fetch(-1, -1)
   }
@@ -41,15 +37,15 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
     }
   }
 
-  def single(): Option[T] = {
+  def single(): T = {
     if (!orders.isEmpty) query.orderBy(orders: _*)
     if (!predicates.isEmpty) query.where(predicates: _*)
+    em.createQuery(query).getSingleResult
+  }
 
-    try {
-      Some(em.createQuery(query).getSingleResult)
-    } catch {
-      case ex: Exception => println(ex.getMessage); None
-    }
+  def distinct(): CriteriaQL[T] = {
+    query.distinct(true)
+    this
   }
 
   def :=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
@@ -106,6 +102,16 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
 
   def notLike(attrName: String, attrVal: String): CriteriaQL[T] = {
     predicates ::= builder.notLike(root.get(attrName).as(classOf[String]), attrVal)
+    this
+  }
+
+  def isNull(attrName: String): CriteriaQL[T] = {
+    predicates ::= builder.isNull(root.get(attrName))
+    this
+  }
+
+  def isNotNull(attrName: String): CriteriaQL[T] = {
+    predicates ::= builder.isNotNull(root.get(attrName))
     this
   }
 

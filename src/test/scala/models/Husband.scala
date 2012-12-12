@@ -1,7 +1,7 @@
 package models
 
 import javax.persistence._
-import org.sporm.jpa.JPAModel
+import org.koala.sporm.jpa.JPQLModel
 
 /**
  * User: YaFengLi
@@ -16,7 +16,7 @@ case class Husband(var name: String, var age: Int) {
   @TableGenerator(name = "seq_t_husband", table = "seq_t_husband", allocationSize = 1)
   var id: Long = _
 
-  @OneToOne(fetch = FetchType.EAGER, mappedBy = "husband")
+  @OneToOne(fetch = FetchType.EAGER, optional = false)
   var teacher: Teacher = _
 
   def this() = this(null, -1)
@@ -27,4 +27,4 @@ case class Husband(var name: String, var age: Int) {
   }
 }
 
-object Husband extends JPAModel[Husband]
+object Husband extends JPQLModel[Husband]

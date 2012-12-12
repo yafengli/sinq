@@ -3,7 +3,7 @@ package models
 import javax.persistence._
 import java.util.Set
 import java.util.HashSet
-import org.sporm.jpa.JPAModel
+import org.koala.sporm.jpa.JPQLModel
 
 
 @Entity
@@ -37,4 +37,4 @@ class Student(var name: String, var age: Int, var address: String) {
 
 }
 
-object Student extends JPAModel[Student]
+object Student extends JPQLModel[Student]

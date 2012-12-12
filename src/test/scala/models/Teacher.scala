@@ -3,7 +3,7 @@ package models
 import javax.persistence._
 import java.util.Set
 import java.util.HashSet
-import org.sporm.jpa.JPAModel
+import org.koala.sporm.jpa.JPQLModel
 
 @Entity
 @Table(name = "t_teacher")
@@ -16,11 +16,11 @@ case class Teacher(var name: String, var age: Int, var address: String) {
   @OneToMany(cascade = Array(CascadeType.REMOVE), mappedBy = "teacher")
   var students: Set[Student] = new HashSet[Student]()
 
-  @OneToOne(cascade = Array(CascadeType.REMOVE), fetch = FetchType.EAGER, optional = true)
+  @OneToOne(cascade = Array(CascadeType.REMOVE), mappedBy = "teacher")
   var husband: Husband = _
 
   def this() = this(null, -1, null)
 
 }
 
-object Teacher extends JPAModel[Teacher]
+object Teacher extends JPQLModel[Teacher]

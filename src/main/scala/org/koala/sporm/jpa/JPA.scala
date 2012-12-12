@@ -1,10 +1,30 @@
-package org.sporm.jpa
+package org.koala.sporm.jpa
 
+import collection.concurrent.TrieMap
 import javax.persistence.{EntityManagerFactory, EntityManager, Persistence}
 
 trait JPA {
 
   import JPA._
+
+
+  def createEntityManager(): EntityManager = {
+    if (em_t.get() == null) {
+      try {
+        em_t.set(lookEntityManagerFactory().createEntityManager())
+      } catch {
+        case e: Exception => e.printStackTrace()
+      }
+    }
+    em_t.get()
+  }
+
+  def close() {
+    if (em_t.get() != null) {
+      em_t.get().close()
+      em_t.remove()
+    }
+  }
 
   def withTransaction[T](call: EntityManager => T): Option[T] = {
     val em = createEntityManager()
@@ -43,22 +63,9 @@ trait JPA {
 
 object JPA {
   val P_U_KEY = "persistence.unit.name"
-  private var emfMap = Map[String, EntityManagerFactory]()
+  private var emfMap = TrieMap[String, EntityManagerFactory]()
   private val em_t = new ThreadLocal[EntityManager]
   private val pn_t = new ThreadLocal[String]
-
-
-  def lookEntityManagerFactory(): EntityManagerFactory = {
-    val unitName = if (pn_t.get() != null) pn_t.get() else System.getProperty(P_U_KEY)
-    if (!emfMap.exists(p => p._1 == unitName))
-      emfMap += (unitName -> Persistence.createEntityManagerFactory(unitName))
-
-    emfMap(unitName)
-  }
-
-  def setPersistenceName(pn: String) {
-    if (pn != null) pn_t.set(pn)
-  }
 
   def initPersistenceName(pn: String) {
     if (pn != null) {
@@ -67,23 +74,12 @@ object JPA {
     }
   }
 
+  def lookEntityManagerFactory(): EntityManagerFactory = {
+    val unitName = if (pn_t.get() != null) pn_t.get() else System.getProperty(P_U_KEY)
+    if (!emfMap.exists(p => p._1 == unitName))
+      emfMap += (unitName -> Persistence.createEntityManagerFactory(unitName))
 
-  def createEntityManager(): EntityManager = {
-    if (em_t.get() == null) {
-      try {
-        em_t.set(lookEntityManagerFactory().createEntityManager())
-      } catch {
-        case e: Exception => e.printStackTrace()
-      }
-    }
-    em_t.get()
-  }
-
-  def close() {
-    if (em_t.get() != null) {
-      em_t.get().close()
-      em_t.remove()
-    }
+    emfMap(unitName)
   }
 }
 
