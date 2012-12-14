@@ -16,14 +16,15 @@ object SpormBuild extends Build {
         "247" at "http://221.231.148.247/nexus/content/groups/public/",
         "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
         "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-        "releases"  at "http://oss.sonatype.org/content/repositories/releases",
+        "releases" at "http://oss.sonatype.org/content/repositories/releases",
         "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
       ),
       libraryDependencies ++= Seq(
-        "org.hibernate" % "hibernate-entitymanager" % "4.1.8.Final",
+        "org.hibernate" % "hibernate-entitymanager" % "4.1.9.Final",
         "com.jolbox" % "bonecp" % "0.7.1.RELEASE",
         "postgresql" % "postgresql" % "9.1-901.jdbc4",
-        "org.specs2" %% "specs2" % "1.13-SNAPSHOT"
+        "org.specs2" %% "specs2" % "1.13-SNAPSHOT",
+        "junit" % "junit" % "4.10"
       )
     )
   )

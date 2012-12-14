@@ -38,7 +38,6 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
   }
 
   def single(): T = {
-    if (!orders.isEmpty) query.orderBy(orders: _*)
     if (!predicates.isEmpty) query.where(predicates: _*)
     em.createQuery(query).getSingleResult
   }
@@ -48,33 +47,33 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
     this
   }
 
-  def :=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
+  def =::(attrName: String, attrVal: Any): CriteriaQL[T] = {
     predicates ::= builder.equal(root.get(attrName), attrVal)
     this
   }
 
 
-  def :!=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
+  def !=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
     predicates ::= builder.notEqual(root.get(attrName), attrVal)
     this
   }
 
-  def :<:(attrName: String, attrVal: Number): CriteriaQL[T] = {
+  def <::(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates ::= builder.lt(root.get(attrName), attrVal)
     this
   }
 
-  def :>:(attrName: String, attrVal: Number): CriteriaQL[T] = {
+  def >::(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates ::= builder.gt(root.get(attrName), attrVal)
     this
   }
 
-  def :<=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
+  def <=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates ::= builder.le(root.get(attrName), attrVal)
     this
   }
 
-  def :>=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
+  def >=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates ::= builder.ge(root.get(attrName), attrVal)
     this
   }
@@ -117,6 +116,11 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
 
   def or(f: (CriteriaQL[T]) => List[Predicate]): CriteriaQL[T] = {
     predicates ::= builder.or(f(this): _*)
+    this
+  }
+
+  def and(f: (CriteriaQL[T]) => List[Predicate]): CriteriaQL[T] = {
+    predicates ::= builder.and(f(this): _*)
     this
   }
 }

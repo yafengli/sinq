@@ -81,5 +81,10 @@ object JPA {
 
     emfMap(unitName)
   }
+
+  def releaseAll() {
+    emfMap.map(_._2.close())
+    emfMap.clear()
+  }
 }
 
