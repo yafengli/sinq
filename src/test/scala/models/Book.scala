@@ -33,10 +33,3 @@ case class Book(var name: String, var price: Int) {
 
 object Book extends JPQLModel[Book]
 
-@StaticMetamodel(classOf[Book])
-object Book_ {
-  val id: SingularAttribute[Book, Int] = _
-  val name: SingularAttribute[Book, String] = _
-  val price: SingularAttribute[Book, Int] = _
-}
-

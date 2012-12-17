@@ -62,16 +62,23 @@ trait JPA {
 
 
 object JPA {
-  val P_U_KEY = "persistence.unit.name"
+  val P_U_KEY = "jpa.persistence.unit.name"
   private var emfMap = TrieMap[String, EntityManagerFactory]()
   private val em_t = new ThreadLocal[EntityManager]
   private val pn_t = new ThreadLocal[String]
 
-  def initPersistenceName(pn: String) {
+  def bind(pn: String) {
     if (pn != null) {
       pn_t.set(pn)
+    }
+    else throw new Exception("#JPA PersistenceUnitName is NULL.")
+  }
+
+  def initPersistenceName(pn: String) {
+    if (pn != null) {
       System.setProperty(P_U_KEY, pn)
     }
+    else throw new Exception("#JPA PersistenceUnitName is NULL.")
   }
 
   def lookEntityManagerFactory(): EntityManagerFactory = {

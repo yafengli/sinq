@@ -47,7 +47,7 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
     this
   }
 
-  def =::(attrName: String, attrVal: Any): CriteriaQL[T] = {
+  def :=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
     predicates ::= builder.equal(root.get(attrName), attrVal)
     this
   }
@@ -78,8 +78,7 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
     this
   }
 
-  def or(attrName: String, attrVal: Number): CriteriaQL[T] = {
-
+  def ||:(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates ::= builder.ge(root.get(attrName), attrVal)
     this
   }

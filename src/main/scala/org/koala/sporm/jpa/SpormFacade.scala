@@ -1,9 +1,7 @@
 package org.koala.sporm.jpa
 
 
-class SpormFacade(val unitName: String) extends JPA {
-
-  def this() = this(System.getProperty(JPA.P_U_KEY))
+class SpormFacade extends JPA {
 
   def insert[T](entity: T) {
     withTransaction {
@@ -37,11 +35,11 @@ class SpormFacade(val unitName: String) extends JPA {
 }
 
 object SpormFacade {
-  def apply(persistenceUnitName: String): SpormFacade = {
-    new SpormFacade(persistenceUnitName)
-  }
+  private val facade_t = new ThreadLocal[SpormFacade]
 
-  def apply(): SpormFacade = {
-    new SpormFacade()
+  def apply(persistenceUnitName: String): SpormFacade = {
+    JPA.initPersistenceName(persistenceUnitName)
+    if (facade_t.get() == null) facade_t.set(new SpormFacade())
+    facade_t.get()
   }
 }
