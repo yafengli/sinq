@@ -29,14 +29,17 @@ class DBQMSpec extends mutable.Specification {
           CriteriaQL(em, classOf[Book]).or(cq => {
             var list = List[Predicate]()
             list ::= cq.builder.equal(cq.root.get(Book_.name), "nanjing")
-            list ::= cq.builder.equal(cq.root.get(Book_.name), "Shanghai")
-            list ::= cq.builder.ge(cq.root.get(Book_.price), 10)
-            list ::= cq.builder.le(cq.root.get(Book_.price), 12)
+            list ::= cq.builder.le(cq.root.get(Book_.price), 10)
             list
           }).and(cq => {
             var list = List[Predicate]()
             list ::= cq.builder.equal(cq.root.get(Book_.name), "nanjing")
+            list ::= cq.builder.ge(cq.root.get(Book_.price), 11)
+            list
+          }).or(cq => {
+            var list = List[Predicate]()
             list ::= cq.builder.equal(cq.root.get(Book_.name), "Shanghai")
+            list ::= cq.builder.ge(cq.root.get(Book_.price), 12)
             list
           }).fetch(10, 1)
         }
