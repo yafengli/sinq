@@ -8,7 +8,7 @@ object SpormBuild extends Build {
     base = file("."),
     settings = Project.defaultSettings ++ Seq(
       name := "sporm",
-      organization := "org.example",
+      organization := "org.koala",
       version := "0.1-SNAPSHOT",
       scalaVersion := "2.10.0-RC3",
       resolvers ++= Seq(

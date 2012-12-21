@@ -7,7 +7,7 @@ abstract class JPQLModel[T: Manifest] extends JPA {
 
   //private def getType = implicitly[Manifest[T]].erasure //2.9.2
 
-  implicit def generateModel(entity: T) = new BaseModelOpts[T](entity)
+  implicit def generateModel(entity: T) = new BaseOperator[T](entity)
 
   def get(id: Any): Option[T] = {
     withEntityManager {
