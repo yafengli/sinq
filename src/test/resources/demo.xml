@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataAcquiFile>
+    <FileHeader>
+        <ReferencedSpecification></ReferencedSpecification>
+        <NeID></NeID>
+        <SenderName></SenderName>
+        <VendorName></VendorName>
+        <JobId></JobId>
+        <BeginTime>2010-04-17T09:00:00</BeginTime>
+        <EndTime>2010-04-17T09:00:00</EndTime>
+    </FileHeader>
+    <DataSet>
+        <DataNameList>
+            <DataName i="1">LINKID</DataName>
+            <DataName i="2">ACK</DataName>
+        </DataNameList>
+        <DataContent>
+            <Data><Value i="0">linkd</Value></Data>
+            <Data><Value i="1">ack</Value></Data>
+        </DataContent>
+    </DataSet>
+    <DataSet>
+        <DataNameList>
+            <DataName i="1">LINKID</DataName>
+            <DataName i="2">ACK</DataName>
+        </DataNameList>
+        <DataContent>
+            <Data><Value i="0">linkd</Value></Data>
+            <Data><Value i="1">ack</Value></Data>
+        </DataContent>
+    </DataSet>
+</DataAcquiFile>

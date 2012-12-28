@@ -10,14 +10,14 @@ import org.specs2._
  * Date: 12-12-11
  * Time: 上午11:08
  */
-class DBQMSpec extends mutable.Specification {
+class DBCQMSpec extends mutable.Specification {
   val init = {
     JPA.initPersistenceName("default")
   }
 
   "Test all" should {
     "CriterialQL Test withEntityManager" in {
-      test()
+      //test()
     }
 
     "CriterialQL Test fetch" in {
@@ -55,7 +55,17 @@ class DBQMSpec extends mutable.Specification {
 
   def fetch() {
     time(() => {
-      Book.
+      Book.fetch {
+        cq =>
+          cq.:=:("id", 12L)
+      } match {
+        case None =>
+        case Some(list) => list.foreach(println(_))
+        //          list.foreach(book => {
+        //            println(book.toString)
+        //          })
+      }
+
       "Fetch"
     })
   }

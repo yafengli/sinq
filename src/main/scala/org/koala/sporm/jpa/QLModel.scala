@@ -11,8 +11,8 @@ abstract class QLModel[T: Manifest] extends JPA {
 
   def get(id: Any): Option[T] = {
     withEntityManager {
-      _.find(getType, id)
-    }.asInstanceOf[Option[T]]
+      _.find(getType, id).asInstanceOf[T]
+    }
   }
 
   /** QL API */
@@ -84,11 +84,11 @@ abstract class QLModel[T: Manifest] extends JPA {
     count(qs, Array())
   }
 
-  def multi(qs: String, ops: Array[Any]): Option[AnyRef] = {
+  def multi(qs: String, ops: Array[Any]): Option[List[Array[_]]] = {
     withEntityManager {
       em =>
         try {
-          val query = em.createQuery(qs)
+          val query = em.createQuery(qs, classOf[Array[_]])
           ops.toList match {
             case Nil =>
             case list: List[Any] =>
@@ -96,7 +96,7 @@ abstract class QLModel[T: Manifest] extends JPA {
                 query.setParameter(i, ops(i - 1))
               }
           }
-          query.getResultList
+          query.getResultList.toList
         } catch {
           case e: Exception => e.printStackTrace()
           null

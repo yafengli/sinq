@@ -1,8 +1,10 @@
 package org.koala.sporm.jpa
 
+import javax.persistence.criteria.Selection
+
 
 abstract class CQModel[T: Manifest] extends JPA {
-  private def getType = implicitly[Manifest[T]].runtimeClass //2.10+
+  def getType = implicitly[Manifest[T]].runtimeClass //2.10+
 
   //private def getType = implicitly[Manifest[T]].erasure //2.9.2
 
@@ -10,8 +12,8 @@ abstract class CQModel[T: Manifest] extends JPA {
 
   def get(id: Any): Option[T] = {
     withEntityManager {
-      _.find(getType, id)
-    }.asInstanceOf[Option[T]]
+      _.find(getType, id).asInstanceOf[T]
+    }
   }
 
   /** Criteria API */
@@ -21,20 +23,28 @@ abstract class CQModel[T: Manifest] extends JPA {
 
   def fetch(limit: Int, offset: Int)(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
     withEntityManager {
-      em => call(CriteriaQL(em, classOf[T])).fetch(limit, offset)
+      em => call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).fetch(limit, offset)
     }
   }
 
-  def single(ct: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
+  def single(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
     withEntityManager {
-      em => call(CriteriaQL(em, classOf[T])).single()
+      em => call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).single()
     }
   }
 
   def count(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[java.lang.Long] = {
     withEntityManager {
       em =>
-        call(CriteriaQL(em, classOf[T])).count()
+        val ct: Class[T] = getType.asInstanceOf
+        call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).count()
+    }
+  }
+
+  def multi(selects: List[Selection[_ <: Any]])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[_ <: Any]] = {
+    withEntityManager {
+      em =>
+        call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).multi(selects)
     }
   }
 }

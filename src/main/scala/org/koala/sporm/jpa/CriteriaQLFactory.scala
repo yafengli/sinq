@@ -48,7 +48,7 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
     em.createQuery(countQuery).getSingleResult
   }
 
-  def multi(selects: List[Selection[Any]]): List[AnyRef] = {
+  def multi(selects: List[Selection[_]]): List[_] = {
     val objectQuery = cab.createQuery()
     objectQuery.multiselect(selects)
 
