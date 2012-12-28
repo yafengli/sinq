@@ -32,6 +32,24 @@ class SpormFacade extends JPA {
       em => call(CriteriaQL(em, ct)).fetch()
     }
   }
+
+  def single[T](ct: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
+    withEntityManager {
+      em => call(CriteriaQL(em, ct)).single()
+    }
+  }
+
+  def inTransaction[T](ct: Class[T])(action: (CriteriaQL[T]) => CriteriaQL[T]) {
+    withTransaction {
+      em => action(CriteriaQL(em, ct))
+    }
+  }
+
+  def inEntityManager[T](ct: Class[T])(action: (CriteriaQL[T]) => CriteriaQL[T]) {
+    withEntityManager {
+      em => action(CriteriaQL(em, ct))
+    }
+  }
 }
 
 object SpormFacade {

@@ -3,7 +3,7 @@ package models
 import javax.persistence._
 import java.util.Set
 import java.util.HashSet
-import org.koala.sporm.jpa.JPQLModel
+import org.koala.sporm.jpa.CQModel
 
 @Entity
 @Table(name = "t_teacher")
@@ -23,4 +23,4 @@ case class Teacher(var name: String, var age: Int, var address: String) {
 
 }
 
-object Teacher extends JPQLModel[Teacher]
+object Teacher extends CQModel[Teacher]

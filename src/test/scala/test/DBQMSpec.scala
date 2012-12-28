@@ -16,8 +16,12 @@ class DBQMSpec extends mutable.Specification {
   }
 
   "Test all" should {
-    "CriterialQL Test" in {
+    "CriterialQL Test withEntityManager" in {
       test()
+    }
+
+    "CriterialQL Test fetch" in {
+      fetch()
     }
   }
 
@@ -28,26 +32,33 @@ class DBQMSpec extends mutable.Specification {
         em => {
           CriteriaQL(em, classOf[Book]).or(cq => {
             var list = List[Predicate]()
-            list ::= cq.builder.equal(cq.root.get(Book_.name), "nanjing")
-            list ::= cq.builder.le(cq.root.get(Book_.price), 10)
+            list ::= cq.cab.equal(cq.root.get(Book_.name), "nanjing")
+            list ::= cq.cab.le(cq.root.get(Book_.price), 10)
             list
           }).and(cq => {
             var list = List[Predicate]()
-            list ::= cq.builder.equal(cq.root.get(Book_.name), "nanjing")
-            list ::= cq.builder.ge(cq.root.get(Book_.price), 11)
+            list ::= cq.cab.equal(cq.root.get(Book_.name), "nanjing")
+            list ::= cq.cab.ge(cq.root.get(Book_.price), 11)
             list
           }).or(cq => {
             var list = List[Predicate]()
-            list ::= cq.builder.equal(cq.root.get(Book_.name), "Shanghai")
-            list ::= cq.builder.ge(cq.root.get(Book_.price), 12)
+            list ::= cq.cab.equal(cq.root.get(Book_.name), "Shanghai")
+            list ::= cq.cab.ge(cq.root.get(Book_.price), 12)
             list
           }).fetch(10, 1)
         }
       }
-      "CriterialQL Test 1"
+      "withEntityManager"
     })
   }
 
+
+  def fetch() {
+    time(() => {
+      Book.
+      "Fetch"
+    })
+  }
 
   def time(f: () => String)() {
     val start = System.currentTimeMillis()

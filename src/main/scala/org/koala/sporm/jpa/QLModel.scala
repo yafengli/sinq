@@ -2,7 +2,7 @@ package org.koala.sporm.jpa
 
 import scala.collection.JavaConversions._
 
-abstract class JPQLModel[T: Manifest] extends JPA {
+abstract class QLModel[T: Manifest] extends JPA {
   private def getType = implicitly[Manifest[T]].runtimeClass //2.10+
 
   //private def getType = implicitly[Manifest[T]].erasure //2.9.2
@@ -20,7 +20,7 @@ abstract class JPQLModel[T: Manifest] extends JPA {
     withEntityManager {
       em =>
         try {
-          val query = em.createQuery(qs)
+          val query = em.createQuery(qs, getType)
           if (offset > 0) query.setFirstResult(offset)
           if (limit > 0) query.setMaxResults(limit)
 
@@ -40,6 +40,20 @@ abstract class JPQLModel[T: Manifest] extends JPA {
 
   def find(qs: String, ops: Array[Any]): Option[List[T]] = {
     find(qs, ops, -1, -1)
+  }
+
+  def single(qs: String, ops: Array[Any]): Option[T] = {
+    withEntityManager {
+      em =>
+        val query = em.createQuery(qs, getType)
+        ops.toList match {
+          case Nil =>
+          case list: List[Any] => for (i <- 1 to list.size) {
+            query.setParameter(i, list(i - 1))
+          }
+        }
+        query.getSingleResult.asInstanceOf[T]
+    }
   }
 
   def count(qs: String, ops: Array[Any]): Option[Long] = {
@@ -70,20 +84,27 @@ abstract class JPQLModel[T: Manifest] extends JPA {
     count(qs, Array())
   }
 
-  /** Criteria API */
-  def fetch(ct: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
-    fetch(ct, -1, -1)(call)
-  }
-
-  def fetch(ct: Class[T], limit: Int, offset: Int)(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
+  def multi(qs: String, ops: Array[Any]): Option[AnyRef] = {
     withEntityManager {
-      em => call(CriteriaQL(em, ct)).fetch(limit, offset)
+      em =>
+        try {
+          val query = em.createQuery(qs)
+          ops.toList match {
+            case Nil =>
+            case list: List[Any] =>
+              for (i <- 1 to ops.size) {
+                query.setParameter(i, ops(i - 1))
+              }
+          }
+          query.getResultList
+        } catch {
+          case e: Exception => e.printStackTrace()
+          null
+        }
     }
   }
 
-  def single(ct: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
-    withEntityManager {
-      em => call(CriteriaQL(em, ct)).single()
-    }
+  def multi(qs: String): Option[AnyRef] = {
+    multi(qs, Array())
   }
 }
