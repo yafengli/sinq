@@ -17,11 +17,11 @@ class DBCQMSpec extends mutable.Specification {
 
   "Test all" should {
     "CriterialQL Test withEntityManager" in {
-      //test()
+      test()
     }
 
     "CriterialQL Test fetch" in {
-      fetch()
+      //      fetch()
     }
   }
 
@@ -30,20 +30,22 @@ class DBCQMSpec extends mutable.Specification {
     time(() => {
       Book.withEntityManager {
         em => {
-          CriteriaQL(em, classOf[Book]).or(cq => {
+          val factory = CriteriaQL(em, classOf[Book])
+          factory.or({
             var list = List[Predicate]()
-            list ::= cq.cab.equal(cq.root.get(Book_.name), "nanjing")
-            list ::= cq.cab.le(cq.root.get(Book_.price), 10)
+            list ::= factory.cab.equal(factory.root.get(Book_.name), "nanjing")
+            list ::= factory.cab.le(factory.root.get(Book_.price), 10)
             list
-          }).and(cq => {
+          }).or({
             var list = List[Predicate]()
-            list ::= cq.cab.equal(cq.root.get(Book_.name), "nanjing")
-            list ::= cq.cab.ge(cq.root.get(Book_.price), 11)
+            list ::= factory.cab.equal(factory.root.get(Book_.name), "nanjing")
+            list ::= factory.cab.ge(factory.root.get(Book_.price), 11)
+            list ::= factory.cab.or(factory.cab.equal(factory.root.get(Book_.name), "nanjing"))
             list
-          }).or(cq => {
+          }).or({
             var list = List[Predicate]()
-            list ::= cq.cab.equal(cq.root.get(Book_.name), "Shanghai")
-            list ::= cq.cab.ge(cq.root.get(Book_.price), 12)
+            list ::= factory.cab.equal(factory.root.get(Book_.name), "Shanghai")
+            list ::= factory.cab.ge(factory.root.get(Book_.price), 12)
             list
           }).fetch(10, 1)
         }
@@ -55,17 +57,23 @@ class DBCQMSpec extends mutable.Specification {
 
   def fetch() {
     time(() => {
-      Book.fetch {
-        cq =>
-          cq.:=:("id", 12L)
+      Book.fetch(5, 5) {
+        factory =>
+
+          val list = List[Predicate]()
+          val cab = factory.cab
+          val root = factory.root
+
+          val o1 = cab.equal(root.get("name"), "nanjing")
+          val o2 = cab.ge(root.get("price"), Integer.valueOf(20))
+          val o3 = cab.equal(root.get("price"), Integer.valueOf(30))
+          val o4 = cab.notEqual(root.get("name"), "heifei")
+          //        val c = cab.or(o1, cab.or(o2, o3), o4)
+          factory.or(List(o1)).or(List(o1, o2)).or(List(o4))
       } match {
         case None =>
         case Some(list) => list.foreach(println(_))
-        //          list.foreach(book => {
-        //            println(book.toString)
-        //          })
       }
-
       "Fetch"
     })
   }
