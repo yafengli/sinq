@@ -10,7 +10,7 @@ object SpormBuild extends Build {
       name := "sporm",
       organization := "org.koala",
       version := "0.1-SNAPSHOT",
-      scalaVersion := "2.10.0-RC3",
+      scalaVersion := "2.10.0-RC5",
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///e:/repository/",
         "247" at "http://221.231.148.247/nexus/content/groups/public/",
@@ -23,7 +23,7 @@ object SpormBuild extends Build {
         "org.hibernate" % "hibernate-entitymanager" % "4.1.9.Final",
         "com.jolbox" % "bonecp" % "0.7.1.RELEASE",
         "postgresql" % "postgresql" % "9.1-901.jdbc4",
-        "org.specs2" %% "specs2" % "1.13-SNAPSHOT",
+        "org.specs2" %% "specs2" % "1.12.3",
         "junit" % "junit" % "4.10"
       )
     )

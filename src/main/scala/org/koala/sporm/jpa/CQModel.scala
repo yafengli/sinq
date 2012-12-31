@@ -6,9 +6,11 @@ import javax.persistence.criteria.Selection
 abstract class CQModel[T: Manifest] extends JPA {
   def getType = implicitly[Manifest[T]].runtimeClass //2.10+
 
-  //private def getType = implicitly[Manifest[T]].erasure //2.9.2
+
+  //@Deprecated  def getType = implicitly[Manifest[T]].erasure //2.9.2
 
   implicit def generateModel(entity: T) = new BaseOperator[T](entity)
+
 
   def get(id: Any): Option[T] = {
     withEntityManager {
@@ -36,7 +38,6 @@ abstract class CQModel[T: Manifest] extends JPA {
   def count(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[java.lang.Long] = {
     withEntityManager {
       em =>
-        val ct: Class[T] = getType.asInstanceOf
         call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).count()
     }
   }

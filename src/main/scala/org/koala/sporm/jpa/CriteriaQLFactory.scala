@@ -127,11 +127,6 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
     this
   }
 
-  def or(list: List[Predicate]): CriteriaQL[T] = {
-    predicates ::= cab.or(list: _*)
-    this
-  }
-
   def and(list: List[Predicate]): CriteriaQL[T] = {
     predicates ::= cab.and(list: _*)
     this

@@ -22,6 +22,7 @@ public class JpaTest {
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
 
         cq.select(qb.count(cq.from(Book.class)));
+
         cq.where(/*your stuff*/);
     }
 }

@@ -3,9 +3,9 @@ package org.koala.sporm.jpa
 import scala.collection.JavaConversions._
 
 abstract class QLModel[T: Manifest] extends JPA {
-  private def getType = implicitly[Manifest[T]].runtimeClass //2.10+
+  def getType = implicitly[Manifest[T]].runtimeClass //2.10+
 
-  //private def getType = implicitly[Manifest[T]].erasure //2.9.2
+  //@Deprecated def getType = implicitly[Manifest[T]].erasure //2.9.2
 
   implicit def generateModel(entity: T) = new BaseOperator[T](entity)
 
