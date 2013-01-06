@@ -3,13 +3,13 @@ package org.koala.sporm.jpa
 import javax.persistence.EntityManager
 import javax.persistence.criteria.{Selection, Predicate, Order}
 import scala.collection.JavaConversions._
-import java.lang.Long
 
 class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
 
   val cab = em.getCriteriaBuilder
   val query = cab.createQuery(ct)
   val root = query.from(ct)
+
 
   private var orders = List[Order]()
   private var predicates = List[Predicate]()
@@ -36,16 +36,9 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
 
   def single(): T = {
     query.select(root)
+
     if (!predicates.isEmpty) query.where(predicates: _*)
     em.createQuery(query).getSingleResult
-  }
-
-  def count(): Long = {
-    val countQuery = cab.createQuery(classOf[Long])
-    countQuery.select(cab.count(countQuery.from(ct)))
-
-    if (!predicates.isEmpty) countQuery.where(predicates: _*)
-    em.createQuery(countQuery).getSingleResult
   }
 
   def multi(selects: List[Selection[_]]): List[_] = {

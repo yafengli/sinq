@@ -1,6 +1,6 @@
 package org.koala.sporm.jpa
 
-import javax.persistence.criteria.Selection
+import javax.persistence.criteria.{CriteriaBuilder, Root, Predicate, Selection}
 
 
 abstract class CQModel[T: Manifest] extends JPA {
@@ -35,10 +35,17 @@ abstract class CQModel[T: Manifest] extends JPA {
     }
   }
 
-  def count(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[java.lang.Long] = {
+  def count(call: (CriteriaBuilder, Root[T]) => List[Predicate]): Option[Long] = {
     withEntityManager {
       em =>
-        call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).count()
+        val ct = getType.asInstanceOf[Class[T]]
+        val cab = em.getCriteriaBuilder
+        val cq = cab.createQuery(classOf[java.lang.Long])
+        val root = cq.from(ct)
+
+        cq.select(cab.count(cq.from(ct)))
+        cq.where(call(cab, root): _*)
+        em.createQuery(cq).getSingleResult.toLong
     }
   }
 
