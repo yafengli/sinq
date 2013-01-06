@@ -38,12 +38,11 @@ abstract class CQModel[T: Manifest] extends JPA {
   def count(call: (CriteriaBuilder, Root[T]) => List[Predicate]): Option[Long] = {
     withEntityManager {
       em =>
-        val ct = getType.asInstanceOf[Class[T]]
         val cab = em.getCriteriaBuilder
         val cq = cab.createQuery(classOf[java.lang.Long])
-        val root = cq.from(ct)
+        val root = cq.from(getType.asInstanceOf[Class[T]])
 
-        cq.select(cab.count(cq.from(ct)))
+        cq.select(cab.count(cq.from(getType.asInstanceOf[Class[T]])))
         cq.where(call(cab, root): _*)
         em.createQuery(cq).getSingleResult.toLong
     }
