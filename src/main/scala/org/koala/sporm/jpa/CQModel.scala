@@ -31,7 +31,8 @@ abstract class CQModel[T: Manifest] extends JPA {
 
   def single(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
     withEntityManager {
-      em => call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).single()
+      em =>
+        call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).single()
     }
   }
 

@@ -35,10 +35,14 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
   }
 
   def single(): T = {
-    query.select(root)
+    try {
+      query.select(root)
 
-    if (!predicates.isEmpty) query.where(predicates: _*)
-    em.createQuery(query).getSingleResult
+      if (!predicates.isEmpty) query.where(predicates: _*)
+      em.createQuery(query).getSingleResult
+    } catch {
+      case ex: Exception => null.asInstanceOf[T]
+    }
   }
 
   def multi(selects: List[Selection[_]]): List[_] = {

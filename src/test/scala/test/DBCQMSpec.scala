@@ -18,11 +18,11 @@ class DBCQMSpec extends mutable.Specification {
 
   "Test all" should {
     "CriterialQL Test withEntityManager" in {
-      //      test()
+      test()
     }
 
     "CriterialQL Test fetch" in {
-      //      fetch()
+      fetch()
     }
     "CriterialQL Test count" in {
       count()
@@ -84,23 +84,6 @@ class DBCQMSpec extends mutable.Specification {
 
   def count() {
     time(() => {
-      /*
-     Book.withEntityManager {
-       em => {
-         val cab = em.getCriteriaBuilder
-         val cq = cab.createQuery(classOf[java.lang.Long])
-         val root = cq.from(classOf[Book])
-
-         cq.select(cab.count(cq.from(classOf[Book])))
-
-         val o1 = cab.equal(root.get(Book_.name), "nanjing")
-         val o2 = cab.ge(root.get(Book_.price), 20)
-
-         cq.where(List(o1, o2): _*)
-         println("#count:" + em.createQuery(cq).getSingleResult())
-       }
-     }
-    */
       Book.count {
         (cab, root) =>
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
