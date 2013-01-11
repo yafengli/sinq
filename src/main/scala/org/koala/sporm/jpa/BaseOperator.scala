@@ -9,7 +9,8 @@ class BaseOperator[T](val entity: T) extends JPA {
 
   def insert() {
     withTransaction {
-      _.persist(entity)
+      //_.persist(entity)
+      _.merge(entity)
     }
   }
 
