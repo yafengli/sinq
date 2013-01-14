@@ -1,7 +1,6 @@
 package models
 
 import javax.persistence._
-import metamodel.{StaticMetamodel, SingularAttribute}
 import org.koala.sporm.jpa.CQModel
 
 /**
@@ -32,4 +31,3 @@ case class Book(var name: String, var price: Int) {
 }
 
 object Book extends CQModel[Book]
-

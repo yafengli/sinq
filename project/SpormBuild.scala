@@ -22,9 +22,9 @@ object SpormBuild extends Build {
       libraryDependencies ++= Seq(
         "org.hibernate" % "hibernate-entitymanager" % "4.1.9.Final",
         "com.jolbox" % "bonecp" % "0.7.1.RELEASE",
-        "postgresql" % "postgresql" % "9.1-901.jdbc4",
-        "org.specs2" %% "specs2" % "1.12.3",
-        "junit" % "junit" % "4.10"
+        "postgresql" % "postgresql" % "9.1-901.jdbc4" % "test",
+        "org.specs2" %% "specs2" % "1.12.3" % "test",
+        "junit" % "junit" % "4.10" % "test"
       )
     )
   )

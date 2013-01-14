@@ -18,11 +18,11 @@ class DBCQMSpec extends mutable.Specification {
 
   "Test all" should {
     "CriterialQL Test withEntityManager" in {
-      test()
+      //      test()
     }
 
     "CriterialQL Test fetch" in {
-      fetch()
+      //      fetch()
     }
     "CriterialQL Test count" in {
       count()
@@ -88,7 +88,10 @@ class DBCQMSpec extends mutable.Specification {
         (cab, root) =>
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
           val o2 = cab.ge(root.get(Book_.price), 20)
-          List(o1, o2)
+          val student = new Student()
+          student.id = 11L
+          val o3 = cab.notEqual(root.get(Book_.student), student)
+          List(o1, o2, o3)
       } match {
         case None =>
         case Some(count) => println(count)
