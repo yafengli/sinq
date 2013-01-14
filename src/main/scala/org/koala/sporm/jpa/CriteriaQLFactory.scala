@@ -3,6 +3,7 @@ package org.koala.sporm.jpa
 import javax.persistence.EntityManager
 import javax.persistence.criteria.{Selection, Predicate, Order}
 import scala.collection.JavaConversions._
+import collection.mutable.ListBuffer
 
 class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
 
@@ -11,8 +12,8 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
   val root = query.from(ct)
 
 
-  private var orders = List[Order]()
-  private var predicates = List[Predicate]()
+  private var orders = ListBuffer[Order]()
+  private var predicates = ListBuffer[Predicate]()
 
   def fetch(): List[T] = {
     fetch(-1, -1)
@@ -59,73 +60,78 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) {
   }
 
   def :=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
-    predicates ::= cab.equal(root.get(attrName), attrVal)
+    predicates += cab.equal(root.get(attrName), attrVal)
     this
   }
 
 
   def !=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
-    predicates ::= cab.notEqual(root.get(attrName), attrVal)
+    predicates += cab.notEqual(root.get(attrName), attrVal)
     this
   }
 
   def <::(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cab.lt(root.get(attrName), attrVal)
+    predicates += cab.lt(root.get(attrName), attrVal)
     this
   }
 
   def >::(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cab.gt(root.get(attrName), attrVal)
+    predicates += cab.gt(root.get(attrName), attrVal)
     this
   }
 
   def <=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cab.le(root.get(attrName), attrVal)
+    predicates += cab.le(root.get(attrName), attrVal)
     this
   }
 
   def >=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cab.ge(root.get(attrName), attrVal)
+    predicates += cab.ge(root.get(attrName), attrVal)
     this
   }
 
   def ||:(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates ::= cab.ge(root.get(attrName), attrVal)
+    predicates += cab.ge(root.get(attrName), attrVal)
     this
   }
 
   def asc(attrName: String): CriteriaQL[T] = {
-    orders ::= cab.asc(root.get(attrName))
+    orders += cab.asc(root.get(attrName))
     this
   }
 
   def desc(attrName: String): CriteriaQL[T] = {
-    orders ::= cab.desc(root.get(attrName))
+    orders += cab.desc(root.get(attrName))
     this
   }
 
   def like(attrName: String, attrVal: String): CriteriaQL[T] = {
-    predicates ::= cab.like(root.get(attrName).as(classOf[String]), attrVal)
+    predicates += cab.like(root.get(attrName).as(classOf[String]), attrVal)
     this
   }
 
   def notLike(attrName: String, attrVal: String): CriteriaQL[T] = {
-    predicates ::= cab.notLike(root.get(attrName).as(classOf[String]), attrVal)
+    predicates += cab.notLike(root.get(attrName).as(classOf[String]), attrVal)
     this
   }
 
   def isNull(attrName: String): CriteriaQL[T] = {
-    predicates ::= cab.isNull(root.get(attrName))
+    predicates += cab.isNull(root.get(attrName))
     this
   }
 
   def isNotNull(attrName: String): CriteriaQL[T] = {
-    predicates ::= cab.isNotNull(root.get(attrName))
+    predicates += cab.isNotNull(root.get(attrName))
     this
   }
 
+  @Deprecated
   def and(list: List[Predicate]): CriteriaQL[T] = {
-    predicates ::= cab.and(list: _*)
+    ::=(list)
+  }
+
+  def ::=(list: List[Predicate]): CriteriaQL[T] = {
+    predicates ++= list
     this
   }
 }

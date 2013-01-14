@@ -91,7 +91,8 @@ class DBCQMSpec extends mutable.Specification {
           val student = new Student()
           student.id = 11L
           val o3 = cab.notEqual(root.get(Book_.student), student)
-          List(o1, o2, o3)
+          val o4 = cab.notEqual(root.join(Book_.student).get(Student_.age), 111)
+          List(o1, o2, o3, o4)
       } match {
         case None =>
         case Some(count) => println(count)
