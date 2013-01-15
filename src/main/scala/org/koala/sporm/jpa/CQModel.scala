@@ -43,7 +43,7 @@ abstract class CQModel[T: Manifest] extends JPA {
         val cq = cab.createQuery(classOf[java.lang.Long])
         val root = cq.from(getType.asInstanceOf[Class[T]])
 
-        cq.select(cab.count(cq.from(getType.asInstanceOf[Class[T]])))
+        cq.select(cab.count(root))
         cq.where(call(cab, root): _*)
         em.createQuery(cq).getSingleResult.toLong
     }

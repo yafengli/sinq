@@ -37,19 +37,19 @@ class DBCQMSpec extends mutable.Specification {
           val factory = CriteriaQL(em, classOf[Book])
           factory.and({
             var list = List[Predicate]()
-            list ::= factory.cab.equal(factory.root.get(Book_.name), "nanjing")
-            list ::= factory.cab.le(factory.root.get(Book_.price), 10)
+            list ::= factory.builder.equal(factory.root.get(Book_.name), "nanjing")
+            list ::= factory.builder.le(factory.root.get(Book_.price), 10)
             list
           }).and({
             var list = List[Predicate]()
-            list ::= factory.cab.equal(factory.root.get(Book_.name), "nanjing")
-            list ::= factory.cab.ge(factory.root.get(Book_.price), 11)
-            list ::= factory.cab.or(factory.cab.equal(factory.root.get(Book_.name), "nanjing"))
+            list ::= factory.builder.equal(factory.root.get(Book_.name), "nanjing")
+            list ::= factory.builder.ge(factory.root.get(Book_.price), 11)
+            list ::= factory.builder.or(factory.builder.equal(factory.root.get(Book_.name), "nanjing"))
             list
           }).and({
             var list = List[Predicate]()
-            list ::= factory.cab.equal(factory.root.get(Book_.name), "Shanghai")
-            list ::= factory.cab.ge(factory.root.get(Book_.price), 12)
+            list ::= factory.builder.equal(factory.root.get(Book_.name), "Shanghai")
+            list ::= factory.builder.ge(factory.root.get(Book_.price), 12)
             list
           }).fetch(10, 1)
         }
@@ -63,7 +63,7 @@ class DBCQMSpec extends mutable.Specification {
     time(() => {
       Teacher.fetch(5, 5) {
         factory =>
-          val cab = factory.cab
+          val cab = factory.builder
           val root = factory.root
 
           val o1 = cab.equal(root.get("name"), "nanjing")
@@ -72,7 +72,7 @@ class DBCQMSpec extends mutable.Specification {
           val o4 = cab.notEqual(root.get("address"), "heifei")
           val c = cab.or(List(o1, o2, cab.and(List(o3, o4): _*)): _*)
 
-          factory.and(List(cab.or(List(o1, o3): _*))).and(List(cab.or(List(o1, o2): _*)))
+          factory.::=(List(cab.or(List(o1, o3): _*))).::=(List(cab.or(List(o1, o2): _*)))
       } match {
         case None =>
         case Some(list) => list.foreach(println(_))
