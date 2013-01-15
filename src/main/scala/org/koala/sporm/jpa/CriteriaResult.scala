@@ -23,12 +23,11 @@ trait CriteriaResult[T] {
   }
 
   def fetch(limit: Int, offset: Int): List[T] = {
-    query.select(root)
-
-    if (!orders.isEmpty) query.orderBy(orders: _*)
-    if (!predicates.isEmpty) query.where(predicates: _*)
-
     try {
+      query.select(root)
+      if (!orders.isEmpty) query.orderBy(orders: _*)
+      if (!predicates.isEmpty) query.where(predicates: _*)
+
       val q = currentEntityManager.createQuery(query)
       if (limit > 0) q.setMaxResults(limit)
       if (offset > 0) q.setFirstResult(offset)
@@ -47,6 +46,22 @@ trait CriteriaResult[T] {
     } catch {
       case ex: Exception => null.asInstanceOf[T]
     }
+  }
+
+  def count(): Long = {
+    val cab = currentEntityManager.getCriteriaBuilder
+    val cq = cab.createQuery(classOf[java.lang.Long])
+    val aa = cq.from(findType)
+
+    cq.select(cab.count(aa))
+    cq.where(predicates.toList: _*)
+    currentEntityManager.createQuery(cq).getSingleResult.toLong
+    /*
+    val longQuery = builder.createQuery(classOf[java.lang.Long])
+    longQuery.select(builder.count(root))
+    longQuery.where(predicates.toList: _*)
+    currentEntityManager.createQuery(longQuery).getSingleResult.toLong
+    */
   }
 
   def multi(selects: List[Selection[_]]): List[_] = {

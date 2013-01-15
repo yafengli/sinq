@@ -49,6 +49,13 @@ abstract class CQModel[T: Manifest] extends JPA {
     }
   }
 
+  def count(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[Long] = {
+    withEntityManager {
+      em =>
+        call(CriteriaQL(em, getType.asInstanceOf[Class[T]])).count()
+    }
+  }
+
   def multi(selects: List[Selection[Any]])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[Any]] = {
     withEntityManager {
       em =>

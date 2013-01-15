@@ -88,16 +88,29 @@ class DBCQMSpec extends mutable.Specification {
         (cab, root) =>
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
           val o2 = cab.ge(root.get(Book_.price), 20)
-          val student = new Student()
-          student.id = 11L
-          val o3 = cab.notEqual(root.get(Book_.student), student)
-          val o4 = cab.notEqual(root.join(Book_.student).get(Student_.age), 111)
-          List(o1, o2, o3, o4)
+          List(o1, o2)
       } match {
         case None =>
-        case Some(count) => println(count)
+        case Some(count) => println("#1#" + count)
       }
-      "Fetch"
+      "Fetch count 1"
+    })
+
+    time(() => {
+      Book.count {
+        factory =>
+          val cab = factory.builder
+          val root = factory.root
+
+          val o1 = cab.equal(root.get(Book_.name), "nanjing")
+          val o2 = cab.ge(root.get(Book_.price), 20)
+
+          factory ::= List(o1, o2)
+      } match {
+        case None =>
+        case Some(count) => println("#2#:" + count)
+      }
+      "Fetch count 2"
     })
   }
 
