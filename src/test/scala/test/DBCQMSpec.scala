@@ -100,7 +100,7 @@ class DBCQMSpec extends mutable.Specification {
       Book.count {
         factory =>
           val cab = factory.builder
-          val root = factory.root
+          val root = factory.countRoot
 
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
           val o2 = cab.ge(root.get(Book_.price), 20)

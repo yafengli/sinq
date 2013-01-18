@@ -18,6 +18,11 @@ trait CriteriaResult[T] {
   val query = builder.createQuery(findType)
   val root = query.from(findType)
 
+
+  val countQuery = builder.createQuery(classOf[java.lang.Long])
+  val countRoot = countQuery.from(findType)
+
+
   def fetch(): List[T] = {
     fetch(-1, -1)
   }
@@ -49,13 +54,9 @@ trait CriteriaResult[T] {
   }
 
   def count(): Long = {
-    val cab = currentEntityManager.getCriteriaBuilder
-    val cq = cab.createQuery(classOf[java.lang.Long])
-    val aa = cq.from(findType)
-
-    cq.select(cab.count(aa))
-    cq.where(predicates.toList: _*)
-    currentEntityManager.createQuery(cq).getSingleResult.toLong
+    countQuery.select(builder.count(countRoot))
+    countQuery.where(predicates.toList: _*)
+    currentEntityManager.createQuery(countQuery).getSingleResult.toLong
     /*
     val longQuery = builder.createQuery(classOf[java.lang.Long])
     longQuery.select(builder.count(root))
@@ -64,7 +65,9 @@ trait CriteriaResult[T] {
     */
   }
 
+
   def multi(selects: List[Selection[_]]): List[_] = {
+
     val objectQuery = builder.createQuery()
     objectQuery.multiselect(selects)
 

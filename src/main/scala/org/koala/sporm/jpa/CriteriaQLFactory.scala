@@ -9,11 +9,6 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) extends CriteriaRes
 
   def findType: Class[T] = ct
 
-  def distinct(): CriteriaQL[T] = {
-    query.distinct(true)
-    this
-  }
-
   def :=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
     predicates += builder.equal(root.get(attrName), attrVal)
     this

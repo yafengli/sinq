@@ -18,7 +18,6 @@ public class JpaTest {
         EntityManager em = null;
         CriteriaBuilder qb = em.getCriteriaBuilder();
 
-
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
 
         cq.select(qb.count(cq.from(Book.class)));
@@ -26,3 +25,4 @@ public class JpaTest {
         cq.where(/*your stuff*/);
     }
 }
+
