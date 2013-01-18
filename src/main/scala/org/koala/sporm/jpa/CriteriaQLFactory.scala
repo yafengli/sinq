@@ -3,11 +3,15 @@ package org.koala.sporm.jpa
 import javax.persistence.EntityManager
 import javax.persistence.criteria.Predicate
 
-class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) extends CriteriaResult[T] {
+class CriteriaQL[T](val em: EntityManager, val ft: Class[T], val rt: Class[_]) extends CriteriaResult[T] {
+
+  def this(em: EntityManager, ft: Class[T]) = this(em, ft, ft)
 
   def currentEntityManager: EntityManager = this.em
 
-  def findType: Class[T] = ct
+  def findType: Class[T] = ft
+
+  def resultType: Class[_] = rt
 
   def :=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
     predicates += builder.equal(root.get(attrName), attrVal)
@@ -87,7 +91,11 @@ class CriteriaQL[T](val em: EntityManager, val ct: Class[T]) extends CriteriaRes
 }
 
 object CriteriaQL {
-  def apply[T](em: EntityManager, ct: Class[T]): CriteriaQL[T] = {
-    new CriteriaQL[T](em, ct)
+  def apply[T](em: EntityManager, ft: Class[T]): CriteriaQL[T] = {
+    new CriteriaQL[T](em, ft)
+  }
+
+  def apply[T](em: EntityManager, ft: Class[T], rt: Class[_]): CriteriaQL[T] = {
+    new CriteriaQL[T](em, ft, rt)
   }
 }

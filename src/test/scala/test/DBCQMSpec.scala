@@ -70,9 +70,8 @@ class DBCQMSpec extends mutable.Specification {
           val o2 = cab.ge(root.get("age"), Integer.valueOf(20))
           val o3 = cab.equal(root.get("id"), Integer.valueOf(1))
           val o4 = cab.notEqual(root.get("address"), "heifei")
-          val c = cab.or(List(o1, o2, cab.and(List(o3, o4): _*)): _*)
 
-          factory.::=(List(cab.or(List(o1, o3): _*))).::=(List(cab.or(List(o1, o2): _*)))
+          factory.::=(List(cab.or(List(o1, o3): _*))).::=(List(cab.or(List(o2, o4): _*)))
       } match {
         case None =>
         case Some(list) => list.foreach(println(_))
@@ -85,22 +84,9 @@ class DBCQMSpec extends mutable.Specification {
   def count() {
     time(() => {
       Book.count {
-        (cab, root) =>
-          val o1 = cab.equal(root.get(Book_.name), "nanjing")
-          val o2 = cab.ge(root.get(Book_.price), 20)
-          List(o1, o2)
-      } match {
-        case None =>
-        case Some(count) => println("#1#" + count)
-      }
-      "Fetch count 1"
-    })
-
-    time(() => {
-      Book.count {
         factory =>
           val cab = factory.builder
-          val root = factory.countRoot
+          val root = factory.root
 
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
           val o2 = cab.ge(root.get(Book_.price), 20)

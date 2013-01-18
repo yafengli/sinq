@@ -7,7 +7,6 @@ trait JPA {
 
   import JPA._
 
-
   def createEntityManager(): EntityManager = {
     if (em_t.get() == null) {
       try {

@@ -1,11 +1,13 @@
 package org.koala.sporm.jpa
 
+import javax.persistence.criteria.Selection
+
 
 class SpormFacade extends JPA {
 
   def insert[T](entity: T) {
     withTransaction {
-      _.persist(entity)
+      _.merge(entity)
     }
   }
 
@@ -21,33 +23,45 @@ class SpormFacade extends JPA {
     }
   }
 
-  def get[T](tc: Class[T], id: Any): Option[T] = {
+  def get[T](rt: Class[T], id: Any): Option[T] = {
     withEntityManager {
-      _.find(tc, id)
+      _.find(rt, id)
     }
   }
 
-  def fetch[T](ct: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
+  def fetch[T](ft: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
     withEntityManager {
-      em => call(CriteriaQL(em, ct)).fetch()
+      em => call(CriteriaQL(em, ft)).fetch()
     }
   }
 
-  def single[T](ct: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
+  def single[T](ft: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
     withEntityManager {
-      em => call(CriteriaQL(em, ct)).single()
+      em => call(CriteriaQL(em, ft)).single()
     }
   }
 
-  def inTransaction[T](ct: Class[T])(action: (CriteriaQL[T]) => CriteriaQL[T]) {
+  def count[T](ft: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[Long] = {
+    withEntityManager {
+      em => call(CriteriaQL(em, ft, classOf[java.lang.Long])).count()
+    }
+  }
+
+  def multi[T](ft: Class[T], selects: List[Selection[Any]])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[_]] = {
+    withEntityManager {
+      em => call(CriteriaQL(em, ft)).multi(selects)
+    }
+  }
+
+  def inTransaction[T](ft: Class[T])(action: (CriteriaQL[T]) => CriteriaQL[T]) {
     withTransaction {
-      em => action(CriteriaQL(em, ct))
+      em => action(CriteriaQL(em, ft))
     }
   }
 
-  def inEntityManager[T](ct: Class[T])(action: (CriteriaQL[T]) => CriteriaQL[T]) {
+  def inEntityManager[T](ft: Class[T])(action: (CriteriaQL[T]) => CriteriaQL[T]) {
     withEntityManager {
-      em => action(CriteriaQL(em, ct))
+      em => action(CriteriaQL(em, ft))
     }
   }
 }

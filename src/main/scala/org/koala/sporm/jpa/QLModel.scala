@@ -15,7 +15,6 @@ abstract class QLModel[T: Manifest] extends JPA {
     }
   }
 
-  /** QL API */
   def find(qs: String, ops: Array[Any], limit: Int, offset: Int): Option[List[T]] = {
     withEntityManager {
       em =>

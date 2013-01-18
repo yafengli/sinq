@@ -1,6 +1,6 @@
 package org.koala.sporm.jpa
 
-import javax.persistence.criteria.{Predicate, Order, Selection}
+import javax.persistence.criteria.{CriteriaQuery, Predicate, Order, Selection}
 import javax.persistence.EntityManager
 import collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
@@ -14,13 +14,13 @@ trait CriteriaResult[T] {
 
   def findType: Class[T]
 
+  def resultType: Class[_]
+
   val builder = currentEntityManager.getCriteriaBuilder
-  val query = builder.createQuery(findType)
-  val root = query.from(findType)
 
 
-  val countQuery = builder.createQuery(classOf[java.lang.Long])
-  val countRoot = countQuery.from(findType)
+  val criteriaQuery = builder.createQuery(resultType)
+  val root = criteriaQuery.from(findType)
 
 
   def fetch(): List[T] = {
@@ -29,6 +29,8 @@ trait CriteriaResult[T] {
 
   def fetch(limit: Int, offset: Int): List[T] = {
     try {
+      val query = criteriaQuery.asInstanceOf[CriteriaQuery[T]]
+
       query.select(root)
       if (!orders.isEmpty) query.orderBy(orders: _*)
       if (!predicates.isEmpty) query.where(predicates: _*)
@@ -44,8 +46,9 @@ trait CriteriaResult[T] {
 
   def single(): T = {
     try {
-      query.select(root)
+      val query = criteriaQuery.asInstanceOf[CriteriaQuery[T]]
 
+      query.select(root)
       if (!predicates.isEmpty) query.where(predicates: _*)
       currentEntityManager.createQuery(query).getSingleResult
     } catch {
@@ -54,24 +57,18 @@ trait CriteriaResult[T] {
   }
 
   def count(): Long = {
-    countQuery.select(builder.count(countRoot))
-    countQuery.where(predicates.toList: _*)
-    currentEntityManager.createQuery(countQuery).getSingleResult.toLong
-    /*
-    val longQuery = builder.createQuery(classOf[java.lang.Long])
-    longQuery.select(builder.count(root))
-    longQuery.where(predicates.toList: _*)
-    currentEntityManager.createQuery(longQuery).getSingleResult.toLong
-    */
+    val query = criteriaQuery.asInstanceOf[CriteriaQuery[java.lang.Long]]
+
+    query.select(builder.count(root))
+    query.where(predicates.toList: _*)
+    currentEntityManager.createQuery(query).getSingleResult.toLong
   }
 
-
   def multi(selects: List[Selection[_]]): List[_] = {
-
     val objectQuery = builder.createQuery()
     objectQuery.multiselect(selects)
 
-    if (!predicates.isEmpty) query.where(predicates: _*)
+    if (!predicates.isEmpty) criteriaQuery.where(predicates: _*)
     currentEntityManager.createQuery(objectQuery).getResultList.toList
   }
 }
