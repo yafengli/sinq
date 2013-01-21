@@ -13,38 +13,33 @@ class CriteriaQL[T](val em: EntityManager, val ft: Class[T], val rt: Class[_]) e
 
   def resultType: Class[_] = rt
 
-  def :=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
+  def ==(attrName: String, attrVal: Any): CriteriaQL[T] = {
     predicates += builder.equal(root.get(attrName), attrVal)
     this
   }
 
 
-  def !=:(attrName: String, attrVal: Any): CriteriaQL[T] = {
+  def !=(attrName: String, attrVal: Any): CriteriaQL[T] = {
     predicates += builder.notEqual(root.get(attrName), attrVal)
     this
   }
 
-  def <::(attrName: String, attrVal: Number): CriteriaQL[T] = {
+  def <<(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates += builder.lt(root.get(attrName), attrVal)
     this
   }
 
-  def >::(attrName: String, attrVal: Number): CriteriaQL[T] = {
+  def >>(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates += builder.gt(root.get(attrName), attrVal)
     this
   }
 
-  def <=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
+  def <=(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates += builder.le(root.get(attrName), attrVal)
     this
   }
 
-  def >=:(attrName: String, attrVal: Number): CriteriaQL[T] = {
-    predicates += builder.ge(root.get(attrName), attrVal)
-    this
-  }
-
-  def ||:(attrName: String, attrVal: Number): CriteriaQL[T] = {
+  def >=(attrName: String, attrVal: Number): CriteriaQL[T] = {
     predicates += builder.ge(root.get(attrName), attrVal)
     this
   }
@@ -79,18 +74,13 @@ class CriteriaQL[T](val em: EntityManager, val ft: Class[T], val rt: Class[_]) e
     this
   }
 
-  @Deprecated
-  def and(list: List[Predicate]): CriteriaQL[T] = {
-    ::=(list)
-  }
-
   def ::=(list: List[Predicate]): CriteriaQL[T] = {
     predicates ++= list
     this
   }
 
   def ::=(predicates: Predicate*): CriteriaQL[T] = {
-    this.::=(predicates.toList)
+    this ::= (predicates.toList)
   }
 }
 

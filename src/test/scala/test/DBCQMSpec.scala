@@ -1,6 +1,5 @@
 package test
 
-import javax.persistence.criteria.Predicate
 import models._
 import org.koala.sporm.jpa.{CriteriaQL, JPA}
 import org.specs2._
@@ -35,23 +34,14 @@ class DBCQMSpec extends mutable.Specification {
       Book.withEntityManager {
         em => {
           val factory = CriteriaQL(em, classOf[Book])
-          factory.and({
-            var list = List[Predicate]()
-            list ::= factory.builder.equal(factory.root.get(Book_.name), "nanjing")
-            list ::= factory.builder.le(factory.root.get(Book_.price), 10)
-            list
-          }).and({
-            var list = List[Predicate]()
-            list ::= factory.builder.equal(factory.root.get(Book_.name), "nanjing")
-            list ::= factory.builder.ge(factory.root.get(Book_.price), 11)
-            list ::= factory.builder.or(factory.builder.equal(factory.root.get(Book_.name), "nanjing"))
-            list
-          }).and({
-            var list = List[Predicate]()
-            list ::= factory.builder.equal(factory.root.get(Book_.name), "Shanghai")
-            list ::= factory.builder.ge(factory.root.get(Book_.price), 12)
-            list
-          }).fetch(10, 1)
+          factory.::=(
+            factory.builder.equal(factory.root.get(Book_.name), "nanjing"),
+            factory.builder.le(factory.root.get(Book_.price), 10),
+            factory.builder.ge(factory.root.get(Book_.price), 11),
+            factory.builder.or(factory.builder.equal(factory.root.get(Book_.name), "nanjing")),
+            factory.builder.equal(factory.root.get(Book_.name), "Shanghai"),
+            factory.builder.ge(factory.root.get(Book_.price), 12)
+          ).fetch(10, 1)
         }
       }
       "withEntityManager"
@@ -71,7 +61,7 @@ class DBCQMSpec extends mutable.Specification {
           val o3 = cab.equal(root.get("id"), Integer.valueOf(1))
           val o4 = cab.notEqual(root.get("address"), "heifei")
 
-          factory.::=(List(cab.or(List(o1, o3): _*))).::=(List(cab.or(List(o2, o4): _*)))
+          factory.::=(cab.or(List(o1, o3): _*), cab.or(List(o2, o4): _*))
       } match {
         case None =>
         case Some(list) => list.foreach(println(_))
@@ -91,7 +81,7 @@ class DBCQMSpec extends mutable.Specification {
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
           val o2 = cab.ge(root.get(Book_.price), 20)
 
-          factory ::= List(o1, o2)
+          factory ::=(o1, o2)
       } match {
         case None =>
         case Some(count) => println("#2#:" + count)
