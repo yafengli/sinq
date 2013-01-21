@@ -88,6 +88,10 @@ class CriteriaQL[T](val em: EntityManager, val ft: Class[T], val rt: Class[_]) e
     predicates ++= list
     this
   }
+
+  def ::=(predicates: Predicate*): CriteriaQL[T] = {
+    this.::=(predicates.toList)
+  }
 }
 
 object CriteriaQL {

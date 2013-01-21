@@ -13,10 +13,7 @@ object SpormBuild extends Build {
       scalaVersion := "2.10.0",
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///e:/repository/",
-        "247" at "http://221.231.148.247/nexus/content/groups/public/",
-        "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
-        "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-        "releases" at "http://oss.sonatype.org/content/repositories/releases",
+        "247" at "http://221.231.148.247/nexus/content/groups/public/",        
         "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
       ),
       libraryDependencies ++= Seq(
