@@ -1,13 +1,10 @@
 package org.koala.sporm.jpa.support
 
 import javax.persistence.criteria.Selection
-import org.koala.sporm.jpa.{JPA}
+import org.koala.sporm.jpa.JPA
 
 
-trait TemplateCriteriaQuery[T] extends JPA {
-  def getType: Class[_]
-
-  implicit def generateModel(entity: T) = new BaseOperator[T](entity)
+trait TemplateCriteriaQuery[T] extends JPA with Template[T] {
 
   def get(id: Any): Option[T] = {
     withEntityManager {

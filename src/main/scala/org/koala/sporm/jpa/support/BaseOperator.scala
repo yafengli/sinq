@@ -7,7 +7,7 @@ import org.koala.sporm.jpa.JPA
  * Date: 12-12-12
  * Time: 下午4:36
  */
-class BaseOperator[T](val entity: T) extends JPA {
+case class BaseOperator[T](var entity: T) extends JPA {
 
   def insert() {
     withTransaction {

@@ -3,11 +3,7 @@ package org.koala.sporm.jpa.support
 import scala.collection.JavaConversions._
 import org.koala.sporm.jpa.JPA
 
-trait TemplateNamedQuery[T] extends JPA {
-
-  def getType: Class[_]
-
-  implicit def generateModel(entity: T) = new BaseOperator[T](entity)
+trait TemplateNamedQuery[T] extends JPA with Template[T] {
 
   def get(id: Any): Option[T] = {
     withEntityManager {
@@ -15,11 +11,11 @@ trait TemplateNamedQuery[T] extends JPA {
     }
   }
 
-  def find(qs: String, ops: Array[Any], limit: Int, offset: Int): Option[List[T]] = {
+  def find(q_name: String, ops: Array[Any], limit: Int, offset: Int): Option[List[T]] = {
     withEntityManager {
       em =>
         try {
-          val query = em.createQuery(qs, getType)
+          val query = em.createNamedQuery(q_name, getType)
           if (offset > 0) query.setFirstResult(offset)
           if (limit > 0) query.setMaxResults(limit)
 
@@ -37,14 +33,14 @@ trait TemplateNamedQuery[T] extends JPA {
     }
   }
 
-  def find(qs: String, ops: Array[Any]): Option[List[T]] = {
-    find(qs, ops, -1, -1)
+  def find(q_name: String, ops: Array[Any]): Option[List[T]] = {
+    find(q_name, ops, -1, -1)
   }
 
-  def single(qs: String, ops: Array[Any]): Option[T] = {
+  def single(q_name: String, ops: Array[Any]): Option[T] = {
     withEntityManager {
       em =>
-        val query = em.createQuery(qs, getType)
+        val query = em.createNamedQuery(q_name, getType)
         ops.toList match {
           case Nil =>
           case list: List[Any] => for (i <- 1 to list.size) {
@@ -55,11 +51,11 @@ trait TemplateNamedQuery[T] extends JPA {
     }
   }
 
-  def count(qs: String, ops: Array[Any]): Option[Long] = {
+  def count(q_name: String, ops: Array[Any]): Option[Long] = {
     withEntityManager {
       em =>
         try {
-          val query = em.createQuery(qs)
+          val query = em.createNamedQuery(q_name)
           ops.toList match {
             case Nil =>
             case list: List[Any] =>
@@ -79,15 +75,15 @@ trait TemplateNamedQuery[T] extends JPA {
     }
   }
 
-  def count(qs: String): Option[Long] = {
-    count(qs, Array())
+  def count(q_name: String): Option[Long] = {
+    count(q_name, Array())
   }
 
-  def multi(qs: String, ops: Array[Any]): Option[List[Array[_]]] = {
+  def multi(q_name: String, ops: Array[Any]): Option[List[Array[_]]] = {
     withEntityManager {
       em =>
         try {
-          val query = em.createQuery(qs, classOf[Array[_]])
+          val query = em.createQuery(q_name, classOf[Array[_]])
           ops.toList match {
             case Nil =>
             case list: List[Any] =>
@@ -103,7 +99,7 @@ trait TemplateNamedQuery[T] extends JPA {
     }
   }
 
-  def multi(qs: String): Option[AnyRef] = {
-    multi(qs, Array())
+  def multi(q_name: String): Option[AnyRef] = {
+    multi(q_name, Array())
   }
 }
