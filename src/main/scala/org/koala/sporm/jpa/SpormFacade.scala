@@ -1,6 +1,7 @@
 package org.koala.sporm.jpa
 
 import javax.persistence.criteria.Selection
+import support.CriteriaQL
 
 
 class SpormFacade extends JPA {

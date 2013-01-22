@@ -1,7 +1,7 @@
 package models
 
 import javax.persistence._
-import org.koala.sporm.jpa.CQModel
+import org.koala.sporm.jpa.{Model}
 
 /**
  * User: YaFengLi
@@ -27,4 +27,4 @@ case class Husband(var name: String, var age: Int) {
   }
 }
 
-object Husband extends CQModel[Husband]
+object Husband extends Model[Husband]

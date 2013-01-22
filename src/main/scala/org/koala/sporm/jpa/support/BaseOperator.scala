@@ -1,4 +1,6 @@
-package org.koala.sporm.jpa
+package org.koala.sporm.jpa.support
+
+import org.koala.sporm.jpa.JPA
 
 /**
  * User: YaFengLi

@@ -67,17 +67,11 @@ object JPA {
   private val pn_t = new ThreadLocal[String]
 
   def bind(pn: String) {
-    if (pn != null) {
-      pn_t.set(pn)
-    }
-    else throw new Exception("#JPA PersistenceUnitName is NULL.")
+    if (pn != null) pn_t.set(pn) else throw new Exception("#JPA PersistenceUnitName is NULL.")
   }
 
   def initPersistenceName(pn: String) {
-    if (pn != null) {
-      System.setProperty(P_U_KEY, pn)
-    }
-    else throw new Exception("#JPA PersistenceUnitName is NULL.")
+    if (pn != null) System.setProperty(P_U_KEY, pn) else throw new Exception("#JPA PersistenceUnitName is NULL.")
   }
 
   def lookEntityManagerFactory(): EntityManagerFactory = {

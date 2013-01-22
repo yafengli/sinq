@@ -1,4 +1,4 @@
-package org.koala.sporm.jpa
+package org.koala.sporm.jpa.support
 
 import javax.persistence.criteria.{CriteriaQuery, Predicate, Order, Selection}
 import javax.persistence.EntityManager

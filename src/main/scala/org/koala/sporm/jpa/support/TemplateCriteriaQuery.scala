@@ -1,13 +1,12 @@
-package org.koala.sporm.jpa
+package org.koala.sporm.jpa.support
 
 import javax.persistence.criteria.Selection
+import org.koala.sporm.jpa.{JPA}
 
 
-abstract class CQModel[T: Manifest] extends JPA {
-  //2.10+
-  def getType = implicitly[Manifest[T]].runtimeClass
+trait TemplateCriteriaQuery[T] extends JPA {
+  def getType: Class[_]
 
-  //@Deprecated  def getType = implicitly[Manifest[T]].erasure //2.9.2
   implicit def generateModel(entity: T) = new BaseOperator[T](entity)
 
   def get(id: Any): Option[T] = {

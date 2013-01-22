@@ -1,9 +1,10 @@
 package test
 
 import models._
-import org.koala.sporm.jpa.{CriteriaQL, JPA}
+import org.koala.sporm.jpa.{JPA}
 import org.specs2._
 import scala.Some
+import org.koala.sporm.jpa.support.CriteriaQL
 
 /**
  * User: YaFengLi
@@ -61,7 +62,7 @@ class DBCQMSpec extends mutable.Specification {
           val o3 = cab.equal(root.get("id"), Integer.valueOf(1))
           val o4 = cab.notEqual(root.get("address"), "heifei")
 
-          factory.::=(cab.or(List(o1, o3): _*), cab.or(List(o2, o4): _*))
+          factory ::=(cab.or(List(o1, o3): _*), cab.or(o1, o2, o4))
       } match {
         case None =>
         case Some(list) => list.foreach(println(_))

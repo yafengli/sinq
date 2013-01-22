@@ -1,8 +1,8 @@
 package test
 
 import models._
-import org.koala.sporm.jpa.JPA
 import org.specs2._
+import org.koala.sporm.jpa.JPA
 
 /**
  * User: YaFengLi
