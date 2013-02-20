@@ -6,7 +6,7 @@
 
     <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <mapping-file>query-models.xml</mapping-file>
+        <mapping-file>META-INF/query-models.xml</mapping-file>
         <class>models.Teacher</class>
         <class>models.Student</class>
         <class>models.Book</class>

@@ -12,7 +12,7 @@ object SpormBuild extends Build {
       version := "0.1-SNAPSHOT",
       scalaVersion := "2.10.0",
       resolvers ++= Seq(
-        "Local Maven Repository" at "file:///e:/repository/",
+        "Local Maven Repository" at "file:///d:/repository/",
         "247" at "http://221.231.148.247/nexus/content/groups/public/",        
         "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
       ),

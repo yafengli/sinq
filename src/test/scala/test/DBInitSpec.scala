@@ -3,6 +3,7 @@ package test
 import models._
 import org.koala.sporm.jpa.JPA
 import org.specs2._
+import scala.collection.immutable.HashMap
 
 /**
  * User: YaFengLi
@@ -32,6 +33,7 @@ class DBInitSpec extends mutable.Specification {
 
         book_1.insert()
         book_2.insert()
+        HashMap
       }
     }
   }
