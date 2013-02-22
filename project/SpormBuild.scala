@@ -9,7 +9,7 @@ object SpormBuild extends Build {
     settings = Project.defaultSettings ++ Seq(
       name := "sporm",
       organization := "org.koala",
-      version := "0.1-SNAPSHOT",
+      version := "0.1",
       scalaVersion := "2.10.0",
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///d:/repository/",

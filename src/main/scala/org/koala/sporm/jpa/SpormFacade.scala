@@ -35,6 +35,12 @@ class SpormFacade extends JPA {
     }
   }
 
+  def fetch[T](ft: Class[T], limit: Int, offset: Int)(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
+    withEntityManager {
+      em => call(CriteriaQL(em, ft)).fetch(limit, offset)
+    }
+  }
+
   def single[T](ft: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
     withEntityManager {
       em => call(CriteriaQL(em, ft)).single()
