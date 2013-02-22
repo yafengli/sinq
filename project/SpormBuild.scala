@@ -13,6 +13,7 @@ object SpormBuild extends Build {
       scalaVersion := "2.10.0",
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///d:/repository/",
+        "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
         "247" at "http://221.231.148.247/nexus/content/groups/public/",        
         "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
       ),
@@ -20,7 +21,7 @@ object SpormBuild extends Build {
         "org.hibernate" % "hibernate-entitymanager" % "4.1.9.Final",
         "com.jolbox" % "bonecp" % "0.7.1.RELEASE",
         "postgresql" % "postgresql" % "9.1-901.jdbc4" % "test",
-        "org.specs2" %% "specs2" % "1.12.3" % "test",
+        "org.specs2" %% "specs2" % "1.14" % "test",
         "junit" % "junit" % "4.10" % "test"
       )
     )

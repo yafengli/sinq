@@ -15,7 +15,7 @@ class ForkJoinSpec extends Specification {
     "Fork" in {
 
       val listBuffer = ListBuffer[String]()
-      for (i <- 0 until 65536) {
+      for (i <- 0 until 1000) {
         listBuffer += i.toString
       }
       val start = System.currentTimeMillis()
@@ -25,7 +25,7 @@ class ForkJoinSpec extends Specification {
       pool.shutdown()
       pool.awaitTermination(30, TimeUnit.SECONDS)
       val end = System.currentTimeMillis()
-      println(s"#time use ${end - start}%dms.")
+      println(f"#time use ${end - start}ms.")
     }
   }
 
@@ -34,10 +34,7 @@ class ForkJoinSpec extends Specification {
 
 case class DemoAction(var list: List[String], var count: Int) extends RecursiveAction {
   def compute() {
-    if (list.size <= count) {
-      println(s"#size:${list.size}%s")
-    }
-    else {
+    if (list.size > count) {
       ForkJoinTask.invokeAll(new DemoAction(list.take(count), count), new DemoAction(list.takeRight(list.size - count), count))
     }
   }
