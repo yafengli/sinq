@@ -13,8 +13,16 @@ class DBFacadeSpec extends mutable.Specification {
   "SpormFacade test all" should {
 
     "Sporm test" in {
-      test
+      //      test()
+      testFetch()
     }
+  }
+
+  def testFetch() {
+    time(() => {
+      facade.fetch(classOf[Student], 10, 1)(_.==("name", "test"))
+      "Sporm fetch"
+    })
   }
 
   def test = {
