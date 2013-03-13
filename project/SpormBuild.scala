@@ -11,6 +11,7 @@ object SpormBuild extends Build {
       organization := "org.koala",
       version := "0.1",
       scalaVersion := "2.10.0",
+      publishTo := Some(Resolver.file("My local maven repo", file("d:/repository"))),
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///d:/repository/",
         "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
