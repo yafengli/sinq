@@ -24,7 +24,8 @@ class DBCQMSpec extends mutable.Specification {
       //      fetch()
     }
     "CriterialQL Test count" in {
-      count()
+      for (i <- 0 to 10)
+        count()
     }
   }
 
@@ -84,7 +85,7 @@ class DBCQMSpec extends mutable.Specification {
           factory ::=(o1, o2)
       } match {
         case None =>
-        case Some(count) => println("#2#:" + count)
+        case Some(count) => println("#count#:" + count)
       }
       "Fetch count 2"
     })

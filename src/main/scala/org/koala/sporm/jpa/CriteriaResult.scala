@@ -28,7 +28,6 @@ trait CriteriaResult[T] {
   }
 
   def fetch(limit: Int, offset: Int): List[T] = {
-    println("2")
     try {
       val query = criteriaQuery.asInstanceOf[CriteriaQuery[T]]
 
