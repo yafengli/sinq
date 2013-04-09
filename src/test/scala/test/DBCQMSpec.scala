@@ -4,6 +4,7 @@ import models._
 import org.koala.sporm.jpa.{CriteriaQL, JPA}
 import org.specs2._
 import scala.Some
+import org.hibernate.criterion.Restrictions
 
 /**
  * User: YaFengLi
@@ -24,8 +25,9 @@ class DBCQMSpec extends mutable.Specification {
       //      fetch()
     }
     "CriterialQL Test count" in {
-      for (i <- 0 to 10)
-        count()
+      count()
+
+      //      for (i <- 0 to 5)        count()
     }
   }
 
@@ -81,8 +83,10 @@ class DBCQMSpec extends mutable.Specification {
 
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
           val o2 = cab.ge(root.get(Book_.price), 20)
+          val join = root.join("student")
+          val o3 = cab.equal(join.get("age"), 999)
 
-          factory ::=(o1, o2)
+          factory ::=(o1, o2, o3)
       } match {
         case None =>
         case Some(count) => println("#count#:" + count)
