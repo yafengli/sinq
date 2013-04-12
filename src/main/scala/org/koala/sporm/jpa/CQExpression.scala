@@ -1,7 +1,7 @@
 package org.koala.sporm.jpa
 
 import javax.persistence.EntityManager
-import javax.persistence.criteria.Predicate
+import javax.persistence.criteria.{Expression, Predicate}
 
 class CQExpression[T](val em: EntityManager, val ft: Class[T], val rt: Class[_]) extends CQBuilder[T] {
 
@@ -74,18 +74,13 @@ class CQExpression[T](val em: EntityManager, val ft: Class[T], val rt: Class[_])
     this
   }
 
-  def between(attrName: String, x: Any, y: Any): CQExpression[T] = {
-    predicates += builder.between(root.get(attrName), x, y)
-    this
-  }
-
   def ::(list: List[Predicate]): CQExpression[T] = {
     predicates ++= list
     this
   }
 
-  def ::(pdts: Predicate*): CQExpression[T] = {
-    predicates ++= pdts.toList
+  def ::(seq: Predicate*): CQExpression[T] = {
+    predicates ++= seq.toList
     this
   }
 }

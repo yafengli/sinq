@@ -1,9 +1,10 @@
 package org.koala.sporm.jpa
 
 import javax.persistence.criteria.Selection
+import javax.persistence.{EntityManager, Query}
 
 
-class SpormFacade extends JPA {
+class SpormFacade extends JPA with NQBuilder {
 
   def insert[T](entity: T) {
     withTransaction {
@@ -70,6 +71,43 @@ class SpormFacade extends JPA {
     withEntityManager {
       em => action(CQExpression(em, ft))
     }
+  }
+
+
+  def fetch[T](qs: String, ops: Array[Any], limit: Int, offset: Int)(f: (EntityManager) => Query): Option[List[T]] = {
+    withEntityManager {
+      em => _fetch(f(em), ops, limit, offset)
+    }
+  }
+
+  def fetch[T](qs: String, ops: Array[Any])(f: (EntityManager) => Query): Option[List[T]] = {
+    fetch(qs, ops, -1, -1)(f)
+  }
+
+  def single[T](qs: String, ops: Array[Any])(f: (EntityManager) => Query): Option[T] = {
+    withEntityManager {
+      em => _single(f(em), ops)
+    }
+  }
+
+  def count[T](name: String, ops: Array[Any])(f: (EntityManager) => Query): Option[Long] = {
+    withEntityManager {
+      em => _count(f(em), ops)
+    }
+  }
+
+  def count[T](name: String)(f: (EntityManager) => Query): Option[Long] = {
+    count(name)(f)
+  }
+
+  def multi[T](name: String, ops: Array[Any])(f: (EntityManager) => Query): Option[List[_]] = {
+    withEntityManager {
+      em => _multi(f(em), ops)
+    }
+  }
+
+  def multi[T](name: String)(f: (EntityManager) => Query): Option[List[_]] = {
+    multi(name, Array[Any]())(f)
   }
 }
 

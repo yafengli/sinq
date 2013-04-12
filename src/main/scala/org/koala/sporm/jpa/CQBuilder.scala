@@ -6,22 +6,17 @@ import collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 
 trait CQBuilder[T] {
-
-  val orders = ListBuffer[Order]()
-  val predicates = ListBuffer[Predicate]()
-
   def currentEntityManager: EntityManager
 
   def findType: Class[T]
 
   def resultType: Class[_]
 
+  val orders = ListBuffer[Order]()
+  val predicates = ListBuffer[Predicate]()
   val builder = currentEntityManager.getCriteriaBuilder
-
-
   val criteriaQuery = builder.createQuery(resultType)
   val root = criteriaQuery.from(findType)
-
 
   def fetch(): List[T] = {
     fetch(-1, -1)
