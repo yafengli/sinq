@@ -5,7 +5,7 @@ package org.koala.sporm.jpa
  * Date: 12-12-12
  * Time: 下午4:36
  */
-class BaseOperator[T](val entity: T) extends JPA {
+class BaseBuilder[T](val entity: T) extends JPA {
 
   def insert() {
     withTransaction {

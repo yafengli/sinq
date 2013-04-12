@@ -29,46 +29,46 @@ class SpormFacade extends JPA {
     }
   }
 
-  def fetch[T](ft: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
+  def fetch[T](ft: Class[T])(call: (CQExpression[T]) => CQExpression[T]): Option[List[T]] = {
     withEntityManager {
-      em => call(CriteriaQL(em, ft)).fetch()
+      em => call(CQExpression(em, ft)).fetch()
     }
   }
 
-  def fetch[T](ft: Class[T], limit: Int, offset: Int)(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[T]] = {
+  def fetch[T](ft: Class[T], limit: Int, offset: Int)(call: (CQExpression[T]) => CQExpression[T]): Option[List[T]] = {
     withEntityManager {
       em =>
-        call(CriteriaQL(em, ft)).fetch(limit, offset)
+        call(CQExpression(em, ft)).fetch(limit, offset)
     }
   }
 
-  def single[T](ft: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[T] = {
+  def single[T](ft: Class[T])(call: (CQExpression[T]) => CQExpression[T]): Option[T] = {
     withEntityManager {
-      em => call(CriteriaQL(em, ft)).single()
+      em => call(CQExpression(em, ft)).single()
     }
   }
 
-  def count[T](ft: Class[T])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[Long] = {
+  def count[T](ft: Class[T])(call: (CQExpression[T]) => CQExpression[T]): Option[Long] = {
     withEntityManager {
-      em => call(CriteriaQL(em, ft, classOf[java.lang.Long])).count()
+      em => call(CQExpression(em, ft, classOf[java.lang.Long])).count()
     }
   }
 
-  def multi[T](ft: Class[T], selects: List[Selection[Any]])(call: (CriteriaQL[T]) => CriteriaQL[T]): Option[List[_]] = {
+  def multi[T](ft: Class[T], selects: List[Selection[Any]])(call: (CQExpression[T]) => CQExpression[T]): Option[List[_]] = {
     withEntityManager {
-      em => call(CriteriaQL(em, ft)).multi(selects)
+      em => call(CQExpression(em, ft)).multi(selects)
     }
   }
 
-  def inTransaction[T](ft: Class[T])(action: (CriteriaQL[T]) => CriteriaQL[T]) {
+  def inTransaction[T](ft: Class[T])(action: (CQExpression[T]) => CQExpression[T]) {
     withTransaction {
-      em => action(CriteriaQL(em, ft))
+      em => action(CQExpression(em, ft))
     }
   }
 
-  def inEntityManager[T](ft: Class[T])(action: (CriteriaQL[T]) => CriteriaQL[T]) {
+  def inEntityManager[T](ft: Class[T])(action: (CQExpression[T]) => CQExpression[T]) {
     withEntityManager {
-      em => action(CriteriaQL(em, ft))
+      em => action(CQExpression(em, ft))
     }
   }
 }

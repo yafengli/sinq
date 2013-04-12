@@ -2,12 +2,17 @@ package org.koala.sporm.jpa
 
 import scala.collection.JavaConversions._
 
-abstract class QLModel[T: Manifest] extends JPA {
+/**
+ * @author ya_feng_li@163.com
+ * @since 1.0
+ *        Name Query Model
+ */
+abstract class NQModel[T: Manifest] extends JPA {
   def getType = implicitly[Manifest[T]].runtimeClass //2.10+
 
   //@Deprecated def getType = implicitly[Manifest[T]].erasure //2.9.2
 
-  implicit def generateModel(entity: T) = new BaseOperator[T](entity)
+  implicit def generateModel(entity: T) = new BaseBuilder[T](entity)
 
   def get(id: Any): Option[T] = {
     withEntityManager {

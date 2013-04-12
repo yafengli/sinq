@@ -1,11 +1,11 @@
 package org.koala.sporm.jpa
 
 import javax.persistence.criteria.{CriteriaQuery, Predicate, Order, Selection}
-import javax.persistence.EntityManager
+import javax.persistence.{criteria, EntityManager}
 import collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 
-trait CriteriaResult[T] {
+trait CQBuilder[T] {
 
   val orders = ListBuffer[Order]()
   val predicates = ListBuffer[Predicate]()
@@ -29,7 +29,7 @@ trait CriteriaResult[T] {
 
   def fetch(limit: Int, offset: Int): List[T] = {
     try {
-      val query = criteriaQuery.asInstanceOf[CriteriaQuery[T]]
+      val query = criteriaQuery.asInstanceOf[criteria.CriteriaQuery[T]]
 
       query.select(root)
       if (!orders.isEmpty) query.orderBy(orders: _*)
@@ -46,7 +46,7 @@ trait CriteriaResult[T] {
 
   def single(): T = {
     try {
-      val query = criteriaQuery.asInstanceOf[CriteriaQuery[T]]
+      val query = criteriaQuery.asInstanceOf[criteria.CriteriaQuery[T]]
 
       query.select(root)
       if (!predicates.isEmpty) query.where(predicates: _*)
@@ -57,7 +57,7 @@ trait CriteriaResult[T] {
   }
 
   def count(): Long = {
-    val query = criteriaQuery.asInstanceOf[CriteriaQuery[java.lang.Long]]
+    val query = criteriaQuery.asInstanceOf[criteria.CriteriaQuery[java.lang.Long]]
 
     query.select(builder.count(root))
     query.where(predicates.toList: _*)

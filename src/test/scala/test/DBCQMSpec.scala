@@ -1,7 +1,7 @@
 package test
 
 import models._
-import org.koala.sporm.jpa.{CriteriaQL, JPA}
+import org.koala.sporm.jpa.{CQExpression, JPA}
 import org.specs2._
 import scala.Some
 import org.hibernate.criterion.Restrictions
@@ -36,7 +36,7 @@ class DBCQMSpec extends mutable.Specification {
     time(() => {
       Book.withEntityManager {
         em => {
-          val factory = CriteriaQL(em, classOf[Book])
+          val factory = CQExpression(em, classOf[Book])
           factory.::=(
             factory.builder.equal(factory.root.get(Book_.name), "nanjing"),
             factory.builder.le(factory.root.get(Book_.price), 10),
