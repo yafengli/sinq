@@ -6,6 +6,13 @@
 
     <package>models</package>
     <named-query name="find_ok">
-        <query>select t from Student as t where t.age = ?</query>
+        <query>
+            select t from Student as t where t.age = ?
+        </query>
     </named-query>
+    <named-native-query name="student.n_find_m">
+        <query>
+            select count(*) from t_student t where t.age = ?
+        </query>
+    </named-native-query>
 </entity-mappings>

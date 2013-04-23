@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class ForkJoinTest {
     @Test
     public void testForkJoin() throws Exception {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         for (int i = 0; i < 65536; i++) {
             list.add(String.valueOf(i));
         }
@@ -30,7 +30,7 @@ public class ForkJoinTest {
 
 
 class ConcurrentTask extends RecursiveAction {
-    private List<String> list = new ArrayList<>();
+    private List<String> list = new ArrayList<String>();
 
     public static final Long count = 4L;
 

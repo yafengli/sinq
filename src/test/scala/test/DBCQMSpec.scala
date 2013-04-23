@@ -37,7 +37,7 @@ class DBCQMSpec extends mutable.Specification {
       Book.withEntityManager {
         em => {
           val factory = CQExpression(em, classOf[Book])
-          factory.::=(
+          factory.::(
             factory.builder.equal(factory.root.get(Book_.name), "nanjing"),
             factory.builder.le(factory.root.get(Book_.price), 10),
             factory.builder.ge(factory.root.get(Book_.price), 11),
@@ -64,7 +64,7 @@ class DBCQMSpec extends mutable.Specification {
           val o3 = cab.equal(root.get("id"), Integer.valueOf(1))
           val o4 = cab.notEqual(root.get("address"), "heifei")
 
-          factory.::=(cab.or(List(o1, o3): _*), cab.or(List(o2, o4): _*))
+          factory.::(cab.or(List(o1, o3): _*), cab.or(List(o2, o4): _*))
       } match {
         case None =>
         case Some(list) => list.foreach(println(_))
@@ -86,7 +86,7 @@ class DBCQMSpec extends mutable.Specification {
           val join = root.join("student")
           val o3 = cab.equal(join.get("age"), 999)
 
-          factory ::=(o1, o2, o3)
+          factory.::(o1, o2, o3)
       } match {
         case None =>
         case Some(count) => println("#count#:" + count)
