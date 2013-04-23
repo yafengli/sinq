@@ -8,6 +8,42 @@ import javax.persistence.EntityManager;
  * Time: 下午1:32
  */
 public abstract class JpaService {
+    public <T> void insert(final T entity) {
+        withTransaction(new JpaCall<T>() {
+            @Override
+            public T call(EntityManager em) {
+                return em.merge(entity);
+            }
+        });
+    }
+
+    public <T> void update(final T entity) {
+        withTransaction(new JpaCall<T>() {
+            @Override
+            public T call(EntityManager em) {
+                return em.merge(entity);
+            }
+        });
+    }
+
+    public <T> void delete(final T entity) {
+        withTransaction(new JpaCall<T>() {
+            @Override
+            public T call(EntityManager em) {
+                em.remove(entity);
+                return null;
+            }
+        });
+    }
+
+    public <T> T get(final Object id, final Class<T> ct) {
+        return withEntityManager(new JpaCall<T>() {
+            @Override
+            public T call(EntityManager em) {
+                return em.find(ct, id);
+            }
+        });
+    }
 
     public <T> T withEntityManager(JpaCall<T> call) {
         T t = null;

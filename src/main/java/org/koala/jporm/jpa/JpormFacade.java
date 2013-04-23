@@ -3,7 +3,6 @@ package org.koala.jporm.jpa;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: ya_feng_li@163.com
@@ -20,42 +19,39 @@ public class JpormFacade extends JpaService {
         }
     }
 
-    public <T> void insert(final T entity) {
-        withTransaction(new JpaCall<T>() {
-            @Override
-            public T call(EntityManager em) {
-                return em.merge(entity);
-            }
-        });
-    }
-
-    public <T> void update(final T entity) {
-        withTransaction(new JpaCall<T>() {
-            @Override
-            public T call(EntityManager em) {
-                return em.merge(entity);
-            }
-        });
-    }
-
-    public <T> void delete(final T entity) {
-        withTransaction(new JpaCall<T>() {
-            @Override
-            public T call(EntityManager em) {
-                em.remove(entity);
-                return null;
-            }
-        });
-    }
-
-    public <T> T get(final Object id, final Class<T> ct) {
+    public <T> T single(final String queryName, final List<Object> params, final Class<T> ct) {
         return withEntityManager(new JpaCall<T>() {
             @Override
             public T call(EntityManager em) {
-                return em.find(ct, id);
+                Query query = em.createNamedQuery(queryName, ct);
+
+                if (params != null) {
+                    for (int i = 0; i < params.size(); i++) {
+                        query.setParameter(i + 1, params.get(i));
+                    }
+                }
+                return (T) query.getSingleResult();
             }
         });
     }
+
+    public Object[] single(final String queryName, final List<Object> params) {
+        return withEntityManager(new JpaCall<Object[]>() {
+            @Override
+            public Object[] call(EntityManager em) {
+                System.out.println("##" + params.size());
+                Query query = em.createNamedQuery(queryName);
+
+                if (params != null) {
+                    for (int i = 0; i < params.size(); i++) {
+                        query.setParameter(i + 1, params.get(i));
+                    }
+                }
+                return (Object[]) query.getSingleResult();
+            }
+        });
+    }
+
 
     public <T> List<T> fetch(final int limit, final int offset, final String queryName, final List<Object> params, final Class<T> ct) {
         return withEntityManager(new JpaCall<List<T>>() {
@@ -64,9 +60,10 @@ public class JpormFacade extends JpaService {
                 Query query = em.createNamedQuery(queryName, ct);
                 if (offset > 0) query.setFirstResult(offset);
                 if (limit > 0) query.setMaxResults(limit);
+
                 if (params != null) {
                     for (int i = 0; i < params.size(); i++) {
-                        query.setParameter(i+1, params.get(i));
+                        query.setParameter(i + 1, params.get(i));
                     }
                 }
                 return query.getResultList();
@@ -85,7 +82,7 @@ public class JpormFacade extends JpaService {
                 Query query = em.createNamedQuery(queryName);
                 if (params != null) {
                     for (int i = 0; i < params.size(); i++) {
-                        query.setParameter(i+1, params.get(i));
+                        query.setParameter(i + 1, params.get(i));
                     }
                 }
                 return ((Number) query.getSingleResult()).longValue();

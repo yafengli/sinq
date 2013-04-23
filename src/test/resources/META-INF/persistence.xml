@@ -36,6 +36,5 @@
             <property name="bonecp.idleConnectionTestPeriod" value="60"/>
             <property name="bonecp.statementsCacheSize" value="20"/>
         </properties>
-
     </persistence-unit>
 </persistence>

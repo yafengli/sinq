@@ -15,4 +15,10 @@
             select count(*) from t_student t where t.age = ?
         </query>
     </named-native-query>
+
+    <named-native-query name="student.n_find_mt">
+        <query>
+            select count(*),sum(t.age) from t_student t where t.age > ?
+        </query>
+    </named-native-query>
 </entity-mappings>
