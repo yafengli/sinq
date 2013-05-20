@@ -47,8 +47,8 @@ object JPA {
   val logger = LoggerFactory.getLogger(classOf[JPA])
   val P_U_KEY = "jpa.persistence.unit.name"
   private val emfMap = TrieMap[String, EntityManagerFactory]()
-  private val em_t = new InheritableThreadLocal[EntityManager]
-  private val pn_t = new InheritableThreadLocal[String]
+  private val em_t = new ThreadLocal[EntityManager]
+  private val pn_t = new ThreadLocal[String]
 
   def bind(pn: String) {
     if (pn != null) {
@@ -67,10 +67,13 @@ object JPA {
   def lookEntityManagerFactory(): EntityManagerFactory = {
     val unitName = if (pn_t.get() != null) pn_t.get() else System.getProperty(P_U_KEY)
     if (!emfMap.exists(p => p._1 == unitName)) {
-      val start = System.currentTimeMillis()
-      emfMap += (unitName -> Persistence.createEntityManagerFactory(unitName))
-      val end = System.currentTimeMillis()
-      logger.debug(f"#new emf:${emfMap(unitName)} time:${end - start}")
+      try {
+        emfMap += (unitName -> Persistence.createEntityManagerFactory(unitName))
+      } catch {
+        case e: Exception =>
+          logger.error(f"#unitName:${unitName} ${pn_t.get()} ${System.getProperty(P_U_KEY)}")
+          e.printStackTrace()
+      }
     }
     emfMap(unitName)
   }
@@ -78,11 +81,7 @@ object JPA {
   def createEntityManager(): EntityManager = {
     if (em_t.get() == null) {
       try {
-        val start = System.currentTimeMillis()
-        val em = lookEntityManagerFactory().createEntityManager()
-        em_t.set(em)
-        val end = System.currentTimeMillis()
-        logger.debug(f"#new em:${em} time:${end - start}")
+        em_t.set(lookEntityManagerFactory().createEntityManager())
       } catch {
         case e: Exception => e.printStackTrace()
       }

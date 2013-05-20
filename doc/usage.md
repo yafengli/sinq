@@ -96,4 +96,46 @@
 
         select b.* from t_book b left join t_author a on b.author_id = a.id where a.name = 'test' and a.age = 15 order by b.id asc
 
+####拼接QL
++ 使用`and`与`or`拼接查询条件
++ 使用`Array[Predatit]`生成查询条件单项`Expression:Boolean`
++ 例如：
 
+        Teacher.single(            
+            _.or((b, r) => Array(b.ge(r.get("age"), 8), b.le(r.get("age"), 9)))
+                .or((b, r) => Array(b.isNotNull(r.get("address")), b.isNotNull(r.get("name"))))
+                .or((b, r) => {
+                    val predicate: Predicate = b.and(Array(b.ge(r.get("age"), 11), b.or(Array(b.le(r.get("age"), 12), b.le(r.get("age"), 13)): _*)): _*)
+                    Array(b.ge(r.get("age"), 10), predicate)
+                }
+        )
+      ) match {
+        case Some(t) => println("t:" + t)
+        case None =>
+      }
++ 生成的SQL类似：
+
+        select
+            teacher0_.id as id1_3_,
+            teacher0_.address as address2_3_,
+            teacher0_.age as age3_3_,
+            teacher0_.name as name4_3_
+        from
+            t_teacher teacher0_
+        where
+            (
+                teacher0_.age>=8
+                or teacher0_.age<=9
+            )
+            and (
+                teacher0_.address is not null
+                or teacher0_.name is not null
+            )
+            and (
+                teacher0_.age>=10
+                or teacher0_.age>=11
+                and (
+                    teacher0_.age<=12
+                    or teacher0_.age<=13
+                )
+            )

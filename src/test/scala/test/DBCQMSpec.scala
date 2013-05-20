@@ -5,6 +5,7 @@ import org.koala.sporm.jpa.{CQExpression, JPA}
 import org.specs2._
 import scala.Some
 import org.hibernate.criterion.Restrictions
+import javax.persistence.criteria.Predicate
 
 /**
  * User: YaFengLi
@@ -25,12 +26,30 @@ class DBCQMSpec extends mutable.Specification {
       //      fetch()
     }
     "CriterialQL Test count" in {
-      count()
-
-      //      for (i <- 0 to 5)        count()
+      //      count()
+    }
+    "Test or and and" in {
+      or()
     }
   }
 
+  def or() {
+    time(() => {
+      Teacher.single(
+        _.or((b, r) => Array(b.ge(r.get("age"), 10), b.le(r.get("age"), 120)))
+          .or((b, r) => Array(b.isNotNull(r.get("address")), b.isNotNull(r.get("name"))))
+          .or((b, r) => {
+          val predicate: Predicate = b.and(Array(b.ge(r.get("age"), 11), b.or(Array(b.le(r.get("age"), 12), b.le(r.get("age"), 13)): _*)): _*)
+          Array(b.ge(r.get("age"), 10), predicate)
+        }
+        )
+      ) match {
+        case Some(t) => println("t:" + t)
+        case None =>
+      }
+      "Or And"
+    })
+  }
 
   def test() {
     time(() => {
