@@ -3,7 +3,7 @@
         >sbt publish-local
 
 ##Install
-+ SBT:`libraryDependencies += "org.koala" % "sporm" % "X.Y.Z"`
++ SBT:`libraryDependencies += "org.koala" %% "sporm" % "X.Y.Z"`
 
 + Maven:
 

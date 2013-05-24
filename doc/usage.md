@@ -1,11 +1,11 @@
 ####Init
 
 + 必须首先初始化Persistence:`JPA.initPersistenceName("persistence.name")`。
-+ 初始化JPA的配置PersistenceName名称，在多线程多数据库的需求中可以在调用Sporm前，绑定当前线程使用的PersistenceName。
++ 初始化JPA的配置`PersistenceName`名称，在多线程多数据库的需求中可以在调用Sporm前，绑定当前线程使用的`PersistenceName`。
 
 ####JPA Entity扩展
 
-+ 对于每一个JPA Entity需要定义其伴生对象并集成CQModel类，例如：`Book.scala`
++ 对于每一个JPA Entity需要定义其伴生对象并集成CQModel类，例如：
 
         @Entity
         @Table(name="t_book)
@@ -20,8 +20,6 @@
         }
 
         object Book extends CQModel[Book]
-
-+ `Author.scala`
 
         @Entity
         @Table(name="t_author)
@@ -38,10 +36,10 @@
 
 
 ####基本调用
-+ 查询：`val book=Book.get(1L)`。
-+ 增加：`book.insert`。
-+ 修改：`book.update`。
-+ 删除：`book.delete`。
++ 查询：`val book=Book.get(1L)`
++ 增加：`book.insert`
++ 修改：`book.update`
++ 删除：`book.delete`
 
 ####扩展调用
 + 对象查询：`fetch`
@@ -71,7 +69,7 @@
 
 ####QL讲解
 + 在`fetch`与`count`方法中有`call: (CriteriaQL[T]) => CriteriaQL[T]`高阶函数
-+ 函数的参数与返回结果均为`Criteria Query`封装
++ 函数的参数与返回结果均为`Criteria Query`封装`CriteriaQL`
 
 + 简单QL：`Book.fetch(10,20)(_.!=("age",12).asc("id")`则其生成的最终SQL类似：
 
@@ -97,22 +95,20 @@
         select b.* from t_book b left join t_author a on b.author_id = a.id where a.name = 'test' and a.age = 15 order by b.id asc
 
 ####拼接QL
-+ 使用`and`与`or`拼接查询条件
-+ 使用`Array[Predatit]`生成查询条件单项`Expression:Boolean`
-+ 例如：
++ 使用`or(call:(CriteriaBuilder,Root[T]) => Array[Predicate])`与`and(call:(CriteriaBuilder,Root[T]) => Array[Predicate])`连接条件
++ 使用`Array[Predicate]`生成查询条件单项`Expression:Boolean`例如：
 
         Teacher.single(            
             _.or((b, r) => Array(b.ge(r.get("age"), 8), b.le(r.get("age"), 9)))
                 .or((b, r) => Array(b.isNotNull(r.get("address")), b.isNotNull(r.get("name"))))
                 .or((b, r) => {
-                    val predicate: Predicate = b.and(Array(b.ge(r.get("age"), 11), b.or(Array(b.le(r.get("age"), 12), b.le(r.get("age"), 13)): _*)): _*)
+                    val predicate = b.and(Array(b.ge(r.get("age"), 11), b.or(Array(b.le(r.get("age"), 12), b.le(r.get("age"), 13)): _*)): _*)
                     Array(b.ge(r.get("age"), 10), predicate)
-                }
-        )
-      ) match {
-        case Some(t) => println("t:" + t)
-        case None =>
-      }
+                })
+        ) match {
+            case Some(t) => println("t:" + t)
+            case None =>
+        }
 + 生成的SQL类似：
 
         select
