@@ -4,7 +4,6 @@ import models._
 import org.koala.sporm.jpa.{CQExpression, JPA}
 import org.specs2._
 import scala.Some
-import org.hibernate.criterion.Restrictions
 import javax.persistence.criteria.Predicate
 
 /**

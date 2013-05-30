@@ -1,8 +1,7 @@
 package org.koala.sporm.jpa
 
 import javax.persistence.EntityManager
-import javax.persistence.criteria.{Root, CriteriaBuilder, Expression, Predicate}
-import org.hibernate.Criteria
+import javax.persistence.criteria.{Expression, Root, CriteriaBuilder, Predicate}
 
 class CQExpression[T](val em: EntityManager, val ft: Class[T], val rt: Class[_]) extends CQBuilder[T] {
 
@@ -75,13 +74,18 @@ class CQExpression[T](val em: EntityManager, val ft: Class[T], val rt: Class[_])
     this
   }
 
-  def ::(list: List[Predicate]): CQExpression[T] = {
-    predicates ++= list
+  def ::(seq: Seq[Predicate]): CQExpression[T] = {
+    predicates ++= seq
     this
   }
 
-  def ::(seq: Predicate*): CQExpression[T] = {
-    predicates ++= seq.toList
+  def ::(predicate: Predicate): CQExpression[T] = {
+    predicates += predicate
+    this
+  }
+
+  def ::(call: (CriteriaBuilder, Root[T]) => Array[Predicate]): CQExpression[T] = {
+    predicates ++= call(builder, root)
     this
   }
 
