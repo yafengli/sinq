@@ -8,6 +8,9 @@
         <class>models.Teacher</class>
         <class>models.Student</class>
         <class>models.Book</class>
+        <class>models.jm.Author</class>
+        <class>models.jm.Game</class>
+        <class>models.jm.Player</class>
         <properties>
             <!-- provider -->
             <property name="hibernate.service.jdbc.connections.spi.provider_class"

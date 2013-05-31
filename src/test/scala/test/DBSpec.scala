@@ -1,17 +1,27 @@
 package test
 
-import models._
 import org.koala.sporm.jpa.{CQExpression, JPA}
-import org.specs2._
-import scala.Some
+import org.specs2.mutable
+
 import javax.persistence.criteria.Predicate
+import models.Book
+import models.Book_
+import models.Teacher
+import models.jm.Author
+import models.jm.Game
+import models.sm.AuthorModel
+import models.sm.AuthorModel._
+import models.sm.GameModel
+import models.sm.GameModel.extendModel
+import java.util.Date
+
 
 /**
  * User: YaFengLi
  * Date: 12-12-11
  * Time: 上午11:08
  */
-class DBCQMSpec extends mutable.Specification {
+class DBSpec extends mutable.Specification {
   val init = {
     JPA.initPersistenceName("default")
   }
@@ -29,6 +39,7 @@ class DBCQMSpec extends mutable.Specification {
     }
     "Test or and and" in {
       or()
+      jm()
     }
   }
 
@@ -40,13 +51,35 @@ class DBCQMSpec extends mutable.Specification {
           .or((b, r) => {
           val predicate: Predicate = b.and(Array(b.ge(r.get("age"), 11), b.or(Array(b.le(r.get("age"), 12), b.le(r.get("age"), 13)): _*)): _*)
           Array(b.ge(r.get("age"), 10), predicate)
-        }
-        )
-      ) match {
+        })) match {
         case Some(t) => println("t:" + t)
         case None =>
       }
       "Or And"
+    })
+  }
+
+  def jm() {
+    time(() => {
+      val all = GameModel.fetch(_.asc("id")).getOrElse(Nil)
+      if (all.size <= 0) {
+        val author = new Author()
+        author.setId(123123)
+        author.setName("123123")
+        author.insert()
+
+        val game = new Game()
+        game.setCreateDate(new Date())
+        game.setName("DiabloIII")
+        game.getAuthors.add(AuthorModel.get(1L).get)
+        game.insert()
+      }
+      else {
+
+      }
+
+      println(f"#size:${all}")
+      "Java and CQModel"
     })
   }
 
@@ -55,20 +88,18 @@ class DBCQMSpec extends mutable.Specification {
       Book.withEntityManager {
         em => {
           val factory = CQExpression(em, classOf[Book])
-          factory.::(
+          factory.::(Array(
             factory.builder.equal(factory.root.get(Book_.name), "nanjing"),
             factory.builder.le(factory.root.get(Book_.price), 10),
             factory.builder.ge(factory.root.get(Book_.price), 11),
             factory.builder.or(factory.builder.equal(factory.root.get(Book_.name), "nanjing")),
             factory.builder.equal(factory.root.get(Book_.name), "Shanghai"),
-            factory.builder.ge(factory.root.get(Book_.price), 12)
-          ).fetch(10, 1)
+            factory.builder.ge(factory.root.get(Book_.price), 12))).fetch(10, 1)
         }
       }
       "withEntityManager"
     })
   }
-
 
   def fetch() {
     time(() => {
@@ -82,7 +113,7 @@ class DBCQMSpec extends mutable.Specification {
           val o3 = cab.equal(root.get("id"), Integer.valueOf(1))
           val o4 = cab.notEqual(root.get("address"), "heifei")
 
-          factory.::(cab.or(List(o1, o3): _*), cab.or(List(o2, o4): _*))
+          factory.::(Array(cab.or(List(o1, o3): _*), cab.or(List(o2, o4): _*)))
       } match {
         case None =>
         case Some(list) => list.foreach(println(_))
@@ -90,7 +121,6 @@ class DBCQMSpec extends mutable.Specification {
       "Fetch"
     })
   }
-
 
   def count() {
     time(() => {
@@ -104,7 +134,7 @@ class DBCQMSpec extends mutable.Specification {
           val join = root.join("student")
           val o3 = cab.equal(join.get("age"), 999)
 
-          factory.::(o1, o2, o3)
+          factory.::(Seq(o1, o2, o3))
       } match {
         case None =>
         case Some(count) => println("#count#:" + count)
