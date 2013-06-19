@@ -1,11 +1,11 @@
-####Init
+####初始化
 
 + 必须首先初始化Persistence:`JPA.initPersistenceName("persistence.name")`。
 + 初始化JPA的配置`PersistenceName`名称，在多线程多数据库的需求中可以在调用Sporm前，绑定当前线程使用的`PersistenceName`。
 
 ####JPA Entity扩展
 
-+ 对于每一个JPA Entity需要定义其伴生对象并集成CQModel类，例如：
++ 对于每一个`JPA Entity`需要定义其伴生对象并继承`CQModel`类，例如：
 
         @Entity
         @Table(name="t_book)
@@ -42,7 +42,10 @@
 + 删除：`book.delete`
 
 ####扩展调用
-+ 对象查询：`fetch`
++ 单`Entity`查询：`single`
+
+        Book.single(_.==("name","test1"))
++ 多`Entity`查询：`fetch`
 
         val limit = 10
         val offset = 20
@@ -55,7 +58,7 @@
             case Some(list) => list.foreach(println _)
             case None =>
         }
-+ 结果数查询：`count`
++ 特殊查询：`count`
 
         Book.count {
             f => {
@@ -68,10 +71,10 @@
         }
 
 ####QL讲解
-+ 在`fetch`与`count`方法中有`call: (CriteriaQL[T]) => CriteriaQL[T]`高阶函数
-+ 函数的参数与返回结果均为`Criteria Query`封装`CriteriaQL`
++ 在`single`,`fetch`与`count`方法中有`call: (CriteriaQL[T]) => CriteriaQL[T]`高阶函数.
++ 函数的参数与返回结果均为`Criteria Query`封装`CriteriaQL`.
 
-+ 简单QL：`Book.fetch(10,20)(_.!=("age",12).asc("id")`则其生成的最终SQL类似：
++ 简单QL：`Book.fetch(10,20)(_.!=("age",12).asc("id"))`则其生成的最终SQL类似：
 
         select b.* from t_book b from t.age != 12 order by id asc
 
