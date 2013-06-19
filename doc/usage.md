@@ -1,11 +1,12 @@
 ####初始化
 
-+ 必须首先初始化Persistence:`JPA.initPersistenceName("persistence.name")`。
++ 调用:`JPA.initPersistenceName("persistence.name")`。
 + 初始化JPA的配置`PersistenceName`名称，在多线程多数据库的需求中可以在调用Sporm前，绑定当前线程使用的`PersistenceName`。
 
 ####JPA Entity扩展
 
 + 对于每一个`JPA Entity`需要定义其伴生对象并继承`CQModel`类，例如：
++ `Book.scala`
 
         @Entity
         @Table(name="t_book)
@@ -20,7 +21,7 @@
         }
 
         object Book extends CQModel[Book]
-
++ `Author.scala`
         @Entity
         @Table(name="t_author)
         class Author(var name:String){
@@ -33,7 +34,6 @@
         }
 
         object Author extends CQModel[Author]
-
 
 ####基本调用
 + 查询：`val book=Book.get(1L)`
