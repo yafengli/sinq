@@ -22,6 +22,7 @@
 
         object Book extends CQModel[Book]
 + `Author.scala`
+
         @Entity
         @Table(name="t_author)
         class Author(var name:String){
