@@ -37,7 +37,7 @@
         object Author extends CQModel[Author]
 
 ####基本调用
-+ 查询：`val book=Book.get(1L)`
++ 查询：`Book.get(1L)`
 + 增加：`book.insert`
 + 修改：`book.update`
 + 删除：`book.delete`
