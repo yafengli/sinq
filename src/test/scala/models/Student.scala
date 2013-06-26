@@ -8,7 +8,7 @@ import org.koala.sporm.jpa.CQModel
 
 @Entity
 @Table(name = "t_student")
-class Student(var name: String, var age: Int, var address: String) {
+case class Student(var name: String, var age: Int, var address: String) {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_student")
   @TableGenerator(name = "seq_t_student", table = "seq_t_student", allocationSize = 1)

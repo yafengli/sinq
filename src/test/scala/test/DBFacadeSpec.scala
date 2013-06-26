@@ -1,10 +1,12 @@
 package test
 
+import concurrent.forkjoin.{ForkJoinPool, RecursiveAction, ForkJoinTask}
+import java.util.concurrent.TimeUnit
 import models._
 import org.koala.sporm.jpa.SpormFacade
 import org.specs2._
-import concurrent.forkjoin.{ForkJoinPool, RecursiveAction, ForkJoinTask}
-import java.util.concurrent.TimeUnit
+import scala.collection.JavaConversions._
+import scala.collection.mutable.ArrayBuffer
 
 class DBFacadeSpec extends mutable.Specification {
 
@@ -18,9 +20,30 @@ class DBFacadeSpec extends mutable.Specification {
     }
   }
 
+  def init() {
+    if (Book.count(_.asc("id")).getOrElse(-1L) <= 0) {
+      val student = Student("test1", 12, "nanjing")
+      println("#id:" + student.id)
+      val s = student.insert().get
+      println("#id:" + student.id)
+      val book = Book("test", 123)
+      book.student = s
+      book.insert()
+    }
+  }
+
   def testFetch() {
     time(() => {
-      facade.fetch(classOf[Student], 10, 1)(_.==("name", "test"))
+      init()
+      //facade.fetch(classOf[Student], 10, 1)(_.==("name", "test"))
+      val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L, 4L)
+      val list = facade.withEntityManager[List[Book]] {
+        em =>
+          val query = em.createQuery("select b from Book b where b.id in :ids")
+          query.setParameter("ids", params)
+          query.getResultList.toList.asInstanceOf[List[Book]]
+      }
+      println("#list:" + list)
       "Sporm fetch"
     })
   }

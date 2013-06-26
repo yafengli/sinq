@@ -1,7 +1,13 @@
-import sbt._
 import sbt.Keys._
+import sbt._
+import scala.io.Source
 
 object SpormBuild extends Build {
+  val reg = "(.+)=(.+)".r
+  val ver = Source.fromFile(new File("version.properties")).getLines().map(it => {
+    val m = reg.findFirstMatchIn(it).get
+    (m.group(1), m.group(2))
+  }).toMap
 
   lazy val sporm = Project(
     id = "sporm",
@@ -9,8 +15,8 @@ object SpormBuild extends Build {
     settings = Project.defaultSettings ++ Seq(
       name := "sporm",
       organization := "org.koala",
-      version := "0.1",
-      scalaVersion := "2.10.1",
+      version := ver("prod"),
+      scalaVersion := ver("scala"),
       publishTo := Some(Resolver.file("My local maven repo", file("d:/repository"))),
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///d:/repository/",
@@ -19,9 +25,9 @@ object SpormBuild extends Build {
         "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
       ),
       libraryDependencies ++= Seq(
-        "org.hibernate" % "hibernate-entitymanager" % "4.2.0.Final",
-        "com.jolbox" % "bonecp" % "0.8.0-rc1",
-        "ch.qos.logback" % "logback-classic" % "1.0.11",
+        "org.hibernate" % "hibernate-entitymanager" % ver("hibernate"),
+        "com.jolbox" % "bonecp" % ver("bonecp"),
+        "ch.qos.logback" % "logback-classic" % ver("logback"),
         "postgresql" % "postgresql" % "9.1-901.jdbc4" % "test",
         "org.specs2" %% "specs2" % "1.14" % "test",
         "junit" % "junit" % "4.10" % "test"
@@ -29,3 +35,4 @@ object SpormBuild extends Build {
     )
   )
 }
+

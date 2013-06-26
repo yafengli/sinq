@@ -1,9 +1,9 @@
-####初始化
+#### 初始化
 
 + 调用:`JPA.initPersistenceName("persistence.name")`。
 + 初始化JPA的配置`PersistenceName`名称，在多线程多数据库的需求中可以在调用Sporm前，绑定当前线程使用的`PersistenceName`。
 
-####JPA Entity扩展
+#### JPA Entity扩展
 
 + 对于每一个`JPA Entity`需要定义其伴生对象并继承`CQModel`类，例如：
 + `Book.scala`
@@ -36,13 +36,13 @@
 
         object Author extends CQModel[Author]
 
-####基本调用
+#### 基本调用
 + 查询：`Book.get(1L)`
 + 增加：`book.insert`
 + 修改：`book.update`
 + 删除：`book.delete`
 
-####扩展调用
+#### 扩展调用
 + 单`Entity`查询：`single`
 
         Book.single(_.==("name","test1"))
@@ -71,14 +71,38 @@
             case None =>
         }
 
-####QL讲解
+#### QL讲解
 + 在`single`,`fetch`与`count`方法中有`call: (CriteriaQL[T]) => CriteriaQL[T]`高阶函数.
 + 函数的参数与返回结果均为`Criteria Query`封装`CriteriaQL`.
 
 + 简单QL：`Book.fetch(10,20)(_.!=("age",12).asc("id"))`则其生成的最终SQL类似：
 
         select b.* from t_book b from t.age != 12 order by id asc
++ `where in`
 
+        import scala.collection.JavaConversions._
+        import scala.collection.mutable.ArrayBuffer
+        val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L)
+        val list = facade.withEntityManager[List[Book]] {
+            em =>
+                val query = em.createQuery("select b from Book b where b.id in :ids")
+                query.setParameter("ids", params)
+                query.getResultList.toList.asInstanceOf[List[Book]]
+        }
++ `where in`最终`SQL`
+
+        select
+            book0_.id as id1_2_,
+            book0_.name as name2_2_,
+            book0_.price as price3_2_,
+            book0_.student_id as student4_2_
+        from
+            t_book book0_
+        where
+            book0_.id in (? , ? , ? , ?)
+        TRACE org.hibernate.type.descriptor.sql.BasicBinder - binding parameter [1] as [BIGINT] - 1
+        TRACE org.hibernate.type.descriptor.sql.BasicBinder - binding parameter [2] as [BIGINT] - 2
+        TRACE org.hibernate.type.descriptor.sql.BasicBinder - binding parameter [3] as [BIGINT] - 3        
 + 连接(Join)：
 
         Book.fetch(10,20) {
@@ -98,7 +122,7 @@
 
         select b.* from t_book b left join t_author a on b.author_id = a.id where a.name = 'test' and a.age = 15 order by b.id asc
 
-####拼接QL
+#### 拼接QL
 + 使用`or(call:(CriteriaBuilder,Root[T]) => Array[Predicate])`与`and(call:(CriteriaBuilder,Root[T]) => Array[Predicate])`连接条件
 + 使用`Array[Predicate]`生成查询条件单项`Expression:Boolean`例如：
 
