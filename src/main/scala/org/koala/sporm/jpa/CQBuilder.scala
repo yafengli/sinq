@@ -1,8 +1,8 @@
 package org.koala.sporm.jpa
 
-import javax.persistence.criteria.{CriteriaQuery, Predicate, Order, Selection}
-import javax.persistence.{criteria, EntityManager}
 import collection.mutable.ListBuffer
+import javax.persistence.criteria.{Predicate, Order, Selection}
+import javax.persistence.{criteria, EntityManager}
 import scala.collection.JavaConversions._
 
 trait CQBuilder[T] {

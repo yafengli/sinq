@@ -45,9 +45,15 @@ class DBFacadeSpec extends mutable.Specification {
       }
       println("#list:" + list)
 
-      facade.fetch(classOf[Book])(_.join("student", "id", 12)((b, p, v) => {
+      facade.fetch(classOf[Book])(_.join[Student]("student", "id", 12)((b, p, v) => {
         b.equal(p, v)
       }))
+
+      facade.fetch(classOf[Book])(f => {
+        val builder = f.builder
+        val root = f.root.get("student").get("teacher")
+        f.::(builder.equal(root.get("id"), 13))
+      })
       "Sporm fetch"
     })
   }
