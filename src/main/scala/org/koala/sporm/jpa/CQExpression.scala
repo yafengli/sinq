@@ -5,6 +5,8 @@ import javax.persistence.criteria.{Expression, Root, CriteriaBuilder, Predicate}
 
 class CQExpression[T](val em: EntityManager, val ft: Class[T], val rt: Class[_]) extends CQBuilder[T] {
 
+  import javax.persistence.criteria.Path
+
   def this(em: EntityManager, ft: Class[T]) = this(em, ft, ft)
 
   def currentEntityManager: EntityManager = this.em
@@ -41,6 +43,12 @@ class CQExpression[T](val em: EntityManager, val ft: Class[T], val rt: Class[_])
 
   def >=(attrName: String, attrVal: Number): CQExpression[T] = {
     predicates += builder.ge(root.get(attrName), attrVal)
+    this
+  }
+
+  def join[Y](joinName: String, attrName: String, attrVal: Any)(call: (CriteriaBuilder, Path[Y], Any) => Predicate): CQExpression[T] = {
+    // predicates += builder.equal(join.get(attrName),attrVal)
+    predicates += call(builder, root.get(joinName), attrVal)
     this
   }
 

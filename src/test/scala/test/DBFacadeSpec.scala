@@ -44,6 +44,10 @@ class DBFacadeSpec extends mutable.Specification {
           query.getResultList.toList.asInstanceOf[List[Book]]
       }
       println("#list:" + list)
+
+      facade.fetch(classOf[Book])(_.join("student", "id", 12)((b, p, v) => {
+        b.equal(p, v)
+      }))
       "Sporm fetch"
     })
   }
