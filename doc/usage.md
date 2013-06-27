@@ -163,3 +163,10 @@
                     or teacher0_.age<=13
                 )
             )
+## CriteriaQuery结构
+![封装了传统查询的子句](http://www.ibm.com/developerworks/cn/java/j-typesafejpa/UML-expressions.gif)
+![查询表达式中的接口层次结构](http://www.ibm.com/developerworks/cn/java/j-typesafejpa/UML-query.gif)
+#### 查询表达式被赋予泛型。一些典型的表达式是：
++ `Root<T>`，相当于一个`FROM`子句。
++ `Predicate`，其计算为布尔值 `true` 或 `false`（事实上，它被声明为 `interface Predicate extends Expression<Boolean>`）。
++ `Path<T>`，表示从 `Root<?>`表达式导航到的持久化属性。`Root<T>`是一个没有父类的特殊 `Path<T>`

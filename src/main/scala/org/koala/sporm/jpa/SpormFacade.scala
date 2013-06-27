@@ -30,44 +30,44 @@ class SpormFacade extends JPA with NQBuilder {
     }
   }
 
-  def fetch[T](ft: Class[T])(call: (CQExpression[T]) => CQExpression[T]): Option[List[T]] = {
+  def fetch[T,X](ft: Class[T])(call: (CQExpression[T,X]) => CQExpression[T,X]): Option[List[T]] = {
     withEntityManager {
       em => call(CQExpression(em, ft)).fetch()
     }
   }
 
-  def fetch[T](ft: Class[T], limit: Int, offset: Int)(call: (CQExpression[T]) => CQExpression[T]): Option[List[T]] = {
+  def fetch[T,X](ft: Class[T], limit: Int, offset: Int)(call: (CQExpression[T,X]) => CQExpression[T,X]): Option[List[T]] = {
     withEntityManager {
       em =>
         call(CQExpression(em, ft)).fetch(limit, offset)
     }
   }
 
-  def single[T](ft: Class[T])(call: (CQExpression[T]) => CQExpression[T]): Option[T] = {
+  def single[T,X](ft: Class[T])(call: (CQExpression[T,X]) => CQExpression[T,X]): Option[T] = {
     withEntityManager {
       em => call(CQExpression(em, ft)).single()
     }
   }
 
-  def count[T](ft: Class[T])(call: (CQExpression[T]) => CQExpression[T]): Option[Long] = {
+  def count[T](ft: Class[T])(call: (CQExpression[T,java.lang.Long]) => CQExpression[T,java.lang.Long]): Option[Long] = {
     withEntityManager {
       em => call(CQExpression(em, ft, classOf[java.lang.Long])).count()
     }
   }
 
-  def multi[T](ft: Class[T], selects: List[Selection[Any]])(call: (CQExpression[T]) => CQExpression[T]): Option[List[_]] = {
+  def multi[T,X](ft: Class[T], selects: List[Selection[Any]])(call: (CQExpression[T,X]) => CQExpression[T,X]): Option[List[_]] = {
     withEntityManager {
       em => call(CQExpression(em, ft)).multi(selects)
     }
   }
 
-  def inTransaction[T](ft: Class[T])(action: (CQExpression[T]) => CQExpression[T]) {
+  def inTransaction[T,X](ft: Class[T])(action: (CQExpression[T,X]) => CQExpression[T,X]) {
     withTransaction {
       em => action(CQExpression(em, ft))
     }
   }
 
-  def inEntityManager[T](ft: Class[T])(action: (CQExpression[T]) => CQExpression[T]) {
+  def inEntityManager[T,X](ft: Class[T])(action: (CQExpression[T,X]) => CQExpression[T,X]) {
     withEntityManager {
       em => action(CQExpression(em, ft))
     }

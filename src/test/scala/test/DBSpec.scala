@@ -45,7 +45,7 @@ class DBSpec extends mutable.Specification {
 
   def or() {
     time(() => {
-      Teacher.single(
+      Teacher.single[Teacher](
         _.or((b, r) => Array(b.ge(r.get("age"), 10), b.le(r.get("age"), 120)))
           .or((b, r) => Array(b.isNotNull(r.get("address")), b.isNotNull(r.get("name"))))
           .or((b, r) => {
@@ -61,24 +61,24 @@ class DBSpec extends mutable.Specification {
 
   def jm() {
     time(() => {
-      val all = GameModel.fetch(_.asc("id")).getOrElse(Nil)
-      if (all.size <= 0) {
-        val author = new Author()
-        author.setId(123123)
-        author.setName("123123")
-        author.insert()
-
-        val game = new Game()
-        game.setCreateDate(new Date())
-        game.setName("DiabloIII")
-        game.getAuthors.add(AuthorModel.get(1L).get)
-        game.insert()
-      }
-      else {
-
-      }
-
-      println(f"#size:${all}")
+//      val all = GameModel.fetch[Game](t => t.asc("id")).getOrElse(Nil)
+//      if (all.size <= 0) {
+//        val author = new Author()
+//        author.setId(123123)
+//        author.setName("123123")
+//        author.insert()
+//
+//        val game = new Game()
+//        game.setCreateDate(new Date())
+//        game.setName("DiabloIII")
+//        game.getAuthors.add(AuthorModel.get(1L).get)
+//        game.insert()
+//      }
+//      else {
+//
+//      }
+//
+//      println(f"#size:${all}")
       "Java and CQModel"
     })
   }
@@ -103,7 +103,7 @@ class DBSpec extends mutable.Specification {
 
   def fetch() {
     time(() => {
-      Teacher.fetch(5, 5) {
+      Teacher.fetch[Teacher](5, 5) {
         factory =>
           val cab = factory.builder
           val root = factory.root
@@ -124,7 +124,7 @@ class DBSpec extends mutable.Specification {
 
   def count() {
     time(() => {
-      Book.count {
+      Book.count[Book] {
         factory =>
           val cab = factory.builder
           val root = factory.root

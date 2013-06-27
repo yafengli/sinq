@@ -1,21 +1,25 @@
 package org.koala.sporm.jpa
 
 import collection.mutable.ListBuffer
+import javax.persistence.EntityManager
+import javax.persistence.Tuple
+import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.{Predicate, Order, Selection}
-import javax.persistence.{criteria, EntityManager}
 import scala.collection.JavaConversions._
 
 trait CQBuilder[T] {
+
   def currentEntityManager: EntityManager
 
   def findType: Class[T]
 
   def resultType: Class[_]
 
+  def criteriaQuery[X]: CriteriaQuery[X]
+
   val orders = ListBuffer[Order]()
   val predicates = ListBuffer[Predicate]()
   val builder = currentEntityManager.getCriteriaBuilder
-  val criteriaQuery = builder.createQuery(resultType)
   val root = criteriaQuery.from(findType)
 
   def fetch(): List[T] = {
@@ -24,7 +28,7 @@ trait CQBuilder[T] {
 
   def fetch(limit: Int, offset: Int): List[T] = {
     try {
-      val query = criteriaQuery.asInstanceOf[criteria.CriteriaQuery[T]]
+      val query = criteriaQuery[T]
 
       query.select(root)
       if (!orders.isEmpty) query.orderBy(orders: _*)
@@ -41,7 +45,7 @@ trait CQBuilder[T] {
 
   def single(): T = {
     try {
-      val query = criteriaQuery.asInstanceOf[criteria.CriteriaQuery[T]]
+      val query = criteriaQuery[T]
 
       query.select(root)
       if (!predicates.isEmpty) query.where(predicates: _*)
@@ -52,18 +56,25 @@ trait CQBuilder[T] {
   }
 
   def count(): Long = {
-    val query = criteriaQuery.asInstanceOf[criteria.CriteriaQuery[java.lang.Long]]
+    try {
+      val query = criteriaQuery[java.lang.Long]
 
-    query.select(builder.count(root))
-    query.where(predicates.toList: _*)
-    currentEntityManager.createQuery(query).getSingleResult.toLong
+      query.select(builder.count(root))
+      query.where(predicates.toList: _*)
+      currentEntityManager.createQuery(query).getSingleResult.toLong
+    } catch {
+      case ex: Exception => 0L
+    }
   }
 
-  def multi(selects: List[Selection[_]]): List[_] = {
-    val objectQuery = builder.createQuery()
-    objectQuery.multiselect(selects)
-
-    if (!predicates.isEmpty) criteriaQuery.where(predicates: _*)
-    currentEntityManager.createQuery(objectQuery).getResultList.toList
+  def multi(selects: Seq[Selection[_]]): List[Tuple] = {
+    try {
+      val query = criteriaQuery[Tuple]
+      query.multiselect(selects)
+      if (!predicates.isEmpty) query.where(predicates: _*)
+      currentEntityManager.createQuery(query).getResultList.toList
+    } catch {
+      case e: Exception => e.printStackTrace(); Nil
+    }
   }
 }

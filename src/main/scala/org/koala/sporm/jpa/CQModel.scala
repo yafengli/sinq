@@ -8,6 +8,10 @@ import javax.persistence.criteria.Selection
  *        Criteria Query Model
  */
 abstract class CQModel[T: Manifest] extends JPA {
+
+  import javax.persistence.Tuple
+  import javax.persistence.criteria.{Root, CriteriaBuilder}
+
   def getType = implicitly[Manifest[T]].runtimeClass
 
   implicit def generateModel(entity: T) = new BaseBuilder[T](entity)
@@ -18,34 +22,35 @@ abstract class CQModel[T: Manifest] extends JPA {
     }
   }
 
-  def fetch(call: (CQExpression[T]) => CQExpression[T]): Option[List[T]] = {
+  def fetch[X](call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
     fetch(-1, -1)(call)
   }
 
-  def fetch(limit: Int, offset: Int)(call: (CQExpression[T]) => CQExpression[T]): Option[List[T]] = {
+  def fetch[X](limit: Int, offset: Int)(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
     withEntityManager {
       em => call(CQExpression(em, getType.asInstanceOf[Class[T]])).fetch(limit, offset)
     }
   }
 
-  def single(call: (CQExpression[T]) => CQExpression[T]): Option[T] = {
+  def single[X](call: (CQExpression[T, X]) => CQExpression[T, X]): Option[T] = {
     withEntityManager {
       em =>
         call(CQExpression(em, getType.asInstanceOf[Class[T]])).single()
     }
   }
 
-  def count(call: (CQExpression[T]) => CQExpression[T]): Option[Long] = {
+  def count[T](call: (CQExpression[T, java.lang.Long]) => CQExpression[T, java.lang.Long]): Option[Long] = {
     withEntityManager {
       em =>
         call(CQExpression(em, getType.asInstanceOf[Class[T]], classOf[java.lang.Long])).count()
     }
   }
 
-  def multi(selects: List[Selection[Any]])(call: (CQExpression[T]) => CQExpression[T]): Option[List[Any]] = {
+  def multi[T](selectCall: (CriteriaBuilder, Root[T]) => Seq[Selection[_]])(queryCall: (CQExpression[T, Tuple]) => CQExpression[T, Tuple]): Option[List[Tuple]] = {
     withEntityManager {
       em =>
-        call(CQExpression(em, getType.asInstanceOf[Class[T]])).multi(selects)
+        val exp = CQExpression(em, getType.asInstanceOf[Class[T]], classOf[Tuple])
+        queryCall(exp).multi(selectCall(exp.builder, exp.root))
     }
   }
 }

@@ -21,7 +21,7 @@ class DBFacadeSpec extends mutable.Specification {
   }
 
   def init() {
-    if (Book.count(_.asc("id")).getOrElse(-1L) <= 0) {
+    if (Book.count[Book](_.asc("id")).getOrElse(-1L) <= 0) {
       val student = Student("test1", 12, "nanjing")
       println("#id:" + student.id)
       val s = student.insert().get
@@ -34,28 +34,63 @@ class DBFacadeSpec extends mutable.Specification {
 
   def testFetch() {
     time(() => {
-      init()
-      //facade.fetch(classOf[Student], 10, 1)(_.==("name", "test"))
-      val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L, 4L)
-      val list = facade.withEntityManager[List[Book]] {
-        em =>
-          val query = em.createQuery("select b from Book b where b.id in :ids")
-          query.setParameter("ids", params)
-          query.getResultList.toList.asInstanceOf[List[Book]]
-      }
-      println("#list:" + list)
-
-      facade.fetch(classOf[Book])(_.join[Student]("student", "id", 12)((b, p, v) => {
-        b.equal(p, v)
-      }))
-
-      facade.fetch(classOf[Book])(f => {
-        val builder = f.builder
-        val root = f.root.get("student").get("teacher")
-        f.::(builder.equal(root.get("id"), 13))
-      })
+      //init()
+      //join
+      collection
+      //multi
+//      val list_2 = Book.multi[Book]((cb, root) => Array(cb.avg(root.get("id")), cb.sum(root.get("id"))))(_.!=("id", -1L))
+//      println("#list:" + list_2)
       "Sporm fetch"
     })
+  }
+
+  def collection {
+    val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L, 4L)
+    val list = facade.withEntityManager[List[Book]] {
+      em =>
+        val query = em.createQuery("select b from Book b where b.id in :ids")
+        query.setParameter("ids", params)
+        query.getResultList.toList.asInstanceOf[List[Book]]
+    }
+    println("#list:" + list)
+  }
+
+
+  def join {
+    facade.fetch[Student,Book](classOf[Student], 10, 1)(_.==("name", "test"))
+    facade.fetch[Book,Book](classOf[Book])(_.join[Student]("student", "id", 12)((b, p, v) => {
+      b.equal(p, v)
+    }))
+
+    facade.fetch[Book,Book](classOf[Book])(f => {
+      val builder = f.builder
+      val root = f.root.get("student").get("teacher")
+      f.::(builder.equal(root.get("id"), 13))
+    })
+  }
+
+  def multi {
+    Book.withEntityManager {
+      em =>
+        val cb = em.getCriteriaBuilder
+        //          val cq = cb.createQuery(classOf[Book])
+        val cq = cb.createTupleQuery()
+        val root = cq.from(classOf[Book])
+        cq.multiselect(Array(cb.avg(root.get("id")), cb.sum(root.get("id"))): _*)
+
+//        cq.where(Array(cb.greaterThan(root.get[Long]("id"), 0L)): _*)
+
+        val list = em.createQuery(cq).getResultList
+        list.foreach {
+          t =>
+            val buffer = ArrayBuffer[String]()
+            t.toArray.foreach(buffer += _.toString)
+
+            print(buffer.mkString(","))
+            println("#######")
+        }
+        println("#list:" + list.size())
+    }
   }
 
   def test = {
