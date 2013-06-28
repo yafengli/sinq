@@ -24,53 +24,53 @@ class SpormFacade extends JPA with NQBuilder {
     }
   }
 
-  def get[T](rt: Class[T], id: Any): Option[T] = {
+  def get[T](resultType: Class[T], id: Any): Option[T] = {
     withEntityManager {
-      _.find(rt, id)
+      _.find(resultType, id)
     }
   }
 
-  def fetch[T, X](ft: Class[T], rt: Class[X])(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
+  def fetch[T, X](fromType: Class[T], resultType: Class[X])(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
     withEntityManager {
-      em => call(CQExpression(em, ft, rt)).fetch()
+      em => call(CQExpression(em, fromType, resultType)).fetch()
     }
   }
 
-  def fetch[T, X](ft: Class[T], rt: Class[X], limit: Int, offset: Int)(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
-    withEntityManager {
-      em =>
-        call(CQExpression(em, ft)).fetch(limit, offset)
-    }
-  }
-
-  def single[T](ft: Class[T])(call: (CQExpression[T, T]) => CQExpression[T, T]): Option[T] = {
-    withEntityManager {
-      em => call(CQExpression(em, ft, ft)).single()
-    }
-  }
-
-  def count[T](ft: Class[T])(call: (CQExpression[T, java.lang.Long]) => CQExpression[T, java.lang.Long]): Option[Long] = {
-    withEntityManager {
-      em => call(CQExpression(em, ft, classOf[java.lang.Long])).count()
-    }
-  }
-
-  def multi[T](ft: Class[T], selects: List[Selection[Any]])(call: (CQExpression[T, Tuple]) => CQExpression[T, Tuple]): Option[List[Tuple]] = {
+  def fetch[T, X](fromType: Class[T], resultType: Class[X], limit: Int, offset: Int)(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
     withEntityManager {
       em =>
-        call(CQExpression(em, ft)).multi(selects)
+        call(CQExpression(em, fromType)).fetch(limit, offset)
     }
   }
 
-  def inTransaction[T, X](ft: Class[T])(action: (CQExpression[T, X]) => CQExpression[T, X]) {
+  def single[T](fromType: Class[T])(call: (CQExpression[T, T]) => CQExpression[T, T]): Option[T] = {
+    withEntityManager {
+      em => call(CQExpression(em, fromType, fromType)).single()
+    }
+  }
+
+  def count[T](fromType: Class[T])(call: (CQExpression[T, java.lang.Long]) => CQExpression[T, java.lang.Long]): Option[Long] = {
+    withEntityManager {
+      em => call(CQExpression(em, fromType, classOf[java.lang.Long])).count()
+    }
+  }
+
+  def multi[T](fromType: Class[T], selects: List[Selection[Any]])(call: (CQExpression[T, Tuple]) => CQExpression[T, Tuple]): Option[List[Tuple]] = {
+    withEntityManager {
+      em =>
+        call(CQExpression(em, fromType)).multi(selects)
+    }
+  }
+
+  def inTransaction[T, X](fromType: Class[T])(action: (CQExpression[T, X]) => CQExpression[T, X]) {
     withTransaction {
-      em => action(CQExpression(em, ft))
+      em => action(CQExpression(em, fromType))
     }
   }
 
-  def inEntityManager[T, X](ft: Class[T])(action: (CQExpression[T, X]) => CQExpression[T, X]) {
+  def inEntityManager[T, X](fromType: Class[T])(action: (CQExpression[T, X]) => CQExpression[T, X]) {
     withEntityManager {
-      em => action(CQExpression(em, ft))
+      em => action(CQExpression(em, fromType))
     }
   }
 

@@ -9,21 +9,34 @@ import scala.collection.JavaConversions._
 
 trait CQBuilder[T, X] {
 
+  import javax.persistence.criteria.Root
+
   def currentEntityManager: EntityManager
 
-  def findType: Class[T]
+  def from: Class[T]
 
-  def resultType: Class[X]
+  def result: Class[X]
 
   val builder = currentEntityManager.getCriteriaBuilder
 
-  val criteriaQuery = builder.createQuery(findType)
-  val root = criteriaQuery.from(findType)
+  val criteriaQuery_t = new ThreadLocal[CriteriaQuery[T]]()
+  val root_t = new ThreadLocal[Root[T]]()
+
+  def criteriaQuery = {
+    if (criteriaQuery_t.get() == null) criteriaQuery_t.set(builder.createQuery(from))
+    criteriaQuery_t.get()
+  }
+
+  def root = {
+    if (root_t.get() == null) root_t.set(criteriaQuery.from(from))
+    root_t.get()
+  }
+
   val orders = ListBuffer[Order]()
   val predicates = ListBuffer[Predicate]()
   //tuple
   val tupleCriteriaQuery = builder.createTupleQuery()
-  val tupleRoot = tupleCriteriaQuery.from(findType)
+  val tupleRoot = tupleCriteriaQuery.from(from)
   val tupleOrders = ListBuffer[Order]()
   val tuplePredicates = ListBuffer[Predicate]()
 

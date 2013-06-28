@@ -4,15 +4,15 @@ import javax.persistence.EntityManager
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.{Root, CriteriaBuilder, Predicate}
 
-class CQExpression[T, X](val em: EntityManager, val ft: Class[T], val rt: Class[X]) extends CQBuilder[T, X] {
+class CQExpression[T, X](val em: EntityManager, val fromType: Class[T], val resultType: Class[X]) extends CQBuilder[T, X] {
 
   def this(em: EntityManager, ft: Class[T]) = this(em, ft, null)
 
   def currentEntityManager: EntityManager = this.em
 
-  def findType: Class[T] = ft
+  def from: Class[T] = fromType
 
-  def resultType: Class[X] = rt
+  def result: Class[X] = resultType
 
   def ==(attrName: String, attrVal: Any): CQExpression[T, X] = {
     predicates += builder.equal(root.get(attrName), attrVal)
@@ -22,6 +22,7 @@ class CQExpression[T, X](val em: EntityManager, val ft: Class[T], val rt: Class[
 
 
   def !=(attrName: String, attrVal: Any): CQExpression[T, X] = {
+    println(f"#builder:${builder} root:${root} predicates:${predicates}")
     predicates += builder.notEqual(root.get(attrName), attrVal)
     tuplePredicates += builder.notEqual(tupleRoot.get(attrName), attrVal)
     this
