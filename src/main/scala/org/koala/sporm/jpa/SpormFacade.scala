@@ -2,7 +2,7 @@ package org.koala.sporm.jpa
 
 import javax.persistence.criteria.Selection
 import javax.persistence.{EntityManager, Query}
-
+import javax.persistence.Tuple
 
 class SpormFacade extends JPA with NQBuilder {
 
@@ -30,44 +30,45 @@ class SpormFacade extends JPA with NQBuilder {
     }
   }
 
-  def fetch[T,X](ft: Class[T])(call: (CQExpression[T,X]) => CQExpression[T,X]): Option[List[T]] = {
+  def fetch[T, X](ft: Class[T], rt: Class[X])(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
     withEntityManager {
-      em => call(CQExpression(em, ft)).fetch()
+      em => call(CQExpression(em, ft, rt)).fetch()
     }
   }
 
-  def fetch[T,X](ft: Class[T], limit: Int, offset: Int)(call: (CQExpression[T,X]) => CQExpression[T,X]): Option[List[T]] = {
+  def fetch[T, X](ft: Class[T], rt: Class[X], limit: Int, offset: Int)(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
     withEntityManager {
       em =>
         call(CQExpression(em, ft)).fetch(limit, offset)
     }
   }
 
-  def single[T,X](ft: Class[T])(call: (CQExpression[T,X]) => CQExpression[T,X]): Option[T] = {
+  def single[T](ft: Class[T])(call: (CQExpression[T, T]) => CQExpression[T, T]): Option[T] = {
     withEntityManager {
-      em => call(CQExpression(em, ft)).single()
+      em => call(CQExpression(em, ft, ft)).single()
     }
   }
 
-  def count[T](ft: Class[T])(call: (CQExpression[T,java.lang.Long]) => CQExpression[T,java.lang.Long]): Option[Long] = {
+  def count[T](ft: Class[T])(call: (CQExpression[T, java.lang.Long]) => CQExpression[T, java.lang.Long]): Option[Long] = {
     withEntityManager {
       em => call(CQExpression(em, ft, classOf[java.lang.Long])).count()
     }
   }
 
-  def multi[T,X](ft: Class[T], selects: List[Selection[Any]])(call: (CQExpression[T,X]) => CQExpression[T,X]): Option[List[_]] = {
+  def multi[T](ft: Class[T], selects: List[Selection[Any]])(call: (CQExpression[T, Tuple]) => CQExpression[T, Tuple]): Option[List[Tuple]] = {
     withEntityManager {
-      em => call(CQExpression(em, ft)).multi(selects)
+      em =>
+        call(CQExpression(em, ft)).multi(selects)
     }
   }
 
-  def inTransaction[T,X](ft: Class[T])(action: (CQExpression[T,X]) => CQExpression[T,X]) {
+  def inTransaction[T, X](ft: Class[T])(action: (CQExpression[T, X]) => CQExpression[T, X]) {
     withTransaction {
       em => action(CQExpression(em, ft))
     }
   }
 
-  def inEntityManager[T,X](ft: Class[T])(action: (CQExpression[T,X]) => CQExpression[T,X]) {
+  def inEntityManager[T, X](ft: Class[T])(action: (CQExpression[T, X]) => CQExpression[T, X]) {
     withEntityManager {
       em => action(CQExpression(em, ft))
     }
@@ -90,17 +91,17 @@ class SpormFacade extends JPA with NQBuilder {
     }
   }
 
-  def count[T](name: String, ops: Array[Any])(f: (EntityManager) => Query): Option[Long] = {
+  def count(name: String, ops: Array[Any])(f: (EntityManager) => Query): Option[Long] = {
     withEntityManager {
       em => _count(f(em), ops)
     }
   }
 
-  def count[T](name: String)(f: (EntityManager) => Query): Option[Long] = {
+  def count(name: String)(f: (EntityManager) => Query): Option[Long] = {
     count(name)(f)
   }
 
-  def multi[T](name: String, ops: Array[Any])(f: (EntityManager) => Query): Option[List[_]] = {
+  def multi(name: String, ops: Array[Any])(f: (EntityManager) => Query): Option[List[_]] = {
     withEntityManager {
       em => _multi(f(em), ops)
     }

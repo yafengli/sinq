@@ -21,8 +21,7 @@ object SpormBuild extends Build {
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///d:/repository/",
         "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
-        "247" at "http://221.231.148.247/nexus/content/groups/public/",
-        "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
+        "nexus" at "http://block-1.114dns.com/nexus/content/groups/public/"
       ),
       libraryDependencies ++= Seq(
         "org.hibernate" % "hibernate-entitymanager" % ver("hibernate"),

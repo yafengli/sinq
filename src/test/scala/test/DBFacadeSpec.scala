@@ -35,18 +35,19 @@ class DBFacadeSpec extends mutable.Specification {
   def testFetch() {
     time(() => {
       //init()
-      //join
-      collection
+      fetch
+      //      join
+      //      collection
       //multi
-//      val list_2 = Book.multi[Book]((cb, root) => Array(cb.avg(root.get("id")), cb.sum(root.get("id"))))(_.!=("id", -1L))
-//      println("#list:" + list_2)
+      //      val list_2 = Book.multi[Book]((cb, root) => Array(cb.avg(root.get("id")), cb.sum(root.get("id"))))(_.!=("id", -1L))
+      //      println("#list:" + list_2)
       "Sporm fetch"
     })
   }
 
   def collection {
     val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L, 4L)
-    val list = facade.withEntityManager[List[Book]] {
+    val list = facade.withEntityManager {
       em =>
         val query = em.createQuery("select b from Book b where b.id in :ids")
         query.setParameter("ids", params)
@@ -55,18 +56,32 @@ class DBFacadeSpec extends mutable.Specification {
     println("#list:" + list)
   }
 
+  def fetch {
+    val list = facade.fetch(classOf[Student], classOf[Student], 10, 1)(_.!=("name", "test"))
+    list match {
+      case Some(l) =>
+        l.foreach {
+          s =>
+            println("student:" + s.id + "##" + s.address)
+        }
+      case None =>
+    }
+    println("#list:" + list)
+  }
 
   def join {
-    facade.fetch[Student,Book](classOf[Student], 10, 1)(_.==("name", "test"))
-    facade.fetch[Book,Book](classOf[Book])(_.join[Student]("student", "id", 12)((b, p, v) => {
+    val list_2 = facade.fetch(classOf[Book], classOf[Book])(_.join[Student]("student", "id", 12)((b, p, v) => {
       b.equal(p, v)
     }))
+    println("#list_2:" + list_2)
 
-    facade.fetch[Book,Book](classOf[Book])(f => {
+    val list_3 = facade.fetch(classOf[Book], classOf[Book])(f => {
       val builder = f.builder
       val root = f.root.get("student").get("teacher")
       f.::(builder.equal(root.get("id"), 13))
     })
+
+    println("#list_3:" + list_3)
   }
 
   def multi {
@@ -78,7 +93,7 @@ class DBFacadeSpec extends mutable.Specification {
         val root = cq.from(classOf[Book])
         cq.multiselect(Array(cb.avg(root.get("id")), cb.sum(root.get("id"))): _*)
 
-//        cq.where(Array(cb.greaterThan(root.get[Long]("id"), 0L)): _*)
+        //        cq.where(Array(cb.greaterThan(root.get[Long]("id"), 0L)): _*)
 
         val list = em.createQuery(cq).getResultList
         list.foreach {
