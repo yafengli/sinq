@@ -1,10 +1,12 @@
 package org.koala.sporm.jpa
 
+import javax.persistence.Tuple
 import javax.persistence.criteria.Selection
 import javax.persistence.{EntityManager, Query}
-import javax.persistence.Tuple
 
 class SpormFacade extends JPA with NQBuilder {
+
+  import javax.persistence.criteria.{CriteriaQuery, Predicate}
 
   def insert[T](entity: T) {
     withTransaction {
@@ -30,50 +32,40 @@ class SpormFacade extends JPA with NQBuilder {
     }
   }
 
-  def fetch[T, X](fromType: Class[T], resultType: Class[X])(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
-    withEntityManager {
-      em => call(CQExpression(em, fromType, resultType)).fetch()
-    }
-  }
-
-  def fetch[T, X](fromType: Class[T], resultType: Class[X], limit: Int, offset: Int)(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
+  def fetch[T, X](fromType: Class[T], resultType: Class[X])(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[List[T]] = {
     withEntityManager {
       em =>
-        call(CQExpression(em, fromType)).fetch(limit, offset)
+        CQBuilder(em, fromType, resultType).fetch(call)
     }
   }
 
-  def single[T](fromType: Class[T])(call: (CQExpression[T, T]) => CQExpression[T, T]): Option[T] = {
-    withEntityManager {
-      em => call(CQExpression(em, fromType, fromType)).single()
-    }
-  }
-
-  def count[T](fromType: Class[T])(call: (CQExpression[T, java.lang.Long]) => CQExpression[T, java.lang.Long]): Option[Long] = {
-    withEntityManager {
-      em => call(CQExpression(em, fromType, classOf[java.lang.Long])).count()
-    }
-  }
-
-  def multi[T](fromType: Class[T], selects: List[Selection[Any]])(call: (CQExpression[T, Tuple]) => CQExpression[T, Tuple]): Option[List[Tuple]] = {
+  def fetch[T, X](fromType: Class[T], resultType: Class[X], limit: Int, offset: Int)(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[List[T]] = {
     withEntityManager {
       em =>
-        call(CQExpression(em, fromType)).multi(selects)
+        CQBuilder(em, fromType, resultType).fetch(limit, offset)(call)
     }
   }
 
-  def inTransaction[T, X](fromType: Class[T])(action: (CQExpression[T, X]) => CQExpression[T, X]) {
-    withTransaction {
-      em => action(CQExpression(em, fromType))
-    }
-  }
-
-  def inEntityManager[T, X](fromType: Class[T])(action: (CQExpression[T, X]) => CQExpression[T, X]) {
+  def single[T](fromType: Class[T])(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[T] = {
     withEntityManager {
-      em => action(CQExpression(em, fromType))
+      em =>
+        CQBuilder(em, fromType, fromType).single(call)
     }
   }
 
+  def count[T](fromType: Class[T])(call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): Option[Long] = {
+    withEntityManager {
+      em =>
+        CQBuilder(em, fromType, classOf[java.lang.Long]).count(call)
+    }
+  }
+
+  def multi[T](fromType: Class[T])(selectsCall: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Selection[_]])(call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): Option[List[Tuple]] = {
+    withEntityManager {
+      em =>
+        CQBuilder(em, fromType, classOf[Tuple]).multi(selectsCall, call)
+    }
+  }
 
   def fetch[T](qs: String, ops: Array[Any], limit: Int, offset: Int)(f: (EntityManager) => Query): Option[List[T]] = {
     withEntityManager {
