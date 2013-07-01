@@ -10,7 +10,7 @@ import javax.persistence.criteria.Selection
 abstract class CQModel[T: Manifest] extends JPA {
 
   import javax.persistence.Tuple
-  import javax.persistence.criteria.{Root, CriteriaBuilder}
+  import javax.persistence.criteria.{Predicate, CriteriaQuery, Root, CriteriaBuilder}
 
   def getType = implicitly[Manifest[T]].runtimeClass
 
@@ -22,31 +22,40 @@ abstract class CQModel[T: Manifest] extends JPA {
     }
   }
 
-  def fetch[X](call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
+  def fetch(call: (CQExpression[T, T]) => CQExpression[T, T]): Option[List[T]] = {
     fetch(-1, -1)(call)
   }
 
-  def fetch[X](limit: Int, offset: Int)(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
+  def fetch(limit: Int, offset: Int)(call: (CQExpression[T, T]) => CQExpression[T, T]): Option[List[T]] = {
     withEntityManager {
       em => call(CQExpression(em, getType.asInstanceOf[Class[T]])).fetch(limit, offset)
     }
   }
 
-  def single[X](call: (CQExpression[T, X]) => CQExpression[T, X]): Option[T] = {
+  def single(call: (CQExpression[T, T]) => CQExpression[T, T]): Option[T] = {
     withEntityManager {
       em =>
         call(CQExpression(em, getType.asInstanceOf[Class[T]])).single()
     }
   }
 
-  def count[T](call: (CQExpression[T, java.lang.Long]) => CQExpression[T, java.lang.Long]): Option[Long] = {
+  def count(call: (CQExpression[T, java.lang.Long]) => CQExpression[T, java.lang.Long]): Option[Long] = {
     withEntityManager {
       em =>
-        call(CQExpression(em, getType.asInstanceOf[Class[T]], classOf[java.lang.Long])).count()
+        val exp = CQExpression(em, getType.asInstanceOf[Class[T]], classOf[java.lang.Long])
+        call(exp).count()
     }
   }
 
-  def multi[T](selectCall: (CriteriaBuilder, Root[T]) => Seq[Selection[_]])(queryCall: (CQExpression[T, Tuple]) => CQExpression[T, Tuple]): Option[List[Tuple]] = {
+  def count_2(call: (CriteriaBuilder, Root[T]) => Seq[Predicate]): Option[Long] = {
+    withEntityManager {
+      em =>
+        val exp = CQExpression(em, getType.asInstanceOf[Class[T]], classOf[java.lang.Long])
+        exp.count_2(call)
+    }
+  }
+
+  def multi(selectCall: (CriteriaBuilder, Root[T]) => Seq[Selection[_]])(queryCall: (CQExpression[T, Tuple]) => CQExpression[T, Tuple]): Option[List[Tuple]] = {
     withEntityManager {
       em =>
         val exp = CQExpression(em, getType.asInstanceOf[Class[T]], classOf[Tuple])

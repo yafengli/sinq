@@ -8,7 +8,10 @@ package org.koala.sporm.jpa
 class BaseBuilder[T](val entity: T) extends JPA {
 
   def insert(): Option[T] = {
-    withTransaction(_.merge(entity))
+    withTransaction(em => {
+      em.persist(entity)
+      entity
+    })
   }
 
   def update(): Option[T] = {

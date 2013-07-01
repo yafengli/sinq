@@ -20,21 +20,8 @@ class DBFacadeSpec extends mutable.Specification {
     }
   }
 
-  def init() {
-    if (Book.count[Book](_.asc("id")).getOrElse(-1L) <= 0) {
-      val student = Student("test1", 12, "nanjing")
-      println("#id:" + student.id)
-      val s = student.insert().get
-      println("#id:" + student.id)
-      val book = Book("test", 123)
-      book.student = s
-      book.insert()
-    }
-  }
-
   def testFetch() {
     time(() => {
-      //init()
       fetch
       //      join
       //      collection
@@ -151,7 +138,9 @@ case class FetchAction(var count: Int) extends RecursiveAction {
       val id = Thread.currentThread().getId
       val count = facade.count(classOf[Student])(_.!=("name", id.toString).!=("age", id).!=("address", id.toString))
       println(f"#id:${id} size:${size} count:${count}")
-      size += 1
+      DB.synchronized {
+        DB.size += 1
+      }
     }
   }
 }

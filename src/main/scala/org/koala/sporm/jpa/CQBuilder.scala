@@ -3,13 +3,13 @@ package org.koala.sporm.jpa
 import collection.mutable.ListBuffer
 import javax.persistence.EntityManager
 import javax.persistence.Tuple
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.{Predicate, Order, Selection}
+import javax.persistence.criteria.{Predicate, Root, CriteriaQuery, Order, Selection}
 import scala.collection.JavaConversions._
 
 trait CQBuilder[T, X] {
 
-  import javax.persistence.criteria.Root
+  import CQBuilder._
+  import javax.persistence.criteria.CriteriaBuilder
 
   def currentEntityManager: EntityManager
 
@@ -66,7 +66,7 @@ trait CQBuilder[T, X] {
       if (offset > 0) q.setFirstResult(offset)
       q.getResultList.toList
     } catch {
-      case ex: Exception => ex.printStackTrace(); Nil
+      case e: Exception => logger.error(e.getMessage); Nil
     }
   }
 
@@ -76,7 +76,7 @@ trait CQBuilder[T, X] {
       if (!predicates.isEmpty) query.where(predicates: _*)
       currentEntityManager.createQuery(query).getSingleResult
     } catch {
-      case ex: Exception => ex.printStackTrace(); null.asInstanceOf[T]
+      case e: Exception => logger.error(e.getMessage); null.asInstanceOf[T]
     }
   }
 
@@ -88,7 +88,21 @@ trait CQBuilder[T, X] {
       val single = currentEntityManager.createQuery(query).getSingleResult
       single.get(0).asInstanceOf[Long]
     } catch {
-      case ex: Exception => ex.printStackTrace(); 0L
+      case e: Exception => e.printStackTrace(); 0L
+    }
+  }
+
+  def count_2(call: (CriteriaBuilder, Root[T]) => Seq[Predicate]): Long = {
+    try {
+      val query = builder.createTupleQuery()
+      val tr = query.from(from)
+      query.multiselect(Seq(builder.count(tr)))
+      val tps = call(builder, tr)
+      query.where(tps: _*)
+      val single = currentEntityManager.createQuery(query).getSingleResult
+      single.get(0).asInstanceOf[Long]
+    } catch {
+      case e: Exception => e.printStackTrace(); 0L
     }
   }
 
@@ -101,7 +115,14 @@ trait CQBuilder[T, X] {
 
       currentEntityManager.createQuery(query).getResultList.asInstanceOf[List[Tuple]]
     } catch {
-      case e: Exception => e.printStackTrace(); Nil
+      case e: Exception => logger.error(e.getMessage); Nil
     }
   }
+}
+
+object CQBuilder {
+
+  import org.slf4j.LoggerFactory
+
+  val logger = LoggerFactory.getLogger(this.getClass)
 }

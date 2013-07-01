@@ -10,9 +10,9 @@ import models.Teacher
 import models.jm.Author
 import models.jm.Game
 import models.sm.AuthorModel
-import models.sm.AuthorModel._
-import models.sm.GameModel
-import models.sm.GameModel.extendModel
+import models.sm.AuthorModel.authorExtend
+import models.sm.GameActiveRecord
+import models.sm.GameActiveRecord.gameExtend
 import java.util.Date
 
 
@@ -27,8 +27,8 @@ class DBSpec extends mutable.Specification {
   }
 
   "Test all" should {
-    "CriterialQL Test withEntityManager" in {
-      //      test()
+    "CriterialQL All Expressions withEntityManager" in {
+      //      all_exps()
     }
 
     "CriterialQL Test fetch" in {
@@ -36,16 +36,18 @@ class DBSpec extends mutable.Specification {
     }
     "CriterialQL Test count" in {
       //      count()
+      count_2()
     }
     "Test or and and" in {
-      or()
-      jm()
+      //or()
+      //java_model()
+      //scala_model()
     }
   }
 
   def or() {
     time(() => {
-      Teacher.single[Teacher](
+      Teacher.single(
         _.or((b, r) => Array(b.ge(r.get("age"), 10), b.le(r.get("age"), 120)))
           .or((b, r) => Array(b.isNotNull(r.get("address")), b.isNotNull(r.get("name"))))
           .or((b, r) => {
@@ -59,31 +61,49 @@ class DBSpec extends mutable.Specification {
     })
   }
 
-  def jm() {
+  def java_model() {
     time(() => {
-//      val all = GameModel.fetch[Game](t => t.asc("id")).getOrElse(Nil)
-//      if (all.size <= 0) {
-//        val author = new Author()
-//        author.setId(123123)
-//        author.setName("123123")
-//        author.insert()
-//
-//        val game = new Game()
-//        game.setCreateDate(new Date())
-//        game.setName("DiabloIII")
-//        game.getAuthors.add(AuthorModel.get(1L).get)
-//        game.insert()
-//      }
-//      else {
-//
-//      }
-//
-//      println(f"#size:${all}")
+      val all = GameActiveRecord.fetch(t => t.asc("id")).getOrElse(Nil)
+      if (all.size <= 0) {
+        val author = new Author()
+        println("#id:" + author.getId)
+        author.setName("123123")
+        author.insert()
+        println("#id:" + author.getId)
+
+        val game = new Game()
+        game.setCreateDate(new Date())
+        game.setName("DiabloIII")
+        game.getAuthors.add(author)
+        game.insert()
+      }
+      println(f"#size:${all.size}")
       "Java and CQModel"
     })
   }
 
-  def test() {
+  def scala_model() {
+    time(() => {
+      val all = Book.fetch(t => t.asc("id")).getOrElse(Nil)
+      if (all.size <= 0) {
+        import models.Student
+        val student = Student("student", 12, "address")
+        println("#sid:" + student.id)
+        student.insert()
+        println("#sid:" + student.id)
+
+        val book = Book("book", 999)
+        book.student = student
+        println("#bid:" + book.id)
+        book.insert()
+        println("#bid:" + book.id)
+      }
+      println(f"#size:${all.size}")
+      "Scala and CQModel"
+    })
+  }
+
+  def all_exps() {
     time(() => {
       Book.withEntityManager {
         em => {
@@ -103,7 +123,7 @@ class DBSpec extends mutable.Specification {
 
   def fetch() {
     time(() => {
-      Teacher.fetch[Teacher](5, 5) {
+      Teacher.fetch(5, 5) {
         factory =>
           val cab = factory.builder
           val root = factory.root
@@ -124,10 +144,10 @@ class DBSpec extends mutable.Specification {
 
   def count() {
     time(() => {
-      Book.count[Book] {
+      Book.count {
         factory =>
           val cab = factory.builder
-          val root = factory.root
+          val root = factory.tupleRoot
 
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
           val o2 = cab.ge(root.get(Book_.price), 20)
@@ -135,6 +155,24 @@ class DBSpec extends mutable.Specification {
           val o3 = cab.equal(join.get("age"), 999)
 
           factory.::(Seq(o1, o2, o3))
+      } match {
+        case None =>
+        case Some(count) => println("#count#:" + count)
+      }
+      "Fetch count 2"
+    })
+  }
+
+  def count_2() {
+    time(() => {
+      Book.count_2 {
+        (cab, root) =>
+          val o1 = cab.equal(root.get(Book_.name), "nanjing")
+          val o2 = cab.ge(root.get(Book_.price), 20)
+          val join = root.join("student")
+          val o3 = cab.equal(join.get("age"), 999)
+
+          Seq(o1, o2, o3)
       } match {
         case None =>
         case Some(count) => println("#count#:" + count)

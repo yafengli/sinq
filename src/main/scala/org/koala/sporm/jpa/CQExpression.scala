@@ -14,10 +14,17 @@ class CQExpression[T, X](val em: EntityManager, val fromType: Class[T], val resu
 
   def result: Class[X] = resultType
 
+  def lookRoot: Root[T] = {
+    import javax.persistence.Tuple
+    if (result.getClass == classOf[Tuple]) tupleRoot
+    else root
+  }
+
   def ==(attrName: String, attrVal: Any): CQExpression[T, X] = {
     predicates += builder.equal(root.get(attrName), attrVal)
     tuplePredicates += builder.equal(tupleRoot.get(attrName), attrVal)
     this
+    //builder.equal(lookRoot.get(attrName), attrVal)
   }
 
 
@@ -109,7 +116,7 @@ class CQExpression[T, X](val em: EntityManager, val fromType: Class[T], val resu
 
   def ::(call: (CriteriaBuilder, Root[T]) => Array[Predicate]): CQExpression[T, X] = {
     predicates ++= call(builder, root)
-    tuplePredicates ++= call(builder, root)
+    tuplePredicates ++= call(builder, tupleRoot)
     this
   }
 
