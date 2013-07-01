@@ -19,11 +19,15 @@ trait CQBuilder[T, X] {
 
   val builder = currentEntityManager.getCriteriaBuilder
 
-  val criteriaQuery_t = new ThreadLocal[CriteriaQuery[T]]()
-  val root_t = new ThreadLocal[Root[T]]()
+  private val criteriaQuery_t = new ThreadLocal[CriteriaQuery[T]]()
+  private val root_t = new ThreadLocal[Root[T]]()
+  private val tupleCriteriaQuery_t = new ThreadLocal[CriteriaQuery[Tuple]]()
+  private val tupleRoot_t = new ThreadLocal[Root[T]]()
 
-  val tupleCriteriaQuery_t = new ThreadLocal[CriteriaQuery[Tuple]]()
-  val tupleRoot_t = new ThreadLocal[Root[T]]()
+  val orders = ListBuffer[Order]()
+  val predicates = ListBuffer[Predicate]()
+  val tupleOrders = ListBuffer[Order]()
+  val tuplePredicates = ListBuffer[Predicate]()
 
   def criteriaQuery = {
     if (criteriaQuery_t.get() == null) criteriaQuery_t.set(builder.createQuery(from))
@@ -34,9 +38,6 @@ trait CQBuilder[T, X] {
     if (root_t.get() == null) root_t.set(criteriaQuery.from(from))
     root_t.get()
   }
-
-  val orders = ListBuffer[Order]()
-  val predicates = ListBuffer[Predicate]()
 
   //tuple
   def tupleCriteriaQuery = {
@@ -49,8 +50,6 @@ trait CQBuilder[T, X] {
     tupleRoot_t.get()
   }
 
-  val tupleOrders = ListBuffer[Order]()
-  val tuplePredicates = ListBuffer[Predicate]()
 
   def fetch(): List[T] = {
     fetch(-1, -1)

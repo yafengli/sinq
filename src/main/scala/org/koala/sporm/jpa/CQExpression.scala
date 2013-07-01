@@ -22,7 +22,7 @@ class CQExpression[T, X](val em: EntityManager, val fromType: Class[T], val resu
 
 
   def !=(attrName: String, attrVal: Any): CQExpression[T, X] = {
-    println(f"#builder:${builder} root:${root} predicates:${predicates}")
+    println(f"#id:${Thread.currentThread().getId} ps:${predicates} tps:${tuplePredicates}")
     predicates += builder.notEqual(root.get(attrName), attrVal)
     tuplePredicates += builder.notEqual(tupleRoot.get(attrName), attrVal)
     this
