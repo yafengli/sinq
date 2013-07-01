@@ -166,11 +166,11 @@ class DBSpec extends mutable.Specification {
   def count_2() {
     time(() => {
       Book.count_2 {
-        (cab, root) =>
-          val o1 = cab.equal(root.get(Book_.name), "nanjing")
-          val o2 = cab.ge(root.get(Book_.price), 20)
-          val join = root.join("student")
-          val o3 = cab.equal(join.get("age"), 999)
+        (b, q, r) =>
+          val o1 = b.equal(r.get(Book_.name), "nanjing")
+          val o2 = b.ge(r.get(Book_.price), 20)
+          val join = r.join("student")
+          val o3 = b.equal(join.get("age"), 999)
 
           Seq(o1, o2, o3)
       } match {

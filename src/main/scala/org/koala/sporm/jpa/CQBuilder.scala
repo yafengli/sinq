@@ -1,65 +1,32 @@
 package org.koala.sporm.jpa
 
-import collection.mutable.ListBuffer
 import javax.persistence.EntityManager
 import javax.persistence.Tuple
-import javax.persistence.criteria.{Predicate, Root, CriteriaQuery, Order, Selection}
+import javax.persistence.criteria.{Predicate, CriteriaQuery, Selection}
 import scala.collection.JavaConversions._
 
-trait CQBuilder[T, X] {
+case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val resultType: Class[X]) {
 
   import CQBuilder._
-  import javax.persistence.criteria.CriteriaBuilder
 
-  def currentEntityManager: EntityManager
+  def currentEntityManager: EntityManager = this.em
 
-  def from: Class[T]
+  def from: Class[T] = fromType
 
-  def result: Class[X]
+  def result: Class[X] = resultType
 
   val builder = currentEntityManager.getCriteriaBuilder
 
-  private val criteriaQuery_t = new ThreadLocal[CriteriaQuery[T]]()
-  private val root_t = new ThreadLocal[Root[T]]()
-  private val tupleCriteriaQuery_t = new ThreadLocal[CriteriaQuery[Tuple]]()
-  private val tupleRoot_t = new ThreadLocal[Root[T]]()
-
-  val orders = ListBuffer[Order]()
-  val predicates = ListBuffer[Predicate]()
-  val tupleOrders = ListBuffer[Order]()
-  val tuplePredicates = ListBuffer[Predicate]()
-
-  def criteriaQuery = {
-    if (criteriaQuery_t.get() == null) criteriaQuery_t.set(builder.createQuery(from))
-    criteriaQuery_t.get()
+  def fetch(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): List[T] = {
+    fetch(-1, -1)(call)
   }
 
-  def root = {
-    if (root_t.get() == null) root_t.set(criteriaQuery.from(from))
-    root_t.get()
-  }
-
-  //tuple
-  def tupleCriteriaQuery = {
-    if (tupleCriteriaQuery_t.get() == null) tupleCriteriaQuery_t.set(builder.createTupleQuery())
-    tupleCriteriaQuery_t.get()
-  }
-
-  def tupleRoot = {
-    if (tupleRoot_t.get() == null) tupleRoot_t.set(tupleCriteriaQuery.from(from))
-    tupleRoot_t.get()
-  }
-
-
-  def fetch(): List[T] = {
-    fetch(-1, -1)
-  }
-
-  def fetch(limit: Int, offset: Int): List[T] = {
+  def fetch(limit: Int, offset: Int)(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): List[T] = {
     try {
-      val query = criteriaQuery
-      if (!orders.isEmpty) query.orderBy(orders: _*)
-      if (!predicates.isEmpty) query.where(predicates: _*)
+      val query = builder.createQuery(from)
+      val root = query.from(from)
+      val ps = call(query, CQExpression(builder, root))
+      if (!ps.isEmpty) query.where(ps: _*)
 
       val q = currentEntityManager.createQuery(query)
       if (limit > 0) q.setMaxResults(limit)
@@ -70,34 +37,25 @@ trait CQBuilder[T, X] {
     }
   }
 
-  def single(): T = {
+  def single(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): T = {
     try {
-      val query = criteriaQuery
-      if (!predicates.isEmpty) query.where(predicates: _*)
+      val query = builder.createQuery(from)
+      val root = query.from(from)
+      val ps = call(query, CQExpression(builder, root))
+      if (!ps.isEmpty) query.where(ps: _*)
+
       currentEntityManager.createQuery(query).getSingleResult
     } catch {
       case e: Exception => logger.error(e.getMessage); null.asInstanceOf[T]
     }
   }
 
-  def count(): Long = {
-    try {
-      val query = tupleCriteriaQuery
-      query.multiselect(Seq(builder.count(tupleRoot)))
-      query.where(tuplePredicates.toList: _*)
-      val single = currentEntityManager.createQuery(query).getSingleResult
-      single.get(0).asInstanceOf[Long]
-    } catch {
-      case e: Exception => e.printStackTrace(); 0L
-    }
-  }
-
-  def count_2(call: (CriteriaBuilder, Root[T]) => Seq[Predicate]): Long = {
+  def count(call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): Long = {
     try {
       val query = builder.createTupleQuery()
-      val tr = query.from(from)
-      query.multiselect(Seq(builder.count(tr)))
-      val tps = call(builder, tr)
+      val root = query.from(from)
+      query.multiselect(Seq(builder.count(root)))
+      val tps = call(query, CQExpression(builder, root))
       query.where(tps: _*)
       val single = currentEntityManager.createQuery(query).getSingleResult
       single.get(0).asInstanceOf[Long]
@@ -106,12 +64,14 @@ trait CQBuilder[T, X] {
     }
   }
 
-  def multi(selects: Seq[Selection[_]]): List[Tuple] = {
+  def multi(selectsCall: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Selection[_]], call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): List[Tuple] = {
     try {
-      val query = tupleCriteriaQuery
+      val query = builder.createTupleQuery()
+      val root = query.from(from)
+      val selects = selectsCall(query, CQExpression(builder, root))
       query.multiselect(selects)
-      if (!tuplePredicates.isEmpty) query.where(tuplePredicates: _*)
-      if (!tupleOrders.isEmpty) query.orderBy(tupleOrders: _*)
+      val tps = call(query, CQExpression(builder, root))
+      if (!tps.isEmpty) query.where(tps: _*)
 
       currentEntityManager.createQuery(query).getResultList.asInstanceOf[List[Tuple]]
     } catch {
