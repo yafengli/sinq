@@ -57,7 +57,7 @@ class DBFacadeSpec extends mutable.Specification {
   }
 
   def fetch {
-    val task = new FetchAction(5)
+    val task = new FetchAction(2)
     pool.submit(task)
     pool.shutdown()
     pool.awaitTermination(20, TimeUnit.SECONDS)
@@ -146,15 +146,9 @@ case class FetchAction(var count: Int) extends RecursiveAction {
       ForkJoinTask.invokeAll(new FetchAction(count - 1), new FetchAction(1))
     }
     else {
-      val list = facade.fetch(classOf[Student], classOf[Student], 10, 1)(_.!=("name", "test"))
-      list match {
-        case Some(l) =>
-          l.foreach {
-            s =>
-              println(f"id:${Thread.currentThread().getId} student: ${s.toString}")
-          }
-        case None =>
-      }
+//      facade.fetch(classOf[Student], classOf[Student], 10, 1)(_.!=("name", "test"))
+//      facade.get(classOf[Student], 1L)
+      facade.count(classOf[Student])(_.!=("name", "123").<<("age", 12))
       size += 1
     }
   }

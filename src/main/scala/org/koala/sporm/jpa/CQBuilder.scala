@@ -22,6 +22,9 @@ trait CQBuilder[T, X] {
   val criteriaQuery_t = new ThreadLocal[CriteriaQuery[T]]()
   val root_t = new ThreadLocal[Root[T]]()
 
+  val tupleCriteriaQuery_t = new ThreadLocal[CriteriaQuery[Tuple]]()
+  val tupleRoot_t = new ThreadLocal[Root[T]]()
+
   def criteriaQuery = {
     if (criteriaQuery_t.get() == null) criteriaQuery_t.set(builder.createQuery(from))
     criteriaQuery_t.get()
@@ -34,9 +37,18 @@ trait CQBuilder[T, X] {
 
   val orders = ListBuffer[Order]()
   val predicates = ListBuffer[Predicate]()
+
   //tuple
-  val tupleCriteriaQuery = builder.createTupleQuery()
-  val tupleRoot = tupleCriteriaQuery.from(from)
+  def tupleCriteriaQuery = {
+    if (tupleCriteriaQuery_t.get() == null) tupleCriteriaQuery_t.set(builder.createTupleQuery())
+    tupleCriteriaQuery_t.get()
+  }
+
+  def tupleRoot = {
+    if (tupleRoot_t.get() == null) tupleRoot_t.set(tupleCriteriaQuery.from(from))
+    tupleRoot_t.get()
+  }
+
   val tupleOrders = ListBuffer[Order]()
   val tuplePredicates = ListBuffer[Predicate]()
 
@@ -71,10 +83,11 @@ trait CQBuilder[T, X] {
 
   def count(): Long = {
     try {
-      val query = builder.createQuery(classOf[java.lang.Long])
-      query.select(builder.count(root))
-      query.where(predicates.toList: _*)
-      currentEntityManager.createQuery(query).getSingleResult.asInstanceOf[Long]
+      val query = tupleCriteriaQuery
+      query.multiselect(Seq(builder.count(tupleRoot)))
+      query.where(tuplePredicates.toList: _*)
+      val single = currentEntityManager.createQuery(query).getSingleResult
+      single.get(0).asInstanceOf[Long]
     } catch {
       case ex: Exception => ex.printStackTrace(); 0L
     }
@@ -82,7 +95,7 @@ trait CQBuilder[T, X] {
 
   def multi(selects: Seq[Selection[_]]): List[Tuple] = {
     try {
-      val query = builder.createTupleQuery()
+      val query = tupleCriteriaQuery
       query.multiselect(selects)
       if (!tuplePredicates.isEmpty) query.where(tuplePredicates: _*)
       if (!tupleOrders.isEmpty) query.orderBy(tupleOrders: _*)
