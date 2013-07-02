@@ -10,7 +10,7 @@ class SpormFacade extends JPA with NQBuilder {
 
   def insert[T](entity: T) {
     withTransaction {
-      _.merge(entity)
+      _.persist(entity)
     }
   }
 
@@ -101,6 +101,20 @@ class SpormFacade extends JPA with NQBuilder {
 
   def multi[T](name: String)(f: (EntityManager) => Query): Option[List[_]] = {
     multi(name, Array[Any]())(f)
+  }
+
+  def sql[T](sql: String, params: Seq[Any]): Option[List[T]] = {
+    import scala.collection.JavaConversions._
+    withEntityManager {
+      em =>
+        val query = em.createNativeQuery(sql)
+        if (params != null && params.size > 0) {
+          for (i <- 1 to params.size) {
+            query.setParameter(i, params(i))
+          }
+        }
+        query.getResultList.toList.asInstanceOf[List[T]]
+    }
   }
 }
 

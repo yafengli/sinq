@@ -28,14 +28,14 @@ class DBSpec extends mutable.Specification {
 
   "Test all" should {
     "CriterialQL All Expressions withEntityManager" in {
-      //      all_exps()
+      //all_exps()
     }
 
     "CriterialQL Test fetch" in {
-      //      fetch()
+      //fetch()
     }
     "CriterialQL Test count" in {
-      //      count()
+      //count()
       count_2()
     }
     "Test or and and" in {
@@ -47,13 +47,15 @@ class DBSpec extends mutable.Specification {
 
   def or() {
     time(() => {
-      Teacher.single(
-        _.or((b, r) => Array(b.ge(r.get("age"), 10), b.le(r.get("age"), 120)))
-          .or((b, r) => Array(b.isNotNull(r.get("address")), b.isNotNull(r.get("name"))))
-          .or((b, r) => {
-          val predicate: Predicate = b.and(Array(b.ge(r.get("age"), 11), b.or(Array(b.le(r.get("age"), 12), b.le(r.get("age"), 13)): _*)): _*)
-          Array(b.ge(r.get("age"), 10), predicate)
-        })) match {
+      Teacher.single((_, e) => {
+        val b = e.builder
+        val p1 = b.or(Array(e.>=("age", 10), e.<=("age", 10)): _*)
+        val p2 = b.or(Array(e.isNotNull("address"), e.isNotNull("name")): _*)
+        val p3_1 = b.and(Array(e.>=("age", 11), b.or(Array(e.<=("age", 12), e.>=("age", 2)): _*): _*): _*)
+        val p3 = b.or(Array(e.<=("age", 13), p3_1): _*)
+
+        Seq(p1, p2, p3)
+      }) match {
         case Some(t) => println("t:" + t)
         case None =>
       }
@@ -63,42 +65,48 @@ class DBSpec extends mutable.Specification {
 
   def java_model() {
     time(() => {
-      val all = GameActiveRecord.fetch(t => t.asc("id")).getOrElse(Nil)
-      if (all.size <= 0) {
-        val author = new Author()
-        println("#id:" + author.getId)
-        author.setName("123123")
-        author.insert()
-        println("#id:" + author.getId)
+      GameActiveRecord.fetch((_, _) => Nil) match {
+        case Some(list) =>
+          if (list.size <= 0) {
+            val author = new Author()
+            println("#id:" + author.getId)
+            author.setName("123123")
+            author.insert()
+            println("#id:" + author.getId)
 
-        val game = new Game()
-        game.setCreateDate(new Date())
-        game.setName("DiabloIII")
-        game.getAuthors.add(author)
-        game.insert()
+            val game = new Game()
+            game.setCreateDate(new Date())
+            game.setName("DiabloIII")
+            game.getAuthors.add(author)
+            game.insert()
+          }
+          println(f"#size:${list.size}")
+        case None =>
       }
-      println(f"#size:${all.size}")
       "Java and CQModel"
     })
   }
 
   def scala_model() {
     time(() => {
-      val all = Book.fetch(t => t.asc("id")).getOrElse(Nil)
-      if (all.size <= 0) {
-        import models.Student
-        val student = Student("student", 12, "address")
-        println("#sid:" + student.id)
-        student.insert()
-        println("#sid:" + student.id)
+      Book.fetch((_, _) => Nil) match {
+        case Some(list) =>
+          if (list.size <= 0) {
+            import models.Student
+            val student = Student("student", 12, "address")
+            println("#sid:" + student.id)
+            student.insert()
+            println("#sid:" + student.id)
 
-        val book = Book("book", 999)
-        book.student = student
-        println("#bid:" + book.id)
-        book.insert()
-        println("#bid:" + book.id)
+            val book = Book("book", 999)
+            book.student = student
+            println("#bid:" + book.id)
+            book.insert()
+            println("#bid:" + book.id)
+          }
+          println(f"#size:${list.size}")
+        case None =>
       }
-      println(f"#size:${all.size}")
       "Scala and CQModel"
     })
   }
@@ -107,14 +115,24 @@ class DBSpec extends mutable.Specification {
     time(() => {
       Book.withEntityManager {
         em => {
-          val factory = CQExpression(em, classOf[Book])
-          factory.::(Array(
-            factory.builder.equal(factory.root.get(Book_.name), "nanjing"),
-            factory.builder.le(factory.root.get(Book_.price), 10),
-            factory.builder.ge(factory.root.get(Book_.price), 11),
-            factory.builder.or(factory.builder.equal(factory.root.get(Book_.name), "nanjing")),
-            factory.builder.equal(factory.root.get(Book_.name), "Shanghai"),
-            factory.builder.ge(factory.root.get(Book_.price), 12))).fetch(10, 1)
+          import scala.collection.mutable.ArrayBuffer
+          val b = em.getCriteriaBuilder
+          val query = b.createQuery(classOf[Book])
+          val r = query.from(classOf[Book])
+          val e = CQExpression(b, r)
+
+          val ps_1 = Array(b.equal(r.get(Book_.name), "nanjing"),
+            b.le(r.get(Book_.price), 10),
+            b.ge(r.get(Book_.price), 11),
+            b.or(b.equal(r.get(Book_.name), "nanjing")),
+            b.equal(r.get(Book_.name), "Shanghai"),
+            b.ge(r.get(Book_.price), 12))
+          val ps_2 = Array(e.>=("price", 12), e.<=("price", 23))
+
+          val ps = ArrayBuffer[Predicate]() ++ ps_1 ++ ps_2
+
+          query.where(ps: _*)
+          em.createQuery(query).getResultList
         }
       }
       "withEntityManager"
@@ -124,16 +142,13 @@ class DBSpec extends mutable.Specification {
   def fetch() {
     time(() => {
       Teacher.fetch(5, 5) {
-        factory =>
-          val cab = factory.builder
-          val root = factory.root
+        (_, e) =>
+          val o1 = e.==("name", "nanjing")
+          val o2 = e.>=("age", 20)
+          val o3 = e.==("id", 1)
+          val o4 = e.!=("address", "heifei")
 
-          val o1 = cab.equal(root.get("name"), "nanjing")
-          val o2 = cab.ge(root.get("age"), Integer.valueOf(20))
-          val o3 = cab.equal(root.get("id"), Integer.valueOf(1))
-          val o4 = cab.notEqual(root.get("address"), "heifei")
-
-          factory.::(Array(cab.or(List(o1, o3): _*), cab.or(List(o2, o4): _*)))
+          Array(e.builder.or(Seq(o1, o3): _*), e.builder.or(Seq(o2, o4): _*))
       } match {
         case None =>
         case Some(list) => list.foreach(println(_))
@@ -142,35 +157,28 @@ class DBSpec extends mutable.Specification {
     })
   }
 
+  def single() {
+    time(() => {
+      Teacher.single((_, e) => Seq(e.==("id", 12))) match {
+        case Some(o) => println(o)
+        case None =>
+      }
+      "Fetch"
+    })
+  }
+
+
   def count() {
     time(() => {
       Book.count {
-        factory =>
-          val cab = factory.builder
-          val root = factory.tupleRoot
+        (_, e) =>
+          val cab = e.builder
+          val root = e.root
 
           val o1 = cab.equal(root.get(Book_.name), "nanjing")
           val o2 = cab.ge(root.get(Book_.price), 20)
           val join = root.join("student")
           val o3 = cab.equal(join.get("age"), 999)
-
-          factory.::(Seq(o1, o2, o3))
-      } match {
-        case None =>
-        case Some(count) => println("#count#:" + count)
-      }
-      "Fetch count 2"
-    })
-  }
-
-  def count_2() {
-    time(() => {
-      Book.count_2 {
-        (b, q, r) =>
-          val o1 = b.equal(r.get(Book_.name), "nanjing")
-          val o2 = b.ge(r.get(Book_.price), 20)
-          val join = r.join("student")
-          val o3 = b.equal(join.get("age"), 999)
 
           Seq(o1, o2, o3)
       } match {

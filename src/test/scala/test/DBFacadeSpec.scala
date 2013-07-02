@@ -15,24 +15,25 @@ class DBFacadeSpec extends mutable.Specification {
   "SpormFacade test all" should {
 
     "Sporm test" in {
-      //      test()
-      testFetch()
+      count
+      single
+      fetch
+      multi
+      join
+      in
+    }
+    "Concurrent" in {
+      time(() => {
+        concurrent(2)
+        "Sporm fetch"
+      })
     }
   }
 
-  def testFetch() {
-    time(() => {
-      fetch
-      //      join
-      //      collection
-      //multi
-      //      val list_2 = Book.multi[Book]((cb, root) => Array(cb.avg(root.get("id")), cb.sum(root.get("id"))))(_.!=("id", -1L))
-      //      println("#list:" + list_2)
-      "Sporm fetch"
-    })
-  }
-
-  def collection {
+  /**
+   * where in 表达式
+   */
+  def in {
     val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L, 4L)
     val list = facade.withEntityManager {
       em =>
@@ -43,61 +44,75 @@ class DBFacadeSpec extends mutable.Specification {
     println("#list:" + list)
   }
 
+  /**
+   * join 表达式
+   */
+  def join {
+    val list_2 = facade.fetch(classOf[Book], classOf[Book]) {
+      (_, e) =>
+        val pe = e.join[Student]("student", "id", 12) {
+          (b, p, v) =>
+            b.equal(p, v)
+        }
+        Array(pe)
+    }
+    println("#join_1:" + list_2)
+
+    val list_3 = facade.fetch(classOf[Book], classOf[Book]) {
+      (_, e) =>
+        val root = e.root.get("student").get("teacher")
+        Seq(e.builder.equal(root.get("id"), 13))
+    }
+    println("#join_2:" + list_3)
+  }
+
+  def count {
+    val count = facade.count(classOf[Book]) {
+      (_, e) =>
+        Array(e.>>("price", 12))
+    }
+    println("#count:" + count)
+  }
+
+  def single {
+    val single = facade.single(classOf[Book]) {
+      (_, e) =>
+        Array(e.>>("price", 12))
+    }
+    println("#single:" + single)
+  }
+
   def fetch {
-    val task = new FetchAction(20)
+    import javax.persistence.Tuple
+    val list_1 = facade.fetch(classOf[Book], classOf[Book]) {
+      (_, e) =>
+        Array(e.>>("price", 12))
+    }
+    println("#fetch_1:" + list_1)
+
+    val list_2 = facade.fetch(classOf[Book], classOf[Tuple]) {
+      (_, e) =>
+        Array(e.>>("price", 12))
+    }
+    println("#fetch_2:" + list_2)
+  }
+
+  def multi {
+    val list = facade.multi(classOf[Book])((_, e) => {
+      Array(e.builder.avg(e.root.get("price")), e.builder.abs(e.root.get("id")))
+    })((_, e) => {
+      Array(e.>>("price", 12))
+    })
+
+    println("#multi:" + list)
+  }
+
+  def concurrent(t: Int) {
+    val task = new FetchAction(t)
     pool.submit(task)
     pool.shutdown()
     pool.awaitTermination(20, TimeUnit.SECONDS)
 
-  }
-
-  def join {
-    val list_2 = facade.fetch(classOf[Book], classOf[Book])(_.join[Student]("student", "id", 12)((b, p, v) => {
-      b.equal(p, v)
-    }))
-    println("#list_2:" + list_2)
-
-    val list_3 = facade.fetch(classOf[Book], classOf[Book])(f => {
-      val builder = f.builder
-      val root = f.root.get("student").get("teacher")
-      f.::(builder.equal(root.get("id"), 13))
-    })
-
-    println("#list_3:" + list_3)
-  }
-
-  def multi {
-    Book.withEntityManager {
-      em =>
-        val cb = em.getCriteriaBuilder
-        //          val cq = cb.createQuery(classOf[Book])
-        val cq = cb.createTupleQuery()
-        val root = cq.from(classOf[Book])
-        cq.multiselect(Array(cb.avg(root.get("id")), cb.sum(root.get("id"))): _*)
-
-        //        cq.where(Array(cb.greaterThan(root.get[Long]("id"), 0L)): _*)
-
-        val list = em.createQuery(cq).getResultList
-        list.foreach {
-          t =>
-            val buffer = ArrayBuffer[String]()
-            t.toArray.foreach(buffer += _.toString)
-
-            print(buffer.mkString(","))
-            println("#######")
-        }
-        println("#list:" + list.size())
-    }
-  }
-
-  def test = {
-    time(() => {
-      val task = new SqlAction(5000)
-      pool.submit(task)
-      pool.shutdown()
-      pool.awaitTermination(20, TimeUnit.SECONDS)
-      "Sporm test"
-    })
   }
 
   def time(f: () => String)() {
@@ -105,22 +120,6 @@ class DBFacadeSpec extends mutable.Specification {
     val name = f()
     val stop = System.currentTimeMillis()
     println(f"---[${name}}][${DB.size}]--#time use ${stop - start}ms.")
-  }
-}
-
-case class SqlAction(var count: Int) extends RecursiveAction {
-
-  import DB._
-
-  def compute() {
-    if (count > 1) {
-      ForkJoinTask.invokeAll(new SqlAction(count - 1), new SqlAction(1))
-    }
-    else {
-      facade.get(classOf[Student], 1L)
-      facade.count(classOf[Student])(_.!=("name", "123").<<("age", 12))
-      size += 1
-    }
   }
 }
 
@@ -133,10 +132,13 @@ case class FetchAction(var count: Int) extends RecursiveAction {
       ForkJoinTask.invokeAll(new FetchAction(count - 1), new FetchAction(1))
     }
     else {
+      val id = Thread.currentThread().getId
       //facade.fetch(classOf[Student], classOf[Student], 10, 1)(_.!=("name", "test"))
       //facade.get(classOf[Student], 1L)
-      val id = Thread.currentThread().getId
-      val count = facade.count(classOf[Student])(_.!=("name", id.toString).!=("age", id).!=("address", id.toString))
+
+      val count = facade.count(classOf[Student])((_, e) => {
+        Array(e.!=("name", id.toString), e.!=("age", id), e.!=("address", id.toString))
+      })
       println(f"#id:${id} size:${size} count:${count}")
       DB.synchronized {
         DB.size += 1
