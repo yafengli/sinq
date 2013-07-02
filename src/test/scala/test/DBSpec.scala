@@ -28,30 +28,32 @@ class DBSpec extends mutable.Specification {
 
   "Test all" should {
     "CriterialQL All Expressions withEntityManager" in {
-      //all_exps()
+      all_exps()
     }
 
     "CriterialQL Test fetch" in {
-      //fetch()
+      fetch()
+      single()
+      count()
+      or()
     }
-    "CriterialQL Test count" in {
-      //count()
-      count_2()
-    }
-    "Test or and and" in {
-      //or()
-      //java_model()
-      //scala_model()
+
+    "Java and Scala Model" in {
+      java_model()
+      scala_model()
     }
   }
 
+  /**
+   * 复杂的条件表达式 or
+   */
   def or() {
     time(() => {
-      Teacher.single((_, e) => {
+      Teacher.fetch((_, e) => {
         val b = e.builder
         val p1 = b.or(Array(e.>=("age", 10), e.<=("age", 10)): _*)
         val p2 = b.or(Array(e.isNotNull("address"), e.isNotNull("name")): _*)
-        val p3_1 = b.and(Array(e.>=("age", 11), b.or(Array(e.<=("age", 12), e.>=("age", 2)): _*): _*): _*)
+        val p3_1 = b.and(Array(e.>=("age", 11), b.or(Array(e.<=("age", 12), e.>=("age", 2)): _*)): _*)
         val p3 = b.or(Array(e.<=("age", 13), p3_1): _*)
 
         Seq(p1, p2, p3)
@@ -159,7 +161,7 @@ class DBSpec extends mutable.Specification {
 
   def single() {
     time(() => {
-      Teacher.single((_, e) => Seq(e.==("id", 12))) match {
+      Book.single((_, e) => Seq(e.==("id", 9))) match {
         case Some(o) => println(o)
         case None =>
       }

@@ -33,7 +33,7 @@ case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val re
       if (offset > 0) q.setFirstResult(offset)
       q.getResultList.toList
     } catch {
-      case e: Exception => logger.error(e.getMessage); Nil
+      case e: Exception => e.printStackTrace(); Nil
     }
   }
 
@@ -46,7 +46,7 @@ case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val re
 
       currentEntityManager.createQuery(query).getSingleResult
     } catch {
-      case e: Exception => logger.error(e.getMessage); null.asInstanceOf[T]
+      case e: Exception => e.printStackTrace(); null.asInstanceOf[T]
     }
   }
 
@@ -73,9 +73,9 @@ case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val re
       val tps = call(query, CQExpression(builder, root))
       if (!tps.isEmpty) query.where(tps: _*)
 
-      currentEntityManager.createQuery(query).getResultList.asInstanceOf[List[Tuple]]
+      currentEntityManager.createQuery(query).getResultList.toList
     } catch {
-      case e: Exception => logger.error(e.getMessage); Nil
+      case e: Exception => e.printStackTrace(); Nil
     }
   }
 }

@@ -15,16 +15,16 @@ class DBFacadeSpec extends mutable.Specification {
   "SpormFacade test all" should {
 
     "Sporm test" in {
-      count
-      single
-      fetch
+      //      count
+      //      single
+      //      fetch
       multi
-      join
-      in
+      //      join
+      //      in
     }
     "Concurrent" in {
       time(() => {
-        concurrent(2)
+        concurrent(0)
         "Sporm fetch"
       })
     }
@@ -98,13 +98,23 @@ class DBFacadeSpec extends mutable.Specification {
   }
 
   def multi {
-    val list = facade.multi(classOf[Book])((_, e) => {
-      Array(e.builder.avg(e.root.get("price")), e.builder.abs(e.root.get("id")))
+    facade.multi(classOf[Book])((_, e) => {
+      Array(e.builder.avg(e.root.get("price")), e.builder.count(e.root.get("id")))
     })((_, e) => {
       Array(e.>>("price", 12))
-    })
-
-    println("#multi:" + list)
+    }) match {
+      case Some(list) =>
+        list.foreach {
+          t =>
+            t.toArray.foreach {
+              i =>
+                print("#i:" + i + " ")
+            }
+            println()
+        }
+        println("#multi:" + list)
+      case None =>
+    }
   }
 
   def concurrent(t: Int) {
@@ -128,10 +138,7 @@ case class FetchAction(var count: Int) extends RecursiveAction {
   import DB._
 
   def compute() {
-    if (count > 1) {
-      ForkJoinTask.invokeAll(new FetchAction(count - 1), new FetchAction(1))
-    }
-    else {
+    if (count == 1) {
       val id = Thread.currentThread().getId
       //facade.fetch(classOf[Student], classOf[Student], 10, 1)(_.!=("name", "test"))
       //facade.get(classOf[Student], 1L)
@@ -143,6 +150,8 @@ case class FetchAction(var count: Int) extends RecursiveAction {
       DB.synchronized {
         DB.size += 1
       }
+    } else if (count > 1) {
+      ForkJoinTask.invokeAll(new FetchAction(count - 1), new FetchAction(1))
     }
   }
 }
