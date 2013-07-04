@@ -22,7 +22,7 @@ trait JPA {
         None
     }
     finally {
-      close()
+      em.close()
     }
   }
 
@@ -37,68 +37,59 @@ trait JPA {
         None
     }
     finally {
-      close()
+      em.close()
     }
   }
 }
 
-
 object JPA {
   val logger = LoggerFactory.getLogger(classOf[JPA])
-  val P_U_KEY = "jpa.persistence.unit.name"
-  private val emfMap = TrieMap[String, EntityManagerFactory]()
-  private val em_t = new ThreadLocal[EntityManager]
-  private val pn_t = new ThreadLocal[String]
 
+  private val EMF_MAP = TrieMap[String, EntityManagerFactory]()
+  private val PN_T = new ThreadLocal[String]
+
+  /**
+   * bind persistence name bind to current thread
+   * @param pn
+   */
   def bind(pn: String) {
     if (pn != null) {
-      pn_t.set(pn)
+      PN_T.set(pn)
     }
     else throw new Exception("#JPA PersistenceUnitName is NULL.")
   }
 
-  def initPersistenceName(pn: String) {
-    if (pn != null) {
-      System.setProperty(P_U_KEY, pn)
+  /**
+   * multi persistence name init
+   * @param pn
+   */
+  def initPersistenceName(pn: String*) {
+    pn.foreach {
+      un =>
+        EMF_MAP += (un -> Persistence.createEntityManagerFactory(un))
     }
-    else throw new Exception("#JPA PersistenceUnitName is NULL.")
+    bind(pn(0))
   }
 
   def lookEntityManagerFactory(): EntityManagerFactory = {
-    val unitName = if (pn_t.get() != null) pn_t.get() else System.getProperty(P_U_KEY)
-    if (!emfMap.exists(p => p._1 == unitName)) {
-      try {
-        emfMap += (unitName -> Persistence.createEntityManagerFactory(unitName))
-      } catch {
-        case e: Exception =>
-          logger.error(f"#unitName:${unitName} ${pn_t.get()} ${System.getProperty(P_U_KEY)}")
-          e.printStackTrace()
-      }
-    }
-    emfMap(unitName)
+    val pn = PN_T.get()
+    if (EMF_MAP.size == 1) EMF_MAP.toSeq.head._2
+    else if (!EMF_MAP.contains(pn)) throw new Exception("#Not found persistence name BIND for current thread.")
+    else EMF_MAP(pn)
+  }
+
+  def lookEntityManagerFactory(pn: String): EntityManagerFactory = {
+    if (!EMF_MAP.contains(pn)) throw new Exception("#Not found persistence name INIT.")
+    else EMF_MAP(pn)
   }
 
   def createEntityManager(): EntityManager = {
-    if (em_t.get() == null) {
-      try {
-        em_t.set(lookEntityManagerFactory().createEntityManager())
-      } catch {
-        case e: Exception => e.printStackTrace()
-      }
-    }
-    em_t.get()
-  }
-
-  def close() {
-    if (em_t.get() != null && em_t.get().isOpen) {
-      em_t.get().close()
-      em_t.remove()
-    }
+    lookEntityManagerFactory().createEntityManager()
   }
 
   def releaseAll() {
-    emfMap.map(_._2.close())
-    emfMap.clear()
+    EMF_MAP.map(_._2.close())
+    EMF_MAP.clear()
   }
 }
 

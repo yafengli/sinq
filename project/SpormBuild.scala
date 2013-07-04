@@ -25,6 +25,7 @@ object SpormBuild extends Build {
       ),
       libraryDependencies ++= Seq(
         "org.hibernate" % "hibernate-entitymanager" % ver("hibernate"),
+        "com.alibaba" % "druid" % ver("druid"),
         "com.jolbox" % "bonecp" % ver("bonecp"),
         "ch.qos.logback" % "logback-classic" % ver("logback"),
         "postgresql" % "postgresql" % "9.1-901.jdbc4" % "test",

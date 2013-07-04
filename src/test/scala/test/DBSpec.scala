@@ -1,19 +1,20 @@
 package test
 
-import org.koala.sporm.jpa.{CQExpression, JPA}
-import org.specs2.mutable
-
+import java.util.Date
 import javax.persistence.criteria.Predicate
 import models.Book
 import models.Book_
 import models.Teacher
 import models.jm.Author
 import models.jm.Game
-import models.sm.AuthorModel
 import models.sm.AuthorModel.authorExtend
 import models.sm.GameActiveRecord
 import models.sm.GameActiveRecord.gameExtend
-import java.util.Date
+import org.koala.sporm.jpa.{CQExpression, JPA}
+import org.specs2.mutable
+import scala.concurrent.forkjoin.RecursiveAction
+import java.util.concurrent.TimeUnit
+import DB._
 
 
 /**
@@ -36,6 +37,7 @@ class DBSpec extends mutable.Specification {
       single()
       count()
       or()
+      concurrent(10)
     }
 
     "Java and Scala Model" in {
@@ -191,6 +193,16 @@ class DBSpec extends mutable.Specification {
     })
   }
 
+  def concurrent(t: Int) {
+    time(() => {
+      val task = new FetchAction(t)
+      pool.submit(task)
+      pool.shutdown()
+      pool.awaitTermination(20, TimeUnit.SECONDS)
+      "Concurrent"
+    })
+  }
+
   def time(f: () => String)() {
     val start = System.currentTimeMillis()
     val name = f()
@@ -198,3 +210,23 @@ class DBSpec extends mutable.Specification {
     println("---%s--#time use %sms.".format(name, stop - start))
   }
 }
+
+case class ModelAction(var count: Int) extends RecursiveAction {
+
+  import DB._
+
+  def compute() {
+    if (count == 1) {
+      val id = Thread.currentThread().getId
+      val count = Book.count((_, e) => Seq(e.>=("id", 12)))
+      println(f"#id:${id} size:${size} count:${count}")
+      DB.synchronized {
+        DB.size += 1
+      }
+    } else if (count > 1) {
+      import scala.concurrent.forkjoin.ForkJoinTask
+      ForkJoinTask.invokeAll(new ModelAction(count - 1), new ModelAction(1))
+    }
+  }
+}
+
