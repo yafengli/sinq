@@ -46,7 +46,7 @@ case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val re
 
       currentEntityManager.createQuery(query).getSingleResult
     } catch {
-      case e: Exception => e.printStackTrace(); null.asInstanceOf[T]
+      case e: Exception => logger.error(e.getMessage); null.asInstanceOf[T]
     }
   }
 

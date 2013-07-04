@@ -14,17 +14,10 @@
             <property name="hibernate.connection.provider_class"
                       value="com.alibaba.druid.support.hibernate.DruidConnectionProvider"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
-            <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-            <property name="hibernate.connection.url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
-            <property name="hibernate.connection.username" value="postgres"/>
-
-            <property name="hibernate.max_fetch_depth" value="3"/>
-            <property name="hibernate.jdbc.fetch_size" value="100"/>
-            <property name="hibernate.jdbc.batch_size" value="50"/>
-
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
-            <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.format_sql" value="true"/>
+            <property name="driverClassName" value="org.postgresql.Driver"/>
+            <property name="url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
+            <property name="username" value="postgres"/>
+            <property name="password" value=""/>
         </properties>
 
     </persistence-unit>
