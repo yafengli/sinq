@@ -2,11 +2,11 @@ package org.koala.sporm.jpa
 
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.{Root, CriteriaBuilder, Predicate}
+import org.hibernate.criterion.CriteriaQuery
 
 case class CQExpression[T](builder: CriteriaBuilder, root: Root[T]) {
 
   import javax.persistence.criteria.Order
-
 
   private def path[Y](ps: Seq[String]): Path[Y] = {
     var join: Path[Y] = null
@@ -17,16 +17,20 @@ case class CQExpression[T](builder: CriteriaBuilder, root: Root[T]) {
     join
   }
 
-  def ==(attrName: String, attrVal: Any): Predicate = {
-    ==(Nil)(attrName, attrVal)
-  }
-
   def ==(ps: Seq[String])(attrName: String, attrVal: Any): Predicate = {
     builder.equal(path(ps).get(attrName), attrVal)
   }
 
+  def ==(attrName: String, attrVal: Any): Predicate = {
+    ==(Nil)(attrName, attrVal)
+  }
+
+  def !=(ps: Seq[String])(attrName: String, attrVal: Any): Predicate = {
+    builder.notEqual(path(ps).get(attrName), attrVal)
+  }
+
   def !=(attrName: String, attrVal: Any): Predicate = {
-    builder.notEqual(root.get(attrName), attrVal)
+    !=(Nil)(attrName, attrVal)
   }
 
   def <<(attrName: String, attrVal: Number): Predicate = {
@@ -43,10 +47,6 @@ case class CQExpression[T](builder: CriteriaBuilder, root: Root[T]) {
 
   def >=(attrName: String, attrVal: Number): Predicate = {
     builder.ge(root.get(attrName), attrVal)
-  }
-
-  def join[Y](joinName: String, attrName: String, attrVal: Any)(call: (CriteriaBuilder, Path[Y], Any) => Predicate): Predicate = {
-    call(builder, root.get(joinName), attrVal)
   }
 
   def asc(attrName: String): Order = {
