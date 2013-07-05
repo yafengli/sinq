@@ -7,8 +7,22 @@ case class CQExpression[T](builder: CriteriaBuilder, root: Root[T]) {
 
   import javax.persistence.criteria.Order
 
+
+  private def path[Y](ps: Seq[String]): Path[Y] = {
+    var join: Path[Y] = null
+    for (i <- 0 until ps.size) {
+      if (i == 0) join = root.get(ps(0))
+      else join = join.get(ps(i))
+    }
+    join
+  }
+
   def ==(attrName: String, attrVal: Any): Predicate = {
-    builder.equal(root.get(attrName), attrVal)
+    ==(Nil)(attrName, attrVal)
+  }
+
+  def ==(ps: Seq[String])(attrName: String, attrVal: Any): Predicate = {
+    builder.equal(path(ps).get(attrName), attrVal)
   }
 
   def !=(attrName: String, attrVal: Any): Predicate = {
@@ -57,5 +71,13 @@ case class CQExpression[T](builder: CriteriaBuilder, root: Root[T]) {
 
   def isNotNull(attrName: String): Predicate = {
     builder.isNotNull(root.get(attrName))
+  }
+
+  def in(attrName: String, params: List[AnyRef]): Predicate = {
+    builder.isTrue(root.get(attrName).in(params))
+  }
+
+  def not(ps: Predicate): Predicate = {
+    builder.not(ps)
   }
 }

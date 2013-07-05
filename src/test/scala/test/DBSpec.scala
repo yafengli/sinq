@@ -23,26 +23,19 @@ import DB._
  * Time: 上午11:08
  */
 class DBSpec extends mutable.Specification {
-  val init = {
-    JPA.initPersistenceName("default")
-  }
+  val init = JPA.initPersistenceName("default")
 
   "Test all" should {
-    "CriterialQL All Expressions withEntityManager" in {
-      all_exps()
-    }
-
-    "CriterialQL Test fetch" in {
-      fetch()
-      single()
-      count()
-      or()
-      concurrent(10)
-    }
-
-    "Java and Scala Model" in {
-      java_model()
-      scala_model()
+    "CriterialQL All Expressions" in {
+      //      all_exps()
+      //      fetch()
+      //      single()
+      //      count()
+      //      or()
+      exp_extend()
+      //      concurrent(10)
+      //      java_model()
+      //      scala_model()
     }
   }
 
@@ -190,6 +183,15 @@ class DBSpec extends mutable.Specification {
         case Some(count) => println("#count#:" + count)
       }
       "Fetch count 2"
+    })
+  }
+
+  def exp_extend() {
+    time(() => {
+      Book.single((_, e) => {
+        Seq(e.==(Seq("student", "teacher"))("id", 999))
+      })
+      "exp extend"
     })
   }
 

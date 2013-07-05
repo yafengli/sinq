@@ -67,25 +67,25 @@ class SpormFacade extends JPA with NQBuilder {
     }
   }
 
-  def fetch[T](qs: String, ops: Array[Any], limit: Int, offset: Int)(f: (EntityManager) => Query): Option[List[T]] = {
+  def fetch[T](qs: String, pm: Map[String, Any], limit: Int, offset: Int)(f: (EntityManager) => Query): Option[List[T]] = {
     withEntityManager {
-      em => _fetch(f(em), ops, limit, offset)
+      em => _fetch(f(em), pm, limit, offset)
     }
   }
 
-  def fetch[T](qs: String, ops: Array[Any])(f: (EntityManager) => Query): Option[List[T]] = {
-    fetch(qs, ops, -1, -1)(f)
+  def fetch[T](qs: String, pm: Map[String, Any])(f: (EntityManager) => Query): Option[List[T]] = {
+    fetch(qs, pm, -1, -1)(f)
   }
 
-  def single[T](qs: String, ops: Array[Any])(f: (EntityManager) => Query): Option[T] = {
+  def single[T](qs: String, pm: Map[String, Any])(f: (EntityManager) => Query): Option[T] = {
     withEntityManager {
-      em => _single(f(em), ops)
+      em => _single(f(em), pm)
     }
   }
 
-  def count(name: String, ops: Array[Any])(f: (EntityManager) => Query): Option[Long] = {
+  def count(name: String, pm: Map[String, Any])(f: (EntityManager) => Query): Option[Long] = {
     withEntityManager {
-      em => _count(f(em), ops)
+      em => _count(f(em), pm)
     }
   }
 
@@ -93,25 +93,24 @@ class SpormFacade extends JPA with NQBuilder {
     count(name)(f)
   }
 
-  def multi(name: String, ops: Array[Any])(f: (EntityManager) => Query): Option[List[_]] = {
+  def multi(name: String, pm: Map[String, Any])(f: (EntityManager) => Query): Option[List[_]] = {
     withEntityManager {
-      em => _multi(f(em), ops)
+      em => _multi(f(em), pm)
     }
   }
 
   def multi[T](name: String)(f: (EntityManager) => Query): Option[List[_]] = {
-    multi(name, Array[Any]())(f)
+    multi(name, Map[String, Any]())(f)
   }
 
-  def sql[T](sql: String, params: Seq[Any]): Option[List[T]] = {
+  def sql[T](sql: String, params: Map[String, Any]): Option[List[T]] = {
     import scala.collection.JavaConversions._
     withEntityManager {
       em =>
         val query = em.createNativeQuery(sql)
-        if (params != null && params.size > 0) {
-          for (i <- 1 to params.size) {
-            query.setParameter(i, params(i))
-          }
+        params.foreach {
+          p =>
+            query.setParameter(p._1, p._2)
         }
         query.getResultList.toList.asInstanceOf[List[T]]
     }
