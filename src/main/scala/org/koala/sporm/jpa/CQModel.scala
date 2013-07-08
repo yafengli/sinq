@@ -1,7 +1,7 @@
 package org.koala.sporm.jpa
 
 import javax.persistence.Tuple
-import javax.persistence.criteria.{Predicate, Selection, CriteriaQuery, Root, CriteriaBuilder}
+import javax.persistence.criteria.{Predicate, Selection}
 
 /**
  * @author ya_feng_li@163.com
@@ -20,32 +20,32 @@ abstract class CQModel[T: Manifest] extends JPA {
     }
   }
 
-  def fetch(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[List[T]] = {
+  def fetch(call: (CQExpression[T, T]) => Seq[Predicate]): Option[List[T]] = {
     fetch(-1, -1)(call)
   }
 
-  def fetch(limit: Int, offset: Int)(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[List[T]] = {
+  def fetch(limit: Int, offset: Int)(call: (CQExpression[T, T]) => Seq[Predicate]): Option[List[T]] = {
     withEntityManager {
       em =>
         CQBuilder(em, getType.asInstanceOf[Class[T]], getType.asInstanceOf[Class[T]]).fetch(limit, offset)(call)
     }
   }
 
-  def single(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[T] = {
+  def single(call: (CQExpression[T, T]) => Seq[Predicate]): Option[T] = {
     withEntityManager {
       em =>
         CQBuilder(em, getType.asInstanceOf[Class[T]], getType.asInstanceOf[Class[T]]).single(call)
     }
   }
 
-  def count(call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): Option[Long] = {
+  def count(call: (CQExpression[T, Tuple]) => Seq[Predicate]): Option[Long] = {
     withEntityManager {
       em =>
         CQBuilder(em, getType.asInstanceOf[Class[T]], classOf[java.lang.Long]).count(call)
     }
   }
 
-  def multi(selectCall: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Selection[_]], call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): Option[List[Tuple]] = {
+  def multi(selectCall: (CQExpression[T, Tuple]) => Seq[Selection[_]], call: (CQExpression[T, Tuple]) => Seq[Predicate]): Option[List[Tuple]] = {
     withEntityManager {
       em =>
         CQBuilder(em, getType.asInstanceOf[Class[T]], classOf[Tuple]).multi(selectCall, call)

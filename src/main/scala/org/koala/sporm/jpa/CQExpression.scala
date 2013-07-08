@@ -1,20 +1,21 @@
 package org.koala.sporm.jpa
 
-import javax.persistence.criteria.Path
-import javax.persistence.criteria.{Root, CriteriaBuilder, Predicate}
-import org.hibernate.criterion.CriteriaQuery
+import javax.persistence.criteria._
 
-case class CQExpression[T](builder: CriteriaBuilder, root: Root[T]) {
-
-  import javax.persistence.criteria.Order
+case class CQExpression[T, X](builder: CriteriaBuilder, query: CriteriaQuery[X], root: Root[T]) {
 
   private def path[Y](ps: Seq[String]): Path[Y] = {
-    var join: Path[Y] = null
-    for (i <- 0 until ps.size) {
-      if (i == 0) join = root.get(ps(0))
-      else join = join.get(ps(i))
+    if (ps.isEmpty) {
+      root.asInstanceOf[Path[Y]]
     }
-    join
+    else {
+      var join: Path[Y] = null
+      for (i <- 0 until ps.size) {
+        if (i == 0) join = root.get(ps(0))
+        else join = join.get(ps(i))
+      }
+      join
+    }
   }
 
   def ==(ps: Seq[String])(attrName: String, attrVal: Any): Predicate = {
@@ -33,51 +34,95 @@ case class CQExpression[T](builder: CriteriaBuilder, root: Root[T]) {
     !=(Nil)(attrName, attrVal)
   }
 
+  def <<(ps: Seq[String])(attrName: String, attrVal: Number): Predicate = {
+    builder.lt(path(ps).get(attrName), attrVal)
+  }
+
   def <<(attrName: String, attrVal: Number): Predicate = {
-    builder.lt(root.get(attrName), attrVal)
+    <<(Nil)(attrName, attrVal)
+  }
+
+  def >>(ps: Seq[String])(attrName: String, attrVal: Number): Predicate = {
+    builder.gt(path(ps).get(attrName), attrVal)
   }
 
   def >>(attrName: String, attrVal: Number): Predicate = {
-    builder.gt(root.get(attrName), attrVal)
+    >>(Nil)(attrName, attrVal)
+  }
+
+  def <=(ps: Seq[String])(attrName: String, attrVal: Number): Predicate = {
+    builder.le(path(ps).get(attrName), attrVal)
   }
 
   def <=(attrName: String, attrVal: Number): Predicate = {
-    builder.le(root.get(attrName), attrVal)
+    <=(Nil)(attrName, attrVal)
+  }
+
+  def >=(ps: Seq[String])(attrName: String, attrVal: Number): Predicate = {
+    builder.ge(path(ps).get(attrName), attrVal)
   }
 
   def >=(attrName: String, attrVal: Number): Predicate = {
-    builder.ge(root.get(attrName), attrVal)
+    >=(Nil)(attrName, attrVal)
   }
 
-  def asc(attrName: String): Order = {
-    builder.asc(root.get(attrName))
-  }
-
-  def desc(attrName: String): Order = {
-    builder.desc(root.get(attrName))
+  def like(ps: Seq[String])(attrName: String, attrVal: String): Predicate = {
+    builder.like(path(ps).get(attrName).as(classOf[String]), attrVal)
   }
 
   def like(attrName: String, attrVal: String): Predicate = {
-    builder.like(root.get(attrName).as(classOf[String]), attrVal)
+    like(Nil)(attrName, attrVal)
+  }
+
+  def notLike(ps: Seq[String])(attrName: String, attrVal: String): Predicate = {
+    builder.notLike(path(ps).get(attrName).as(classOf[String]), attrVal)
   }
 
   def notLike(attrName: String, attrVal: String): Predicate = {
-    builder.notLike(root.get(attrName).as(classOf[String]), attrVal)
+    notLike(Nil)(attrName, attrVal)
+  }
+
+  def isNull(ps: Seq[String])(attrName: String): Predicate = {
+    builder.isNull(path(ps).get(attrName))
   }
 
   def isNull(attrName: String): Predicate = {
-    builder.isNull(root.get(attrName))
+    isNull(Nil)(attrName)
+  }
+
+  def isNotNull(ps: Seq[String])(attrName: String): Predicate = {
+    builder.isNotNull(path(ps).get(attrName))
   }
 
   def isNotNull(attrName: String): Predicate = {
-    builder.isNotNull(root.get(attrName))
+    isNotNull(Nil)(attrName)
+  }
+
+  def in(ps: Seq[String])(attrName: String, params: List[AnyRef]): Predicate = {
+    builder.isTrue(path(ps).get(attrName).in(params))
   }
 
   def in(attrName: String, params: List[AnyRef]): Predicate = {
-    builder.isTrue(root.get(attrName).in(params))
+    in(Nil)(attrName, params)
   }
 
   def not(ps: Predicate): Predicate = {
     builder.not(ps)
+  }
+
+  def asc(ps: Seq[String])(attrName: String): Order = {
+    builder.asc(path(ps).get(attrName))
+  }
+
+  def asc(attrName: String): Order = {
+    asc(Nil)(attrName)
+  }
+
+  def desc(ps: Seq[String])(attrName: String): Order = {
+    builder.desc(path(ps).get(attrName))
+  }
+
+  def desc(attrName: String): Order = {
+    desc(Nil)(attrName)
   }
 }

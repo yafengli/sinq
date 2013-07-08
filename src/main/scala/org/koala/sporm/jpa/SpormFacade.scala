@@ -32,35 +32,35 @@ class SpormFacade extends JPA with NQBuilder {
     }
   }
 
-  def fetch[T, X](fromType: Class[T], resultType: Class[X])(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[List[T]] = {
+  def fetch[T, X](fromType: Class[T], resultType: Class[X])(call: (CQExpression[T, T]) => Seq[Predicate]): Option[List[T]] = {
     withEntityManager {
       em =>
         CQBuilder(em, fromType, resultType).fetch(call)
     }
   }
 
-  def fetch[T, X](fromType: Class[T], resultType: Class[X], limit: Int, offset: Int)(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[List[T]] = {
+  def fetch[T, X](fromType: Class[T], resultType: Class[X], limit: Int, offset: Int)(call: (CQExpression[T, T]) => Seq[Predicate]): Option[List[T]] = {
     withEntityManager {
       em =>
         CQBuilder(em, fromType, resultType).fetch(limit, offset)(call)
     }
   }
 
-  def single[T](fromType: Class[T])(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): Option[T] = {
+  def single[T](fromType: Class[T])(call: (CQExpression[T,T]) => Seq[Predicate]): Option[T] = {
     withEntityManager {
       em =>
         CQBuilder(em, fromType, fromType).single(call)
     }
   }
 
-  def count[T](fromType: Class[T])(call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): Option[Long] = {
+  def count[T](fromType: Class[T])(call: (CQExpression[T,Tuple]) => Seq[Predicate]): Option[Long] = {
     withEntityManager {
       em =>
         CQBuilder(em, fromType, classOf[java.lang.Long]).count(call)
     }
   }
 
-  def multi[T](fromType: Class[T])(selectsCall: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Selection[_]])(call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): Option[List[Tuple]] = {
+  def multi[T](fromType: Class[T])(selectsCall: (CQExpression[T,Tuple]) => Seq[Selection[_]])(call: (CQExpression[T,Tuple]) => Seq[Predicate]): Option[List[Tuple]] = {
     withEntityManager {
       em =>
         CQBuilder(em, fromType, classOf[Tuple]).multi(selectsCall, call)

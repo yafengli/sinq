@@ -17,15 +17,15 @@ case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val re
 
   val builder = currentEntityManager.getCriteriaBuilder
 
-  def fetch(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): List[T] = {
+  def fetch(call: (CQExpression[T, T]) => Seq[Predicate]): List[T] = {
     fetch(-1, -1)(call)
   }
 
-  def fetch(limit: Int, offset: Int)(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): List[T] = {
+  def fetch(limit: Int, offset: Int)(call: (CQExpression[T, T]) => Seq[Predicate]): List[T] = {
     try {
       val query = builder.createQuery(from)
       val root = query.from(from)
-      val ps = call(query, CQExpression(builder, root))
+      val ps = call(CQExpression(builder, query, root))
       if (!ps.isEmpty) query.where(ps: _*)
 
       val q = currentEntityManager.createQuery(query)
@@ -37,25 +37,26 @@ case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val re
     }
   }
 
-  def single(call: (CriteriaQuery[T], CQExpression[T]) => Seq[Predicate]): T = {
+  def single(call: (CQExpression[T, T]) => Seq[Predicate]): T = {
     try {
       val query = builder.createQuery(from)
       val root = query.from(from)
-      val ps = call(query, CQExpression(builder, root))
+      val ps = call(CQExpression(builder, query, root))
       if (!ps.isEmpty) query.where(ps: _*)
-
-      currentEntityManager.createQuery(query).getSingleResult
+      val qq = currentEntityManager.createQuery(query)
+      logger.error(f"#result:${qq.getFirstResult} ${qq.getMaxResults}")
+      qq.getSingleResult
     } catch {
-      case e: Exception => logger.error(e.getMessage); null.asInstanceOf[T]
+      case e: Exception => e.printStackTrace(); null.asInstanceOf[T]
     }
   }
 
-  def count(call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): Long = {
+  def count(call: (CQExpression[T, Tuple]) => Seq[Predicate]): Long = {
     try {
       val query = builder.createTupleQuery()
       val root = query.from(from)
       query.multiselect(Seq(builder.count(root)))
-      val tps = call(query, CQExpression(builder, root))
+      val tps = call(CQExpression(builder, query, root))
       query.where(tps: _*)
       val single = currentEntityManager.createQuery(query).getSingleResult
       single.get(0).asInstanceOf[Long]
@@ -64,13 +65,13 @@ case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val re
     }
   }
 
-  def multi(selectsCall: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Selection[_]], call: (CriteriaQuery[Tuple], CQExpression[T]) => Seq[Predicate]): List[Tuple] = {
+  def multi(selectsCall: (CQExpression[T, Tuple]) => Seq[Selection[_]], call: (CQExpression[T, Tuple]) => Seq[Predicate]): List[Tuple] = {
     try {
       val query = builder.createTupleQuery()
       val root = query.from(from)
-      val selects = selectsCall(query, CQExpression(builder, root))
+      val selects = selectsCall(CQExpression(builder, query, root))
       query.multiselect(selects)
-      val tps = call(query, CQExpression(builder, root))
+      val tps = call(CQExpression(builder, query, root))
       if (!tps.isEmpty) query.where(tps: _*)
 
       currentEntityManager.createQuery(query).getResultList.toList
