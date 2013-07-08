@@ -43,9 +43,10 @@ case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val re
       val root = query.from(from)
       val ps = call(CQExpression(builder, query, root))
       if (!ps.isEmpty) query.where(ps: _*)
-      val qq = currentEntityManager.createQuery(query)
-      logger.error(f"#result:${qq.getFirstResult} ${qq.getMaxResults}")
-      qq.getSingleResult
+      currentEntityManager.createQuery(query).getResultList.headOption match {
+        case Some(o) => o
+        case None => null.asInstanceOf[T]
+      }
     } catch {
       case e: Exception => e.printStackTrace(); null.asInstanceOf[T]
     }

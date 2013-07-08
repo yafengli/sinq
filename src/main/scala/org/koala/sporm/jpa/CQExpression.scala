@@ -98,11 +98,16 @@ case class CQExpression[T, X](builder: CriteriaBuilder, query: CriteriaQuery[X],
     isNotNull(Nil)(attrName)
   }
 
-  def in(ps: Seq[String])(attrName: String, params: List[AnyRef]): Predicate = {
-    builder.isTrue(path(ps).get(attrName).in(params))
+  def in(ps: Seq[String])(attrName: String, params: Seq[Any]): Predicate = {
+    val ops = new java.util.ArrayList[Any]()
+    params.foreach {
+      it =>
+        ops.add(it)
+    }
+    builder.isTrue(path(ps).get(attrName).in(ops))
   }
 
-  def in(attrName: String, params: List[AnyRef]): Predicate = {
+  def in(attrName: String, params: Seq[Any]): Predicate = {
     in(Nil)(attrName, params)
   }
 

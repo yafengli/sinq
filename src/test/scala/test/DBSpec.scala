@@ -44,7 +44,7 @@ class DBSpec extends mutable.Specification {
    */
   def or() {
     time(() => {
-      Teacher.fetch((_, e) => {
+      Teacher.fetch(e => {
         val b = e.builder
         val p1 = b.or(Array(e.>=("age", 10), e.<=("age", 10)): _*)
         val p2 = b.or(Array(e.isNotNull("address"), e.isNotNull("name")): _*)
@@ -62,7 +62,7 @@ class DBSpec extends mutable.Specification {
 
   def java_model() {
     time(() => {
-      GameActiveRecord.fetch((_, _) => Nil) match {
+      GameActiveRecord.fetch(_ => Nil) match {
         case Some(list) =>
           if (list.size <= 0) {
             val author = new Author()
@@ -86,7 +86,7 @@ class DBSpec extends mutable.Specification {
 
   def scala_model() {
     time(() => {
-      Book.fetch((_, _) => Nil) match {
+      Book.fetch(_ => Nil) match {
         case Some(list) =>
           if (list.size <= 0) {
             import models.Student
@@ -116,7 +116,7 @@ class DBSpec extends mutable.Specification {
           val b = em.getCriteriaBuilder
           val query = b.createQuery(classOf[Book])
           val r = query.from(classOf[Book])
-          val e = CQExpression(b, r)
+          val e = CQExpression(b, query, r)
 
           val ps_1 = Array(b.equal(r.get(Book_.name), "nanjing"),
             b.le(r.get(Book_.price), 10),
@@ -139,7 +139,7 @@ class DBSpec extends mutable.Specification {
   def fetch() {
     time(() => {
       Teacher.fetch(5, 5) {
-        (_, e) =>
+        e =>
           val o1 = e.==("name", "nanjing")
           val o2 = e.>=("age", 20)
           val o3 = e.==("id", 1)
@@ -156,7 +156,7 @@ class DBSpec extends mutable.Specification {
 
   def single() {
     time(() => {
-      Book.single((_, e) => Seq(e.==("id", 9))) match {
+      Book.single(e => Seq(e.==("id", 9))) match {
         case Some(o) => println(o)
         case None =>
       }
@@ -168,7 +168,7 @@ class DBSpec extends mutable.Specification {
   def count() {
     time(() => {
       Book.count {
-        (_, e) =>
+        e =>
           val cab = e.builder
           val root = e.root
 
@@ -188,9 +188,12 @@ class DBSpec extends mutable.Specification {
 
   def exp_extend() {
     time(() => {
-      Book.single((_, e) => {
-        Seq(e.==(Seq("student", "teacher"))("id", 999))
-      })
+      Book.single(e => {
+        Seq(e.==(Seq("student", "teacher"))("id", 2L))
+      }) match {
+        case Some(o) => println(f"#book:${o.id} ${o.name}")
+        case None => println(f"#BOOK IS NULL.")
+      }
       "exp extend"
     })
   }
@@ -220,7 +223,7 @@ case class ModelAction(var count: Int) extends RecursiveAction {
   def compute() {
     if (count == 1) {
       val id = Thread.currentThread().getId
-      val count = Book.count((_, e) => Seq(e.>=("id", 12)))
+      val count = Book.count(e => Seq(e.>=(Seq("student"))("id", 12)))
       println(f"#id:${id} size:${size} count:${count}")
       DB.synchronized {
         DB.size += 1

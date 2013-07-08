@@ -49,17 +49,13 @@ class DBFacadeSpec extends mutable.Specification {
    */
   def join {
     val list_2 = facade.fetch(classOf[Book], classOf[Book]) {
-      (_, e) =>
-        val pe = e.join[Student]("student", "id", 12) {
-          (b, p, v) =>
-            b.equal(p, v)
-        }
-        Array(pe)
+      e =>
+        Seq(e.==(Seq("student"))("id",12L))
     }
     println("#join_1:" + list_2)
 
     val list_3 = facade.fetch(classOf[Book], classOf[Book]) {
-      (_, e) =>
+      e =>
         val root = e.root.get("student").get("teacher")
         Seq(e.builder.equal(root.get("id"), 13))
     }
@@ -68,7 +64,7 @@ class DBFacadeSpec extends mutable.Specification {
 
   def count {
     val count = facade.count(classOf[Book]) {
-      (_, e) =>
+      e =>
         Array(e.>>("price", 12))
     }
     println("#count:" + count)
@@ -76,7 +72,7 @@ class DBFacadeSpec extends mutable.Specification {
 
   def single {
     val single = facade.single(classOf[Book]) {
-      (_, e) =>
+      e =>
         Array(e.>>("price", 12))
     }
     println("#single:" + single)
@@ -85,22 +81,22 @@ class DBFacadeSpec extends mutable.Specification {
   def fetch {
     import javax.persistence.Tuple
     val list_1 = facade.fetch(classOf[Book], classOf[Book]) {
-      (_, e) =>
+      e =>
         Array(e.>>("price", 12))
     }
     println("#fetch_1:" + list_1)
 
     val list_2 = facade.fetch(classOf[Book], classOf[Tuple]) {
-      (_, e) =>
+      e =>
         Array(e.>>("price", 12))
     }
     println("#fetch_2:" + list_2)
   }
 
   def multi {
-    facade.multi(classOf[Book])((_, e) => {
+    facade.multi(classOf[Book])(e => {
       Array(e.builder.avg(e.root.get("price")), e.builder.count(e.root.get("id")))
-    })((_, e) => {
+    })(e => {
       Array(e.>>("price", 12))
     }) match {
       case Some(list) =>
@@ -143,7 +139,7 @@ case class FetchAction(var count: Int) extends RecursiveAction {
       //facade.fetch(classOf[Student], classOf[Student], 10, 1)(_.!=("name", "test"))
       //facade.get(classOf[Student], 1L)
 
-      val count = facade.count(classOf[Student])((_, e) => {
+      val count = facade.count(classOf[Student])(e => {
         Array(e.!=("name", id.toString), e.!=("age", id), e.!=("address", id.toString))
       })
       println(f"#id:${id} size:${size} count:${count}")
