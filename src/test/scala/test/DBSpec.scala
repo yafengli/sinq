@@ -27,12 +27,12 @@ class DBSpec extends mutable.Specification {
 
   "Test all" should {
     "CriterialQL All Expressions" in {
-      //      all_exps()
+      all_exps()
       //      fetch()
       //      single()
       //      count()
       //      or()
-      exp_extend()
+      //      exp_extend()
       //      concurrent(10)
       //      java_model()
       //      scala_model()
@@ -112,6 +112,7 @@ class DBSpec extends mutable.Specification {
     time(() => {
       Book.withEntityManager {
         em => {
+          Book.single(e => Seq(e.==("id", 777L)))
           import scala.collection.mutable.ArrayBuffer
           val b = em.getCriteriaBuilder
           val query = b.createQuery(classOf[Book])
