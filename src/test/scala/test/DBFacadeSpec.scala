@@ -15,37 +15,25 @@ class DBFacadeSpec extends mutable.Specification {
   "SpormFacade test all" should {
 
     "Sporm test" in {
-      //      test()
-      testFetch()
-    }
-  }
-
-  def init() {
-    if (Book.count[Book](_.asc("id")).getOrElse(-1L) <= 0) {
-      val student = Student("test1", 12, "nanjing")
-      println("#id:" + student.id)
-      val s = student.insert().get
-      println("#id:" + student.id)
-      val book = Book("test", 123)
-      book.student = s
-      book.insert()
-    }
-  }
-
-  def testFetch() {
-    time(() => {
-      //init()
-      fetch
+      //      count
+      //      single
+      //      fetch
+      multi
       //      join
-      //      collection
-      //multi
-      //      val list_2 = Book.multi[Book]((cb, root) => Array(cb.avg(root.get("id")), cb.sum(root.get("id"))))(_.!=("id", -1L))
-      //      println("#list:" + list_2)
-      "Sporm fetch"
-    })
+      //      in
+    }
+    "Concurrent" in {
+      time(() => {
+        concurrent(0)
+        "Sporm fetch"
+      })
+    }
   }
 
-  def collection {
+  /**
+   * where in 表达式
+   */
+  def in {
     val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L, 4L)
     val list = facade.withEntityManager {
       em =>
@@ -56,61 +44,81 @@ class DBFacadeSpec extends mutable.Specification {
     println("#list:" + list)
   }
 
+  /**
+   * join 表达式
+   */
+  def join {
+    val list_2 = facade.fetch(classOf[Book], classOf[Book]) {
+      e =>
+        Seq(e.==(Seq("student"))("id",12L))
+    }
+    println("#join_1:" + list_2)
+
+    val list_3 = facade.fetch(classOf[Book], classOf[Book]) {
+      e =>
+        val root = e.root.get("student").get("teacher")
+        Seq(e.builder.equal(root.get("id"), 13))
+    }
+    println("#join_2:" + list_3)
+  }
+
+  def count {
+    val count = facade.count(classOf[Book]) {
+      e =>
+        Array(e.>>("price", 12))
+    }
+    println("#count:" + count)
+  }
+
+  def single {
+    val single = facade.single(classOf[Book]) {
+      e =>
+        Array(e.>>("price", 12))
+    }
+    println("#single:" + single)
+  }
+
   def fetch {
-    val task = new FetchAction(5)
+    import javax.persistence.Tuple
+    val list_1 = facade.fetch(classOf[Book], classOf[Book]) {
+      e =>
+        Array(e.>>("price", 12))
+    }
+    println("#fetch_1:" + list_1)
+
+    val list_2 = facade.fetch(classOf[Book], classOf[Tuple]) {
+      e =>
+        Array(e.>>("price", 12))
+    }
+    println("#fetch_2:" + list_2)
+  }
+
+  def multi {
+    facade.multi(classOf[Book])(e => {
+      Array(e.builder.avg(e.root.get("price")), e.builder.count(e.root.get("id")))
+    })(e => {
+      Array(e.>>("price", 12))
+    }) match {
+      case Some(list) =>
+        list.foreach {
+          t =>
+            t.toArray.foreach {
+              i =>
+                print("#i:" + i + " ")
+            }
+            println()
+        }
+        println("#multi:" + list)
+      case None =>
+    }
+  }
+
+  def concurrent(t: Int) {
+    val task = new FetchAction(t)
     pool.submit(task)
     pool.shutdown()
     pool.awaitTermination(20, TimeUnit.SECONDS)
 
-  }
-
-  def join {
-    val list_2 = facade.fetch(classOf[Book], classOf[Book])(_.join[Student]("student", "id", 12)((b, p, v) => {
-      b.equal(p, v)
-    }))
-    println("#list_2:" + list_2)
-
-    val list_3 = facade.fetch(classOf[Book], classOf[Book])(f => {
-      val builder = f.builder
-      val root = f.root.get("student").get("teacher")
-      f.::(builder.equal(root.get("id"), 13))
-    })
-
-    println("#list_3:" + list_3)
-  }
-
-  def multi {
-    Book.withEntityManager {
-      em =>
-        val cb = em.getCriteriaBuilder
-        //          val cq = cb.createQuery(classOf[Book])
-        val cq = cb.createTupleQuery()
-        val root = cq.from(classOf[Book])
-        cq.multiselect(Array(cb.avg(root.get("id")), cb.sum(root.get("id"))): _*)
-
-        //        cq.where(Array(cb.greaterThan(root.get[Long]("id"), 0L)): _*)
-
-        val list = em.createQuery(cq).getResultList
-        list.foreach {
-          t =>
-            val buffer = ArrayBuffer[String]()
-            t.toArray.foreach(buffer += _.toString)
-
-            print(buffer.mkString(","))
-            println("#######")
-        }
-        println("#list:" + list.size())
-    }
-  }
-
-  def test = {
-    time(() => {
-      val task = new SqlAction(5000)
-      pool.submit(task)
-      pool.shutdown()
-      pool.awaitTermination(20, TimeUnit.SECONDS)
-      "Sporm test"
-    })
   }
 
   def time(f: () => String)() {
@@ -121,41 +129,25 @@ class DBFacadeSpec extends mutable.Specification {
   }
 }
 
-case class SqlAction(var count: Int) extends RecursiveAction {
-
-  import DB._
-
-  def compute() {
-    if (count > 1) {
-      ForkJoinTask.invokeAll(new SqlAction(count - 1), new SqlAction(1))
-    }
-    else {
-      facade.get(classOf[Student], 1L)
-      facade.count(classOf[Student])(_.!=("name", "123").<<("age", 12))
-      size += 1
-    }
-  }
-}
-
 case class FetchAction(var count: Int) extends RecursiveAction {
 
   import DB._
 
   def compute() {
-    if (count > 1) {
-      ForkJoinTask.invokeAll(new FetchAction(count - 1), new FetchAction(1))
-    }
-    else {
-      val list = facade.fetch(classOf[Student], classOf[Student], 10, 1)(_.!=("name", "test"))
-      list match {
-        case Some(l) =>
-          l.foreach {
-            s =>
-              println(f"id:${Thread.currentThread().getId} student: ${s.toString}")
-          }
-        case None =>
+    if (count == 1) {
+      val id = Thread.currentThread().getId
+      //facade.fetch(classOf[Student], classOf[Student], 10, 1)(_.!=("name", "test"))
+      //facade.get(classOf[Student], 1L)
+
+      val count = facade.count(classOf[Student])(e => {
+        Array(e.!=("name", id.toString), e.!=("age", id), e.!=("address", id.toString))
+      })
+      println(f"#id:${id} size:${size} count:${count}")
+      DB.synchronized {
+        DB.size += 1
       }
-      size += 1
+    } else if (count > 1) {
+      ForkJoinTask.invokeAll(new FetchAction(count - 1), new FetchAction(1))
     }
   }
 }

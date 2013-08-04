@@ -1,6 +1,7 @@
 package org.koala.sporm.jpa
 
-import javax.persistence.criteria.Selection
+import javax.persistence.Tuple
+import javax.persistence.criteria.{Predicate, Selection}
 
 /**
  * @author ya_feng_li@163.com
@@ -8,9 +9,6 @@ import javax.persistence.criteria.Selection
  *        Criteria Query Model
  */
 abstract class CQModel[T: Manifest] extends JPA {
-
-  import javax.persistence.Tuple
-  import javax.persistence.criteria.{Root, CriteriaBuilder}
 
   def getType = implicitly[Manifest[T]].runtimeClass
 
@@ -22,35 +20,35 @@ abstract class CQModel[T: Manifest] extends JPA {
     }
   }
 
-  def fetch[X](call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
+  def fetch(call: (CQExpression[T, T]) => Seq[Predicate]): Option[List[T]] = {
     fetch(-1, -1)(call)
   }
 
-  def fetch[X](limit: Int, offset: Int)(call: (CQExpression[T, X]) => CQExpression[T, X]): Option[List[T]] = {
+  def fetch(limit: Int, offset: Int)(call: (CQExpression[T, T]) => Seq[Predicate]): Option[List[T]] = {
     withEntityManager {
-      em => call(CQExpression(em, getType.asInstanceOf[Class[T]])).fetch(limit, offset)
+      em =>
+        CQBuilder(em, getType.asInstanceOf[Class[T]], getType.asInstanceOf[Class[T]]).fetch(limit, offset)(call)
     }
   }
 
-  def single[X](call: (CQExpression[T, X]) => CQExpression[T, X]): Option[T] = {
+  def single(call: (CQExpression[T, T]) => Seq[Predicate]): Option[T] = {
     withEntityManager {
       em =>
-        call(CQExpression(em, getType.asInstanceOf[Class[T]])).single()
+        CQBuilder(em, getType.asInstanceOf[Class[T]], getType.asInstanceOf[Class[T]]).single(call)
     }
   }
 
-  def count[T](call: (CQExpression[T, java.lang.Long]) => CQExpression[T, java.lang.Long]): Option[Long] = {
+  def count(call: (CQExpression[T, Tuple]) => Seq[Predicate]): Option[Long] = {
     withEntityManager {
       em =>
-        call(CQExpression(em, getType.asInstanceOf[Class[T]], classOf[java.lang.Long])).count()
+        CQBuilder(em, getType.asInstanceOf[Class[T]], classOf[java.lang.Long]).count(call)
     }
   }
 
-  def multi[T](selectCall: (CriteriaBuilder, Root[T]) => Seq[Selection[_]])(queryCall: (CQExpression[T, Tuple]) => CQExpression[T, Tuple]): Option[List[Tuple]] = {
+  def multi(selectCall: (CQExpression[T, Tuple]) => Seq[Selection[_]], call: (CQExpression[T, Tuple]) => Seq[Predicate]): Option[List[Tuple]] = {
     withEntityManager {
       em =>
-        val exp = CQExpression(em, getType.asInstanceOf[Class[T]], classOf[Tuple])
-        queryCall(exp).multi(selectCall(exp.builder, exp.root))
+        CQBuilder(em, getType.asInstanceOf[Class[T]], classOf[Tuple]).multi(selectCall, call)
     }
   }
 }

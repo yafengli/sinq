@@ -16,83 +16,83 @@ abstract class NQModel[T: Manifest] extends JPA with NQBuilder {
     }
   }
 
-  def fetch(qs: String, ops: Array[Any], limit: Int, offset: Int): Option[List[T]] = {
+  def fetch(qs: String, pm: Map[String, Any], limit: Int, offset: Int): Option[List[T]] = {
     withEntityManager {
       em =>
-        _fetch(em.createQuery(qs, getType), ops, limit, offset)
+        _fetch(em.createQuery(qs, getType), pm, limit, offset)
     }
   }
 
-  def fetch(qs: String, ops: Array[Any]): Option[List[T]] = {
-    fetch(qs, ops, -1, -1)
+  def fetch(qs: String, pm: Map[String, Any]): Option[List[T]] = {
+    fetch(qs, pm, -1, -1)
   }
 
-  def single(qs: String, ops: Array[Any]): Option[T] = {
+  def single(qs: String, pm: Map[String, Any]): Option[T] = {
     withEntityManager {
       em =>
-        _single(em.createQuery(qs, getType), ops)
+        _single(em.createQuery(qs, getType), pm)
     }
   }
 
-  def count(qs: String, ops: Array[Any]): Option[Long] = {
+  def count(qs: String, pm: Map[String, Any]): Option[Long] = {
     withEntityManager {
       em =>
-        _count(em.createQuery(qs, getType), ops)
+        _count(em.createQuery(qs, getType), pm)
     }
   }
 
   def count(qs: String): Option[Long] = {
-    count(qs, Array())
+    count(qs, Map())
   }
 
-  def multi(qs: String, ops: Array[Any]): Option[List[Array[Any]]] = {
+  def multi(qs: String, pm: Map[String, Any]): Option[List[Array[Any]]] = {
     withEntityManager {
       em =>
-        _multi(em.createQuery(qs, classOf[List[Array[Any]]]), ops)
+        _multi(em.createQuery(qs, classOf[List[Array[Any]]]), pm)
     }
   }
 
   def multi(qs: String): Option[AnyRef] = {
-    multi(qs, Array())
+    multi(qs, Map())
   }
 
-  def fetchByName(name: String, ops: Array[Any], limit: Int, offset: Int): Option[List[T]] = {
+  def fetchByName(name: String, pm: Map[String, Any], limit: Int, offset: Int): Option[List[T]] = {
     withEntityManager {
       em =>
-        _fetch(em.createNamedQuery(name, getType), ops, limit, offset)
+        _fetch(em.createNamedQuery(name, getType), pm, limit, offset)
     }
   }
 
-  def fetchByName(name: String, ops: Array[Any]): Option[List[T]] = {
-    fetchByName(name, ops, -1, -1)
+  def fetchByName(name: String, pm: Map[String, Any]): Option[List[T]] = {
+    fetchByName(name, pm, -1, -1)
   }
 
-  def singleByName(name: String, ops: Array[Any]): Option[T] = {
+  def singleByName(name: String, pm: Map[String, Any]): Option[T] = {
     withEntityManager {
       em =>
-        _single(em.createNamedQuery(name, getType), ops)
+        _single(em.createNamedQuery(name, getType), pm)
     }
   }
 
-  def countByName(name: String, ops: Array[Any]): Option[Long] = {
+  def countByName(name: String, pm: Map[String, Any]): Option[Long] = {
     withEntityManager {
       em =>
-        _count(em.createNamedQuery(name, getType), ops)
+        _count(em.createNamedQuery(name, getType), pm)
     }
   }
 
   def countByName(name: String): Option[Long] = {
-    countByName(name, Array())
+    countByName(name, Map())
   }
 
-  def multiByName(name: String, ops: Array[Any]): Option[List[Array[Any]]] = {
+  def multiByName(name: String, pm: Map[String, Any]): Option[List[Array[Any]]] = {
     withEntityManager {
       em =>
-        _multi(em.createNamedQuery(name, classOf[List[Array[Any]]]), ops)
+        _multi(em.createNamedQuery(name, classOf[List[Array[Any]]]), pm)
     }
   }
 
   def multiByName(qs: String): Option[AnyRef] = {
-    multiByName(qs, Array())
+    multiByName(qs, Map())
   }
 }

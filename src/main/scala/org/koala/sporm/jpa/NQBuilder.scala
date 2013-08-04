@@ -9,42 +9,35 @@ import scala.collection.JavaConversions._
  * Time: 下午3:25
  */
 trait NQBuilder {
-  def _fetch[T](query: Query, ops: Array[Any], limit: Int, offset: Int): List[T] = {
+  def _fetch[T](query: Query, pm: Map[String, Any], limit: Int, offset: Int): List[T] = {
     try {
       if (offset > 0) query.setFirstResult(offset)
       if (limit > 0) query.setMaxResults(limit)
 
-      ops.toList match {
-        case Nil =>
-        case list: List[Any] => for (i <- 1 to list.size) {
-          query.setParameter(i, list(i - 1))
-        }
+      pm.foreach {
+        p =>
+          query.setParameter(p._1, p._2)
       }
       query.getResultList.toList.asInstanceOf[List[T]]
     } catch {
       case e: Exception => e.printStackTrace()
-      Nil
+        Nil
     }
   }
 
-  def _single[T](query: Query, ops: Array[Any]): T = {
-    ops.toList match {
-      case Nil =>
-      case list: List[Any] => for (i <- 1 to list.size) {
-        query.setParameter(i, list(i - 1))
-      }
+  def _single[T](query: Query, pm: Map[String, Any]): T = {
+    pm.foreach {
+      p =>
+        query.setParameter(p._1, p._2)
     }
     query.getSingleResult.asInstanceOf[T]
   }
 
-  def _count[T](query: Query, ops: Array[Any]): Long = {
+  def _count[T](query: Query, pm: Map[String, Any]): Long = {
     try {
-      ops.toList match {
-        case Nil =>
-        case list: List[Any] =>
-          for (i <- 1 to ops.size) {
-            query.setParameter(i, ops(i - 1))
-          }
+      pm.foreach {
+        p =>
+          query.setParameter(p._1, p._2)
       }
       query.getSingleResult match {
         case row: Number => row.longValue()
@@ -52,23 +45,20 @@ trait NQBuilder {
       }
     } catch {
       case e: Exception => e.printStackTrace()
-      0L
+        0L
     }
   }
 
-  def _multi[T](query: Query, ops: Array[Any]): List[Array[Any]] = {
+  def _multi[T](query: Query, pm: Map[String, Any]): List[Array[Any]] = {
     try {
-      ops.toList match {
-        case Nil =>
-        case list: List[Any] =>
-          for (i <- 1 to ops.size) {
-            query.setParameter(i, ops(i - 1))
-          }
+      pm.foreach {
+        p =>
+          query.setParameter(p._1, p._2)
       }
       query.getResultList.toList.asInstanceOf[List[Array[Any]]]
     } catch {
       case e: Exception => e.printStackTrace()
-      null
+        null
     }
   }
 }

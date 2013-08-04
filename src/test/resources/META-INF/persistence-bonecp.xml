@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <mapping-file>META-INF/query-models.xml</mapping-file>
+        <class>models.Teacher</class>
+        <class>models.Student</class>
+        <class>models.Book</class>
+        <class>models.jm.Author</class>
+        <class>models.jm.Game</class>
+        <class>models.jm.Player</class>
+        <properties>
+            <!-- provider -->
+            <property name="hibernate.service.jdbc.connections.spi.provider_class"
+                      value="com.jolbox.bonecp.provider.BoneCPConnectionProvider"/>
+            <!-- Postgresql -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
+            <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+            <property name="hibernate.connection.url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
+            <property name="hibernate.connection.username" value="postgres"/>
+
+            <property name="hibernate.max_fetch_depth" value="3"/>
+            <property name="hibernate.jdbc.fetch_size" value="100"/>
+            <property name="hibernate.jdbc.batch_size" value="50"/>
+
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <!-- BoneCP settings -->
+            <property name="bonecp.partitionCount" value="3"/>
+            <property name="bonecp.maxConnectionsPerPartition" value="20"/>
+            <property name="bonecp.minConnectionsPerPartition" value="10"/>
+            <property name="bonecp.acquireIncrement" value="5"/>
+            <property name="bonecp.poolAvailabilityThreshold" value="20"/>
+            <property name="bonecp.releaseHelperThreads" value="3"/>
+            <property name="bonecp.idleMaxAge" value="240"/>
+            <property name="bonecp.idleConnectionTestPeriod" value="60"/>
+            <property name="bonecp.statementsCacheSize" value="20"/>
+        </properties>
+    </persistence-unit>
+</persistence>

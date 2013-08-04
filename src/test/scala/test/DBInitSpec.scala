@@ -13,11 +13,11 @@ import scala.collection.immutable.HashMap
 class DBInitSpec extends mutable.Specification {
   "Init Data" should {
     "Init" in {
-      test()
+      init()
     }
   }
 
-  def test() {
+  def init() {
     JPA.bind("default")
 
     val t = Teacher.get(1L)

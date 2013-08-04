@@ -1,137 +1,133 @@
 package org.koala.sporm.jpa
 
-import javax.persistence.EntityManager
-import javax.persistence.criteria.Path
-import javax.persistence.criteria.{Root, CriteriaBuilder, Predicate}
+import javax.persistence.criteria._
 
-class CQExpression[T, X](val em: EntityManager, val fromType: Class[T], val resultType: Class[X]) extends CQBuilder[T, X] {
+case class CQExpression[T, X](builder: CriteriaBuilder, query: CriteriaQuery[X], root: Root[T]) {
 
-  def this(em: EntityManager, ft: Class[T]) = this(em, ft, null)
-
-  def currentEntityManager: EntityManager = this.em
-
-  def from: Class[T] = fromType
-
-  def result: Class[X] = resultType
-
-  def ==(attrName: String, attrVal: Any): CQExpression[T, X] = {
-    predicates += builder.equal(root.get(attrName), attrVal)
-    tuplePredicates += builder.equal(tupleRoot.get(attrName), attrVal)
-    this
+  private def path[Y](ps: Seq[String]): Path[Y] = {
+    if (ps.isEmpty) {
+      root.asInstanceOf[Path[Y]]
+    }
+    else {
+      var join: Path[Y] = null
+      for (i <- 0 until ps.size) {
+        if (i == 0) join = root.get(ps(0))
+        else join = join.get(ps(i))
+      }
+      join
+    }
   }
 
-
-  def !=(attrName: String, attrVal: Any): CQExpression[T, X] = {
-    println(f"#builder:${builder} root:${root} predicates:${predicates}")
-    predicates += builder.notEqual(root.get(attrName), attrVal)
-    tuplePredicates += builder.notEqual(tupleRoot.get(attrName), attrVal)
-    this
+  def ==(ps: Seq[String])(attrName: String, attrVal: Any): Predicate = {
+    builder.equal(path(ps).get(attrName), attrVal)
   }
 
-  def <<(attrName: String, attrVal: Number): CQExpression[T, X] = {
-    predicates += builder.lt(root.get(attrName), attrVal)
-    tuplePredicates += builder.lt(tupleRoot.get(attrName), attrVal)
-    this
+  def ==(attrName: String, attrVal: Any): Predicate = {
+    ==(Nil)(attrName, attrVal)
   }
 
-  def >>(attrName: String, attrVal: Number): CQExpression[T, X] = {
-    predicates += builder.gt(root.get(attrName), attrVal)
-    tuplePredicates += builder.gt(tupleRoot.get(attrName), attrVal)
-    this
+  def !=(ps: Seq[String])(attrName: String, attrVal: Any): Predicate = {
+    builder.notEqual(path(ps).get(attrName), attrVal)
   }
 
-  def <=(attrName: String, attrVal: Number): CQExpression[T, X] = {
-    predicates += builder.le(root.get(attrName), attrVal)
-    tuplePredicates += builder.le(tupleRoot.get(attrName), attrVal)
-    this
+  def !=(attrName: String, attrVal: Any): Predicate = {
+    !=(Nil)(attrName, attrVal)
   }
 
-  def >=(attrName: String, attrVal: Number): CQExpression[T, X] = {
-    predicates += builder.ge(root.get(attrName), attrVal)
-    tuplePredicates += builder.ge(tupleRoot.get(attrName), attrVal)
-    this
+  def <<(ps: Seq[String])(attrName: String, attrVal: Number): Predicate = {
+    builder.lt(path(ps).get(attrName), attrVal)
   }
 
-  def join[Y](joinName: String, attrName: String, attrVal: Any)(call: (CriteriaBuilder, Path[Y], Any) => Predicate): CQExpression[T, X] = {
-    // predicates += builder.equal(join.get(attrName),attrVal)
-    predicates += call(builder, root.get(joinName), attrVal)
-    tuplePredicates += call(builder, tupleRoot.get(joinName), attrVal)
-    this
+  def <<(attrName: String, attrVal: Number): Predicate = {
+    <<(Nil)(attrName, attrVal)
   }
 
-  def asc(attrName: String): CQExpression[T, X] = {
-    orders += builder.asc(root.get(attrName))
-    tupleOrders += builder.asc(tupleRoot.get(attrName))
-    this
+  def >>(ps: Seq[String])(attrName: String, attrVal: Number): Predicate = {
+    builder.gt(path(ps).get(attrName), attrVal)
   }
 
-  def desc(attrName: String): CQExpression[T, X] = {
-    orders += builder.desc(root.get(attrName))
-    tupleOrders += builder.desc(tupleRoot.get(attrName))
-    this
+  def >>(attrName: String, attrVal: Number): Predicate = {
+    >>(Nil)(attrName, attrVal)
   }
 
-  def like(attrName: String, attrVal: String): CQExpression[T, X] = {
-    predicates += builder.like(root.get(attrName).as(classOf[String]), attrVal)
-    tuplePredicates += builder.like(tupleRoot.get(attrName).as(classOf[String]), attrVal)
-    this
+  def <=(ps: Seq[String])(attrName: String, attrVal: Number): Predicate = {
+    builder.le(path(ps).get(attrName), attrVal)
   }
 
-  def notLike(attrName: String, attrVal: String): CQExpression[T, X] = {
-    predicates += builder.notLike(root.get(attrName).as(classOf[String]), attrVal)
-    tuplePredicates += builder.notLike(tupleRoot.get(attrName).as(classOf[String]), attrVal)
-    this
+  def <=(attrName: String, attrVal: Number): Predicate = {
+    <=(Nil)(attrName, attrVal)
   }
 
-  def isNull(attrName: String): CQExpression[T, X] = {
-    predicates += builder.isNull(root.get(attrName))
-    tuplePredicates += builder.isNull(tupleRoot.get(attrName))
-    this
+  def >=(ps: Seq[String])(attrName: String, attrVal: Number): Predicate = {
+    builder.ge(path(ps).get(attrName), attrVal)
   }
 
-  def isNotNull(attrName: String): CQExpression[T, X] = {
-    predicates += builder.isNotNull(root.get(attrName))
-    tuplePredicates += builder.isNotNull(tupleRoot.get(attrName))
-    this
+  def >=(attrName: String, attrVal: Number): Predicate = {
+    >=(Nil)(attrName, attrVal)
   }
 
-  def ::(seq: Seq[Predicate]): CQExpression[T, X] = {
-    predicates ++= seq
-    tuplePredicates ++= seq
-    this
+  def like(ps: Seq[String])(attrName: String, attrVal: String): Predicate = {
+    builder.like(path(ps).get(attrName).as(classOf[String]), attrVal)
   }
 
-  def ::(predicate: Predicate): CQExpression[T, X] = {
-    predicates += predicate
-    tuplePredicates += predicate
-    this
+  def like(attrName: String, attrVal: String): Predicate = {
+    like(Nil)(attrName, attrVal)
   }
 
-  def ::(call: (CriteriaBuilder, Root[T]) => Array[Predicate]): CQExpression[T, X] = {
-    predicates ++= call(builder, root)
-    tuplePredicates ++= call(builder, root)
-    this
+  def notLike(ps: Seq[String])(attrName: String, attrVal: String): Predicate = {
+    builder.notLike(path(ps).get(attrName).as(classOf[String]), attrVal)
   }
 
-  def or(call: (CriteriaBuilder, Root[T]) => Array[Predicate]): CQExpression[T, X] = {
-    predicates += builder.or(call(builder, root): _*)
-    tuplePredicates += builder.or(call(builder, tupleRoot): _*)
-    this
+  def notLike(attrName: String, attrVal: String): Predicate = {
+    notLike(Nil)(attrName, attrVal)
   }
 
-  def and(call: (CriteriaBuilder, Root[T]) => Array[Predicate]): CQExpression[T, X] = {
-    predicates += builder.and(call(builder, root): _*)
-    tuplePredicates += builder.and(call(builder, tupleRoot): _*)
-    this
-  }
-}
-
-object CQExpression {
-  def apply[T, X](em: EntityManager, ft: Class[T]): CQExpression[T, X] = {
-    new CQExpression[T, X](em, ft)
+  def isNull(ps: Seq[String])(attrName: String): Predicate = {
+    builder.isNull(path(ps).get(attrName))
   }
 
-  def apply[T, X](em: EntityManager, ft: Class[T], rt: Class[X]): CQExpression[T, X] = {
-    new CQExpression[T, X](em, ft, rt)
+  def isNull(attrName: String): Predicate = {
+    isNull(Nil)(attrName)
+  }
+
+  def isNotNull(ps: Seq[String])(attrName: String): Predicate = {
+    builder.isNotNull(path(ps).get(attrName))
+  }
+
+  def isNotNull(attrName: String): Predicate = {
+    isNotNull(Nil)(attrName)
+  }
+
+  def in(ps: Seq[String])(attrName: String, params: Seq[Any]): Predicate = {
+    val ops = new java.util.ArrayList[Any]()
+    params.foreach {
+      it =>
+        ops.add(it)
+    }
+    builder.isTrue(path(ps).get(attrName).in(ops))
+  }
+
+  def in(attrName: String, params: Seq[Any]): Predicate = {
+    in(Nil)(attrName, params)
+  }
+
+  def not(ps: Predicate): Predicate = {
+    builder.not(ps)
+  }
+
+  def asc(ps: Seq[String])(attrName: String): Order = {
+    builder.asc(path(ps).get(attrName))
+  }
+
+  def asc(attrName: String): Order = {
+    asc(Nil)(attrName)
+  }
+
+  def desc(ps: Seq[String])(attrName: String): Order = {
+    builder.desc(path(ps).get(attrName))
+  }
+
+  def desc(attrName: String): Order = {
+    desc(Nil)(attrName)
   }
 }

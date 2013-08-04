@@ -5,6 +5,6 @@ import org.koala.sporm.jpa.CQModel
 
 import models.jm.Game
 
-object GameModel extends CQModel[Game] {
-  implicit def extendModel(entity: Game) = new BaseBuilder(entity)
+object GameActiveRecord extends CQModel[Game] {
+  implicit def gameExtend(entity: Game) = new BaseBuilder(entity)
 }
