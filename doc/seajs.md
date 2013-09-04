@@ -16,3 +16,7 @@
 			//@end
 			module.exports = nv;
 		});
+		
+#### Seajs Blogs
+
++ http://blog.codinglabs.org/articles/modularized-javascript-with-seajs.html		
