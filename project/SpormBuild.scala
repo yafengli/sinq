@@ -17,11 +17,10 @@ object SpormBuild extends Build {
       organization := "org.koala",
       version := ver("prod"),
       scalaVersion := ver("scala"),
-      publishTo := Some(Resolver.file("My local maven repo", file("d:/repository"))),
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///d:/repository/",
         "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
-        "nexus" at "http://block-1.114dns.com/nexus/content/groups/public/"
+        "OSC Nexus" at "http://maven.oschina.net/content/groups/public/"
       ),
       libraryDependencies ++= Seq(
         "org.hibernate" % "hibernate-entitymanager" % ver("hibernate"),
