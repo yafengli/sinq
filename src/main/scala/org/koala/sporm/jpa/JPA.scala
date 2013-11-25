@@ -1,6 +1,6 @@
 package org.koala.sporm.jpa
 
-import collection.concurrent.TrieMap
+import scala.collection.mutable
 import javax.persistence.{EntityManagerFactory, EntityManager, Persistence}
 import org.slf4j.LoggerFactory
 
@@ -45,7 +45,7 @@ trait JPA {
 object JPA {
   val logger = LoggerFactory.getLogger(classOf[JPA])
 
-  private val EMF_MAP = TrieMap[String, EntityManagerFactory]()
+  private val EMF_MAP = mutable.HashMap[String, EntityManagerFactory]()
   private val PN_T = new ThreadLocal[String]
 
   /**
@@ -88,7 +88,7 @@ object JPA {
   }
 
   def releaseAll() {
-    EMF_MAP.map(_._2.close())
+    EMF_MAP.foreach(_._2.close())
     EMF_MAP.clear()
   }
 }

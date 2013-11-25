@@ -2,12 +2,10 @@ package org.koala.sporm.jpa
 
 import javax.persistence.EntityManager
 import javax.persistence.Tuple
-import javax.persistence.criteria.{Predicate, CriteriaQuery, Selection}
+import javax.persistence.criteria.{Predicate, Selection}
 import scala.collection.JavaConversions._
 
 case class CQBuilder[T, X](val em: EntityManager, val fromType: Class[T], val resultType: Class[X]) {
-
-  import CQBuilder._
 
   def currentEntityManager: EntityManager = this.em
 

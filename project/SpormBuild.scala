@@ -19,7 +19,6 @@ object SpormBuild extends Build {
       scalaVersion := ver("scala"),
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///d:/repository/",
-        "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
         "OSC Nexus" at "http://maven.oschina.net/content/groups/public/"
       ),
       libraryDependencies ++= Seq(

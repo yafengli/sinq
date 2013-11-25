@@ -53,3 +53,9 @@ class JpormSpec extends mutable.Specification {
     }
   }
 }
+
+trait SomeTrait[A] {
+  def foo(implicit ev: Manifest[A]) = {
+    (ev.runtimeClass)
+  }
+}
