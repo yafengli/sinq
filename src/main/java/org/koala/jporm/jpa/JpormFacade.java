@@ -24,7 +24,6 @@ public class JpormFacade extends JpaService {
             @Override
             public T call(EntityManager em) {
                 Query query = em.createNamedQuery(queryName, ct);
-
                 if (params != null) {
                     for (int i = 0; i < params.size(); i++) {
                         query.setParameter(i + 1, params.get(i));
@@ -39,7 +38,6 @@ public class JpormFacade extends JpaService {
         return withEntityManager(new JpaCall<Object[]>() {
             @Override
             public Object[] call(EntityManager em) {
-                System.out.println("##" + params.size());
                 Query query = em.createNamedQuery(queryName);
 
                 if (params != null) {

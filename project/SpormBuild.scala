@@ -1,6 +1,7 @@
 import sbt.Keys._
 import sbt._
 import scala.io.Source
+import net.virtualvoid.sbt.graph.Plugin._
 
 object SpormBuild extends Build {
   val reg = "(.+)=(.+)".r
@@ -22,15 +23,14 @@ object SpormBuild extends Build {
         "OSC Nexus" at "http://maven.oschina.net/content/groups/public/"
       ),
       libraryDependencies ++= Seq(
-        "org.hibernate" % "hibernate-entitymanager" % ver("hibernate"),
-        "com.alibaba" % "druid" % ver("druid"),
-        "com.jolbox" % "bonecp" % ver("bonecp"),
+        "org.hibernate" % "hibernate-entitymanager" % ver("hibernate") % "provided",
+        "com.alibaba" % "druid" % ver("druid"),        
         "ch.qos.logback" % "logback-classic" % ver("logback"),
         "postgresql" % "postgresql" % "9.1-901.jdbc4" % "test",
         "org.specs2" %% "specs2" % "1.14" % "test",
         "junit" % "junit" % "4.10" % "test"
       )
     )
-  )
+  ) settings(graphSettings: _*)
 }
 
