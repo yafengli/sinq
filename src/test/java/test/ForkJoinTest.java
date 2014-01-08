@@ -19,12 +19,6 @@ import java.util.concurrent.TimeUnit;
 public class ForkJoinTest {
 
     public static final Logger logger = LoggerFactory.getLogger(ForkJoinTest.class);
-    private static JpormFacade orm = null;
-
-    @BeforeClass
-    public static void init() {
-        orm = new JpormFacade("default");
-    }
 
     @Test
     public void testForkJoin() throws Exception {
@@ -33,6 +27,7 @@ public class ForkJoinTest {
         Map<String, Object> params = new HashMap<String, Object>() {{
             put("name", "hello");
         }};
+        JpormFacade orm = new JpormFacade("default");
         Author author = orm.single(Author.class, "t_find", params);
         if (author == null) {
             author = new Author();

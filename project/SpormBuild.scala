@@ -22,6 +22,7 @@ object SpormBuild extends Build {
         "Local Maven Repository" at "file:///d:/repository/",
         "OSC Nexus" at "http://maven.oschina.net/content/groups/public/"
       ),
+      publishTo := Some(Resolver.file("file", new File("d:/repository"))),
       libraryDependencies ++= Seq(
         "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api" % $("jpa"),
         "org.hibernate" % "hibernate-entitymanager" % $("hibernate") % "provided",
@@ -32,6 +33,6 @@ object SpormBuild extends Build {
         "junit" % "junit" % "4.10" % "test"
       )
     )
-  ) settings(graphSettings: _*)
+  ) settings (graphSettings: _*)
 }
 
