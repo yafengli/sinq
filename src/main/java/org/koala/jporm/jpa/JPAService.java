@@ -45,6 +45,15 @@ public abstract class JpaService {
         });
     }
 
+    public Integer execute(final String queryName) {
+        return withEntityManager(new JpaCall<Integer>() {
+            @Override
+            public Integer call(EntityManager em) {
+                return em.createNativeQuery(queryName).executeUpdate();
+            }
+        });
+    }
+
     public <T> T withEntityManager(JpaCall<T> call) {
         T t = null;
         EntityManager em = JpaFactory.createEntityManager();
@@ -53,7 +62,7 @@ public abstract class JpaService {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            JpaFactory.close();
+            em.close();
             return t;
         }
     }
@@ -70,7 +79,7 @@ public abstract class JpaService {
             em.getTransaction().rollback();
             e.printStackTrace();
         } finally {
-            JpaFactory.close();
+            em.close();
             return t;
         }
     }

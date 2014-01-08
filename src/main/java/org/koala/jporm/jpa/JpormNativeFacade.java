@@ -10,9 +10,9 @@ import java.util.Map;
  * Date: 13-4-22
  * Time: 下午2:43
  */
-public class JpormFacade extends JpaService {
+public class JpormNativeFacade extends JpaService {
 
-    public JpormFacade(String persistenceName) {
+    public JpormNativeFacade(String persistenceName) {
         try {
             JpaFactory.bind(persistenceName);
         } catch (Exception e) {
@@ -38,6 +38,7 @@ public class JpormFacade extends JpaService {
             @Override
             public Object[] call(EntityManager em) {
                 Query query = em.createNamedQuery(queryName);
+
                 for (String key : params.keySet()) {
                     query.setParameter(key, params.get(key));
                 }
@@ -59,7 +60,8 @@ public class JpormFacade extends JpaService {
         });
     }
 
-    public <T> List<T> fetch(final Class<T> ct, final int limit, final int offset, final String queryName, final Map<String, Object> params) {
+    public <T> List<T> fetch(final Class<T> ct, final int limit, final int offset, final String queryName,
+                             final Map<String, Object> params) {
         return withEntityManager(new JpaCall<List<T>>() {
             @Override
             public List<T> call(EntityManager em) {
@@ -79,7 +81,8 @@ public class JpormFacade extends JpaService {
         return fetch(ct, -1, -1, queryName, params);
     }
 
-    public List fetch(final int limit, final int offset, final String queryName, final Map<String, Object> params) {
+    public List fetch(final int limit, final int offset, final String queryName,
+                      final Map<String, Object> params) {
         return withEntityManager(new JpaCall<List>() {
             @Override
             public List call(EntityManager em) {

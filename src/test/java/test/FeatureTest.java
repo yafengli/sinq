@@ -34,6 +34,5 @@ class TestClose implements Closeable {
 	@Override
 	public void close() throws IOException {
 		System.out.println("#What the fucking.");
-
 	}
 }

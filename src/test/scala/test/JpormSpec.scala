@@ -20,6 +20,7 @@ class JpormSpec extends mutable.Specification {
   }
 
   def test() {
+    /**
     JpaFactory.bind("default")
     val facade = new JpormFacade("default")
     val entity = new Student()
@@ -27,7 +28,7 @@ class JpormSpec extends mutable.Specification {
     entity.age = 111
     entity.name = "test"
     entity.teacher = facade.get(1L, classOf[Teacher])
-//    facade.insert(entity)
+    facade.insert(entity)
 
     val list = new util.ArrayList[AnyRef]()
     list.add(Integer.valueOf(7))
@@ -35,7 +36,7 @@ class JpormSpec extends mutable.Specification {
     val stus = facade.fetch(10, 0, "find_ok", list, classOf[Student])
     println(f"#count:${count} ${stus}")
 
-    val objs = facade.multi(10, 0, "student.n_find_mt", list)
+    val objs = facade.fetch(10, 0, "student.n_find_mt", list)
     objs.toArray.foreach {
       it =>
         if(it.isInstanceOf[Array[_]]){
@@ -51,6 +52,7 @@ class JpormSpec extends mutable.Specification {
       obj =>
         println(f"@@${obj.getClass} ${obj.toString.toLong}")
     }
+      */
   }
 }
 

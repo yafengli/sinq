@@ -6,7 +6,7 @@ import javax.persistence.{EntityManager, Query}
 
 class SpormFacade extends JPA with NQBuilder {
 
-  import javax.persistence.criteria.{CriteriaQuery, Predicate}
+  import javax.persistence.criteria.Predicate
 
   def insert[T](entity: T) {
     withTransaction {
