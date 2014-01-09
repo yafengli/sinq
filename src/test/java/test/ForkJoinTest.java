@@ -1,6 +1,8 @@
 package test;
 
 import models.jm.Author;
+import org.h2.tools.Server;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.koala.jporm.jpa.JpormFacade;
@@ -20,6 +22,20 @@ public class ForkJoinTest {
 
     public static final Logger logger = LoggerFactory.getLogger(ForkJoinTest.class);
 
+    public static Server server = null;
+
+    @BeforeClass
+    public static void initH2() throws Exception {
+        server = Server.createTcpServer().start();
+        logger.info("host:{} port:{}", server.getURL(), server.getPort());
+    }
+
+    @AfterClass
+    public static void stop() {
+        server.stop();
+    }
+
+
     @Test
     public void testForkJoin() throws Exception {
 
@@ -36,11 +52,11 @@ public class ForkJoinTest {
         }
 
         List<String> list = new ArrayList<String>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 64; i++) {
             list.add(String.valueOf(i));
         }
         long start = System.currentTimeMillis();
-        ForkJoinTask<?> task = new ConcurrentTask(list, orm);
+        ForkJoinTask<?> task = new ConcurrentTask(list);
         ForkJoinPool pool = new ForkJoinPool();
         pool.submit(task);
         pool.shutdown();
@@ -57,18 +73,17 @@ class ConcurrentTask extends RecursiveAction {
     public static final Logger logger = LoggerFactory.getLogger(ConcurrentTask.class);
 
     private List<String> list = new ArrayList<String>();
-    private JpormFacade orm;
 
     public static final Long count = 4L;
 
-    ConcurrentTask(List<String> list, JpormFacade orm) {
+    ConcurrentTask(List<String> list) {
         this.list = list;
-        this.orm = orm;
     }
 
     @Override
     protected void compute() {
-        if (list.size() <= 4) {
+        if (list.size() <= 1) {
+            JpormFacade orm = new JpormFacade("default");
             logger.info("#list:" + list.toString() + " @" + orm);
             Map<String, Object> params = new HashMap<String, Object>() {
                 {
@@ -78,8 +93,8 @@ class ConcurrentTask extends RecursiveAction {
             Author author = orm.single(Author.class, "t_find", params);
             logger.info("#author:" + author);
         } else {
-            invokeAll(new ConcurrentTask(list.subList(0, 4), orm),
-                    new ConcurrentTask(list.subList(4, list.size()), orm));
+            invokeAll(new ConcurrentTask(list.subList(0, 1)),
+                    new ConcurrentTask(list.subList(1, list.size())));
         }
     }
 }
