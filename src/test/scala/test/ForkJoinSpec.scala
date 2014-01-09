@@ -11,23 +11,23 @@ import java.util.concurrent.TimeUnit
  * Time: 上午11:20
  */
 class ForkJoinSpec extends Specification {
-  "Hello World!" should {
-    "Fork" in {
-
-      val listBuffer = ListBuffer[String]()
-      for (i <- 0 until 1000) {
-        listBuffer += i.toString
-      }
-      val start = System.currentTimeMillis()
-      val task = new DemoAction(listBuffer.toList, 4)
-      val pool = new ForkJoinPool()
-      pool.submit(task)
-      pool.shutdown()
-      pool.awaitTermination(30, TimeUnit.SECONDS)
-      val end = System.currentTimeMillis()
-      println(f"#time use ${end - start}ms.")
-    }
-  }
+//  "Hello World!" should {
+//    "Fork" in {
+//
+//      val listBuffer = ListBuffer[String]()
+//      for (i <- 0 until 1000) {
+//        listBuffer += i.toString
+//      }
+//      val start = System.currentTimeMillis()
+//      val task = new DemoAction(listBuffer.toList, 4)
+//      val pool = new ForkJoinPool()
+//      pool.submit(task)
+//      pool.shutdown()
+//      pool.awaitTermination(30, TimeUnit.SECONDS)
+//      val end = System.currentTimeMillis()
+//      println(f"#time use ${end - start}ms.")
+//    }
+//  }
 
 }
 

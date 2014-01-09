@@ -11,11 +11,11 @@ import scala.collection.immutable.HashMap
  * Time: 上午11:08
  */
 class DBInitSpec extends mutable.Specification {
-  "Init Data" should {
-    "Init" in {
-      init()
-    }
-  }
+//  "Init Data" should {
+//    "Init" in {
+//      init()
+//    }
+//  }
 
   def init() {
     JPA.bind("default")

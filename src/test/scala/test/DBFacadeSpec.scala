@@ -8,27 +8,27 @@ import org.specs2._
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
-class DBFacadeSpec extends mutable.Specification {
+class DBFacadeSpec extends Specification {
 
   import DB._
 
-  "SpormFacade test all" should {
 
-    "Sporm test" in {
-      //      count
-      //      single
-      //      fetch
-      multi
-      //      join
-      //      in
-    }
-    "Concurrent" in {
-      time(() => {
-        concurrent(0)
-        "Sporm fetch"
-      })
-    }
-  }
+  def is = s2"""
+
+ This is a specification to check the 'Hello world' string
+
+ The 'Hello world' string should
+   contain 11 characters                             ${concurrent(0)}
+   start with 'Hello'                                $multi
+                                                     """
+
+
+  //      count
+  //      single
+  //      fetch
+  //      multi
+  //      join
+  //      in
 
   /**
    * where in 表达式
@@ -42,6 +42,7 @@ class DBFacadeSpec extends mutable.Specification {
         query.getResultList.toList.asInstanceOf[List[Book]]
     }
     println("#list:" + list)
+    "Call" must have size (4)
   }
 
   /**
@@ -50,7 +51,7 @@ class DBFacadeSpec extends mutable.Specification {
   def join {
     val list_2 = facade.fetch(classOf[Book], classOf[Book]) {
       e =>
-        Seq(e.==(Seq("student"))("id",12L))
+        Seq(e.==(Seq("student"))("id", 12L))
     }
     println("#join_1:" + list_2)
 
@@ -93,7 +94,7 @@ class DBFacadeSpec extends mutable.Specification {
     println("#fetch_2:" + list_2)
   }
 
-  def multi {
+  def multi= {
     facade.multi(classOf[Book])(e => {
       Array(e.builder.avg(e.root.get("price")), e.builder.count(e.root.get("id")))
     })(e => {
@@ -111,14 +112,15 @@ class DBFacadeSpec extends mutable.Specification {
         println("#multi:" + list)
       case None =>
     }
+    "multi"
   }
 
-  def concurrent(t: Int) {
+  def concurrent(t: Int): String = {
     val task = new FetchAction(t)
     pool.submit(task)
     pool.shutdown()
     pool.awaitTermination(20, TimeUnit.SECONDS)
-
+    "concurrent"
   }
 
   def time(f: () => String)() {

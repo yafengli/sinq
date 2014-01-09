@@ -11,7 +11,7 @@ import models.sm.AuthorModel.authorExtend
 import models.sm.GameActiveRecord
 import models.sm.GameActiveRecord.gameExtend
 import org.koala.sporm.jpa.{CQExpression, JPA}
-import org.specs2.mutable
+import org.specs2._
 import scala.concurrent.forkjoin.RecursiveAction
 import java.util.concurrent.TimeUnit
 import DB._
@@ -22,27 +22,28 @@ import DB._
  * Date: 12-12-11
  * Time: 上午11:08
  */
-class DBSpec extends mutable.Specification {
-  val init = JPA.initPersistenceName("default")
-
-  "Test all" should {
-    "CriterialQL All Expressions" in {
-      all_exps()
-      //      fetch()
-      //      single()
-      //      count()
-      //      or()
-      //      exp_extend()
-      //      concurrent(10)
-      //      java_model()
-      //      scala_model()
-    }
+class DBSpec extends Specification {
+  def init = {
+    JPA.initPersistenceName("default")
+    "call" must have size (4)
   }
+
+  def is = s2"""
+
+ This is a specification to check the 'Hello world' string
+
+ The 'Hello world' string should
+   init                                              $init
+   fetch                                             $fetch
+   single                                            $single
+   or                                                $or
+   count                                             $count
+                                                     """
 
   /**
    * 复杂的条件表达式 or
    */
-  def or() {
+  def or = {
     time(() => {
       Teacher.fetch(e => {
         val b = e.builder
@@ -58,6 +59,7 @@ class DBSpec extends mutable.Specification {
       }
       "Or And"
     })
+    "Or And"
   }
 
   def java_model() {
@@ -137,7 +139,7 @@ class DBSpec extends mutable.Specification {
     })
   }
 
-  def fetch() {
+  def fetch = {
     time(() => {
       Teacher.fetch(5, 5) {
         e =>
@@ -153,20 +155,22 @@ class DBSpec extends mutable.Specification {
       }
       "Fetch"
     })
+    "Fetch"
   }
 
-  def single() {
+  def single = {
     time(() => {
       Book.single(e => Seq(e.==("id", 9))) match {
         case Some(o) => println(o)
         case None =>
       }
-      "Fetch"
+      "single"
     })
+    "single"
   }
 
 
-  def count() {
+  def count = {
     time(() => {
       Book.count {
         e =>
@@ -185,6 +189,7 @@ class DBSpec extends mutable.Specification {
       }
       "Fetch count 2"
     })
+    "count 2"
   }
 
   def exp_extend() {
