@@ -5,18 +5,18 @@ import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.koala.jporm.jpa.JpormFacade;
+import org.koala.jporm.jpa.CQLCall;
+import org.koala.jporm.jpa.CQLFacade;
+import org.koala.jporm.jpa.JPQLFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import javax.persistence.criteria.*;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class ForkJoinTest {
 
@@ -38,12 +38,11 @@ public class ForkJoinTest {
 
     @Test
     public void testForkJoin() throws Exception {
-
         String name = "hello";
         Map<String, Object> params = new HashMap<String, Object>() {{
             put("name", "hello");
         }};
-        JpormFacade orm = new JpormFacade("default");
+        JPQLFacade orm = new JPQLFacade("default");
         Author author = orm.single(Author.class, "t_find", params);
         if (author == null) {
             author = new Author();
@@ -51,19 +50,17 @@ public class ForkJoinTest {
             orm.insert(author);
         }
 
-        List<String> list = new ArrayList<String>();
-        for (int i = 0; i < 64; i++) {
-            list.add(String.valueOf(i));
-        }
         long start = System.currentTimeMillis();
-        ForkJoinTask<?> task = new ConcurrentTask(list);
+//        ForkJoinTask<?> task = new ConcurrentTask(5000);
+        ForkJoinTask<Long> task = new WordCountTask(10, 50000);
         ForkJoinPool pool = new ForkJoinPool();
         pool.submit(task);
+
         pool.shutdown();
         pool.awaitTermination(30, TimeUnit.SECONDS);
         long end = System.currentTimeMillis();
 
-        logger.error("#time use " + (end - start) + "ms.");
+        logger.error("#result:" + task.get() + "#time use " + (end - start) + "ms.");
     }
 }
 
@@ -72,29 +69,79 @@ class ConcurrentTask extends RecursiveAction {
 
     public static final Logger logger = LoggerFactory.getLogger(ConcurrentTask.class);
 
-    private List<String> list = new ArrayList<String>();
+    public long count = 0L;
+    public long times = 0L;
 
-    public static final Long count = 4L;
+    ConcurrentTask(long count) {
+        this.count = count;
+    }
 
-    ConcurrentTask(List<String> list) {
-        this.list = list;
+
+    private void jpql() {
+        JPQLFacade orm = new JPQLFacade("default");
+        logger.info("#count:" + count + " @" + orm);
+        Map<String, Object> params = new HashMap<String, Object>() {{
+            put("name", "hello");
+        }};
+        Author author = orm.single(Author.class, "t_find", params);
+
+    }
+
+    private void cql() {
+        CQLFacade orm = new CQLFacade("default");
+        Long count = orm.count(Author.class, new CQLCall<Long>() {
+            @Override
+            public void call(CriteriaBuilder cb, final CriteriaQuery<Long> cq) {
+                Root<Author> root = cq.from(Author.class);
+                Path path = root.get("id");
+                Predicate p1 = cb.ge(path, 12);
+                cq.where(p1);
+            }
+        });
+        orm.fetch(Author.class, new CQLCall<Author>() {
+            @Override
+            public void call(CriteriaBuilder cb, CriteriaQuery<Author> cq) {
+                Root<Author> root = cq.from(Author.class);
+                Predicate p1 = cb.equal(root.get("name"), "Hello");
+                Predicate p2 = cb.ge((Path) root.get("id"), 1);
+                cq.where(p1, p2);
+            }
+        });
     }
 
     @Override
     protected void compute() {
-        if (list.size() <= 1) {
-            JpormFacade orm = new JpormFacade("default");
-            logger.info("#list:" + list.toString() + " @" + orm);
-            Map<String, Object> params = new HashMap<String, Object>() {
-                {
-                    put("name", "hello");
-                }
-            };
-            Author author = orm.single(Author.class, "t_find", params);
-            logger.info("#author:" + author);
+        if (count <= 1L) {
+            //jpql();
+            cql();
+            times = count;
+
         } else {
-            invokeAll(new ConcurrentTask(list.subList(0, 1)),
-                    new ConcurrentTask(list.subList(1, list.size())));
+            invokeAll(new ConcurrentTask(1L), new ConcurrentTask(count - 1L));
         }
+    }
+}
+
+class WordCountTask extends RecursiveTask<Long> {
+    private final long thread;
+    private long size;
+
+    WordCountTask(long thread, long size) {
+        this.thread = thread;
+        this.size = size;
+    }
+
+    @Override
+    protected Long compute() {
+        List<ForkJoinTask<Long>> forks = new LinkedList<>();
+        if (size <= thread) {
+            return size;
+        } else {
+            forks.add(new WordCountTask(thread, size - thread).fork());
+        }
+        for (ForkJoinTask<Long> task : forks) {
+            size = size + task.join();
+        }
+        return size;
     }
 }

@@ -1,7 +1,7 @@
 package test
 
 import models.{Teacher, Student}
-import org.koala.jporm.jpa.JpormFacade
+import org.koala.jporm.jpa.JPQLFacade
 import org.specs2.ScalaCheck
 import org.specs2.mutable._
 import scala.collection.JavaConversions._
@@ -36,7 +36,7 @@ class JpormSpec extends Specification {
   }
 
   def test = {
-    val facade = new JpormFacade("default")
+    val facade = new JPQLFacade("default")
     val entity = new Student()
     entity.address = "Hello World!"
     entity.age = 111

@@ -2,6 +2,7 @@ package org.koala.jporm.jpa;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +11,9 @@ import java.util.Map;
  * Date: 13-4-22
  * Time: 下午2:43
  */
-public class JpormNativeFacade extends JpaService {
+public class JPQLFacade extends JpaService {
 
-    public JpormNativeFacade(String persistenceName) {
+    public JPQLFacade(String persistenceName) {
         try {
             JpaFactory.bind(persistenceName);
         } catch (Exception e) {
@@ -24,11 +25,11 @@ public class JpormNativeFacade extends JpaService {
         return withEntityManager(new JpaCall<T>() {
             @Override
             public T call(EntityManager em) {
-                Query query = em.createNamedQuery(queryName, ct);
+                TypedQuery<T> query = em.createNamedQuery(queryName, ct);
                 for (String key : params.keySet()) {
                     query.setParameter(key, params.get(key));
                 }
-                return (T) query.getSingleResult();
+                return query.getSingleResult();
             }
         });
     }
@@ -38,7 +39,6 @@ public class JpormNativeFacade extends JpaService {
             @Override
             public Object[] call(EntityManager em) {
                 Query query = em.createNamedQuery(queryName);
-
                 for (String key : params.keySet()) {
                     query.setParameter(key, params.get(key));
                 }
@@ -60,12 +60,11 @@ public class JpormNativeFacade extends JpaService {
         });
     }
 
-    public <T> List<T> fetch(final Class<T> ct, final int limit, final int offset, final String queryName,
-                             final Map<String, Object> params) {
+    public <T> List<T> fetch(final Class<T> ct, final int limit, final int offset, final String queryName, final Map<String, Object> params) {
         return withEntityManager(new JpaCall<List<T>>() {
             @Override
             public List<T> call(EntityManager em) {
-                Query query = em.createNamedQuery(queryName, ct);
+                TypedQuery<T> query = em.createNamedQuery(queryName, ct);
                 if (offset > 0) query.setFirstResult(offset);
                 if (limit > 0) query.setMaxResults(limit);
 
@@ -81,8 +80,7 @@ public class JpormNativeFacade extends JpaService {
         return fetch(ct, -1, -1, queryName, params);
     }
 
-    public List fetch(final int limit, final int offset, final String queryName,
-                      final Map<String, Object> params) {
+    public List fetch(final int limit, final int offset, final String queryName, final Map<String, Object> params) {
         return withEntityManager(new JpaCall<List>() {
             @Override
             public List call(EntityManager em) {

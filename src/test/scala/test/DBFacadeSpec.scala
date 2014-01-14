@@ -1,17 +1,24 @@
 package test
 
-import concurrent.forkjoin.{ForkJoinPool, RecursiveAction, ForkJoinTask}
 import java.util.concurrent.TimeUnit
-import models._
-import org.koala.sporm.jpa.SpormFacade
-import org.specs2._
-import scala.collection.JavaConversions._
+
+import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConversions.bufferAsJavaList
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.forkjoin.ForkJoinPool
+import scala.concurrent.forkjoin.ForkJoinTask
+import scala.concurrent.forkjoin.RecursiveAction
+
+import org.koala.sporm.jpa.SpormFacade
+import org.specs2.Specification
+
+import javax.persistence.Tuple
+import models.Book
+import models.Student
 
 class DBFacadeSpec extends Specification {
 
   import DB._
-
 
   def is = s2"""
 
@@ -22,7 +29,6 @@ class DBFacadeSpec extends Specification {
    start with 'Hello'                                $multi
                                                      """
 
-
   //      count
   //      single
   //      fetch
@@ -30,9 +36,6 @@ class DBFacadeSpec extends Specification {
   //      join
   //      in
 
-  /**
-   * where in 表达式
-   */
   def in {
     val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L, 4L)
     val list = facade.withEntityManager {
@@ -45,9 +48,6 @@ class DBFacadeSpec extends Specification {
     "Call" must have size (4)
   }
 
-  /**
-   * join 表达式
-   */
   def join {
     val list_2 = facade.fetch(classOf[Book], classOf[Book]) {
       e =>
@@ -94,7 +94,7 @@ class DBFacadeSpec extends Specification {
     println("#fetch_2:" + list_2)
   }
 
-  def multi= {
+  def multi = {
     facade.multi(classOf[Book])(e => {
       Array(e.builder.avg(e.root.get("price")), e.builder.count(e.root.get("id")))
     })(e => {
