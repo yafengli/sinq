@@ -1,8 +1,9 @@
-package org.koala.sporm.jpa
+package org.koala.sporm
 
 import javax.persistence.Tuple
 import javax.persistence.criteria.Selection
 import javax.persistence.{EntityManager, Query}
+import org.koala.sporm.jpa.{CQBuilder, CQExpression, NQBuilder, JPA}
 
 class SpormFacade extends JPA with NQBuilder {
 
