@@ -1,11 +1,11 @@
 package test
 
 import models.{Teacher, Student}
-import org.koala.jporm.jpa.JPQLFacade
 import org.specs2.ScalaCheck
 import org.specs2.mutable._
 import scala.collection.JavaConversions._
 import org.h2.tools.Server
+import org.koala.jporm.JPQLFacade
 
 /**
  * User: ya_feng_li@163.com

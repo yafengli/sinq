@@ -1,4 +1,9 @@
-package org.koala.jporm.jpa;
+package org.koala.jporm;
+
+import org.koala.jporm.jpa.CQLCall;
+import org.koala.jporm.jpa.JpaCall;
+import org.koala.jporm.jpa.JpaFactory;
+import org.koala.jporm.jpa.JpaService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

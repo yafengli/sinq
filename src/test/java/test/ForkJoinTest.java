@@ -6,8 +6,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.koala.jporm.jpa.CQLCall;
-import org.koala.jporm.jpa.CQLFacade;
-import org.koala.jporm.jpa.JPQLFacade;
+import org.koala.jporm.CQLFacade;
+import org.koala.jporm.JPQLFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class ForkJoinTest {
 
         long start = System.currentTimeMillis();
 //        ForkJoinTask<?> task = new ConcurrentTask(5000);
-        ForkJoinTask<Long> task = new WordCountTask(10, 50000);
+        ForkJoinTask<Long> task = new WordCountTask(1, 1000);
         ForkJoinPool pool = new ForkJoinPool();
         pool.submit(task);
 
