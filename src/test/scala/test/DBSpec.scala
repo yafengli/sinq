@@ -33,11 +33,13 @@ class DBSpec extends Specification {
  This is a specification to check the 'Hello world' string
 
  The 'Hello world' string should
+   init db                                           ${H2DB.init}
    init                                              $init
    fetch                                             $fetch
    single                                            $single
    or                                                $or
    count                                             $count
+   stop db                                           ${H2DB.close}
                                                      """
 
   /**

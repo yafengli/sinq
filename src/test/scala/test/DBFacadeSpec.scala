@@ -25,8 +25,10 @@ class DBFacadeSpec extends Specification {
  This is a specification to check the 'Hello world' string
 
  The 'Hello world' string should
+   init db                                           ${H2DB.init}
    contain 11 characters                             ${concurrent(0)}
    start with 'Hello'                                $multi
+   stop db                                           ${H2DB.close}
                                                      """
 
   //      count

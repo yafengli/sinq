@@ -14,12 +14,11 @@ import org.koala.jporm.JPQLFacade
  */
 class JpormSpec extends Specification {
 
-  var server: Server = null
 
   override def is = s2"""
-  init db                   $init
+  init db                   ${H2DB.init}
   test db query and execute ${test}
-  close db                  $close
+  close db                  ${H2DB.close}
   """
 
 
