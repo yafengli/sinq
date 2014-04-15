@@ -6,3 +6,4 @@ logs/
 .idea*
 project/project
 /.cache
+projectFilesBackup*/
