@@ -144,4 +144,15 @@ class WordCountTask extends RecursiveTask<Long> {
         }
         return size;
     }
+
+    public String toHex(int len) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("0x");
+        String s = Integer.toHexString(len);
+        for (int i = (4 - s.length()); i > 0; i--) {
+            builder.append("0");
+        }
+        builder.append(s);
+        return builder.toString();
+    }
 }
