@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>TRACE</level>
         </filter>
@@ -15,24 +15,20 @@
         </encoder>
     </appender>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%-5level %logger - %message%n%xException{5}</pattern>
         </encoder>
     </appender>
 
-    <root level="DEBUG">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
+    <root level="ERROR">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="file"/>
     </root>
-    <!-- 下面配置一些第三方包的日志过滤级别，用于避免刷屏 -->
-    <logger name="org.hibernate" level="WARN"/>
-    <logger name="org.apache" level="WARN"/>
     <!-- show parameters for hibernate sql 专为 Hibernate 定制 -->
     <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
-    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="ERROR"/>
-    <logger name="org.hibernate.SQL" level="TRACE"/>
-    <logger name="org.hibernate.type" level="ERROR"/>
-    <logger name="org.hibernate.engine.QueryParameters" level="ERROR"/>
-    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="ERROR"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="DEBUG"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.engine.QueryParameters" level="DEBUG"/>
+    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG"/>
 </configuration>
