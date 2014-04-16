@@ -19,7 +19,7 @@ object SpormBuild extends Build {
       version := $("prod"),
       scalaVersion := $("scala"),
       resolvers ++= Seq(
-        "Local Maven Repository" at "file:///d:/repository/",
+        "Local Maven Repository" at "file:///f:/repository/",
         "OSC Nexus" at "http://maven.oschina.net/content/groups/public/"
       ),
       publishTo := Some(Resolver.file("file", new File("d:/repository"))),

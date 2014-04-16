@@ -12,10 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-/**
- * Wrapper for EntityManger for CRUD operations and finders.
- * TBD: EntityListners
- */
 public class BaseDAO {
     private static Logger log = LoggerFactory.getLogger(BaseDAO.class);
     private CriteriaProcessor _criteriaProcessor = null;

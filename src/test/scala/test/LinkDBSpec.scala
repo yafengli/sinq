@@ -32,8 +32,10 @@ class LinkDBSpec extends Specification {
     withEntityManager {
       em =>
         val qe = new QueryExp[Book](em)
-        val sl = qe.where((cb, cq, from) => cb.equal(from.get("price"), 12)).single()
-        println(">>>>>>>>>>>>>>>>>>>>>" + sl)
+        val sg = qe.where((cb, cq, from) => cb.equal(from.get("price"), 12)).single()
+        val ls = qe.where((cb, cq, from) => cb.gt(from.get("price"), 12)).fetch()
+        println(">>>>>>>>>>>>>>>>>>>>>" + sg)
+        println(">>>>>>>>>>>>>>>>>>>>>" + ls)
     }
     "Single"
   }

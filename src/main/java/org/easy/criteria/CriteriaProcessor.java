@@ -1,16 +1,3 @@
-/**
- * Copyright � 2011 Aftab Mahmood
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   any later version.
-
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details <http://www.gnu.org/licenses/>.
- **/
 package org.easy.criteria;
 
 import com.google.common.base.Preconditions;
@@ -24,25 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Finds the data for the given criteria. Extracts the criteria information such
- * as Select clause, Where, Order By, Grouping, Having and attributes to match
- * (restrictions) from CriteriaContainer. Executes the criteria and generates
- * the result.
- * <p>
- * <pre>
- *  Example:
- *
- *  SQL : select person.name, sum(course.unit) from person inner join course_session inner join course group by person.name
- *
- * 	Using this framework:
- * 	    CriteriaComposer<Person> forStudentUnitCount = CriteriaComposer.createComposer(Person.class).select(Person_.name).groupBy(Person_.name);
- * 	    forStudentUnitCount.join(Person_.courseSessions).join(CourseSession_.course).select(AggregateFunction.SUM, Course_.unit);
- *      List<Tuple>  result = criteriaProcessor.findAllTuple(forStudentUnitCount);
- * </pre>
- *
- * @author mahmood.aftab
- */
 public final class CriteriaProcessor {
     private static Logger log = LoggerFactory.getLogger(CriteriaProcessor.class);
 
