@@ -24,10 +24,9 @@ object SpormBuild extends Build {
       ),
       publishTo := Some(Resolver.file("file", new File("d:/repository"))),
       libraryDependencies ++= Seq(
-        "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api" % $("jpa"),
-        "com.alibaba" % "druid" % $("druid"),
-        "ch.qos.logback" % "logback-classic" % $("logback"),
-        "org.hibernate" % "hibernate-entitymanager" % $("hibernate") % "test",
+        "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),
+        "ch.qos.logback" % "logback-classic" % $("logback") % "provided",
+        "com.alibaba" % "druid" % $("druid") % "test",
         "com.h2database" % "h2" % $("h2") % "test",
         "postgresql" % "postgresql" % "9.1-901.jdbc4" % "test",
         "org.specs2" %% "specs2" % $("specs2") % "test",

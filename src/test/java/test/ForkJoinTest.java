@@ -5,7 +5,7 @@ import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.koala.jporm.jpa.CQLCall;
+import org.koala.jporm.jpa.CriteriaQueryCall;
 import org.koala.jporm.CQLFacade;
 import org.koala.jporm.JPQLFacade;
 import org.slf4j.Logger;
@@ -89,7 +89,7 @@ class ConcurrentTask extends RecursiveAction {
 
     private void cql() {
         CQLFacade orm = new CQLFacade("default");
-        Long count = orm.count(Author.class, new CQLCall<Long>() {
+        Long count = orm.count(Author.class, new CriteriaQueryCall<Long>() {
             @Override
             public void call(CriteriaBuilder cb, final CriteriaQuery<Long> cq) {
                 Root<Author> root = cq.from(Author.class);
@@ -98,7 +98,7 @@ class ConcurrentTask extends RecursiveAction {
                 cq.where(p1);
             }
         });
-        orm.fetch(Author.class, new CQLCall<Author>() {
+        orm.fetch(Author.class, new CriteriaQueryCall<Author>() {
             @Override
             public void call(CriteriaBuilder cb, CriteriaQuery<Author> cq) {
                 Root<Author> root = cq.from(Author.class);

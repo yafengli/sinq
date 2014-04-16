@@ -1,10 +1,8 @@
 package org.koala.jporm;
 
-import org.koala.jporm.jpa.JpaCall;
-import org.koala.jporm.jpa.JpaFactory;
-import org.koala.jporm.jpa.JpaService;
+import org.koala.jporm.jpa.EntityService;
+import org.koala.jporm.jpa.PersistenceFactory;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -15,68 +13,56 @@ import java.util.Map;
  * Date: 13-4-22
  * Time: 下午2:43
  */
-public class JPQLFacade extends JpaService {
+public class JPQLFacade extends EntityService {
 
     public JPQLFacade(String persistenceName) {
         try {
-            JpaFactory.bind(persistenceName);
+            PersistenceFactory.bind(persistenceName);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public <T> T single(final Class<T> ct, final String queryName, final Map<String, Object> params) {
-        return withEntityManager(new JpaCall<T>() {
-            @Override
-            public T call(EntityManager em) {
-                TypedQuery<T> query = em.createNamedQuery(queryName, ct);
-                for (String key : params.keySet()) {
-                    query.setParameter(key, params.get(key));
-                }
-                return query.getSingleResult();
+        return withEntityManager(em -> {
+            TypedQuery<T> query = em.createNamedQuery(queryName, ct);
+            for (String key : params.keySet()) {
+                query.setParameter(key, params.get(key));
             }
+            return query.getSingleResult();
         });
     }
 
     public Object[] single(final String queryName, final Map<String, Object> params) {
-        return withEntityManager(new JpaCall<Object[]>() {
-            @Override
-            public Object[] call(EntityManager em) {
-                Query query = em.createNamedQuery(queryName);
-                for (String key : params.keySet()) {
-                    query.setParameter(key, params.get(key));
-                }
-                return (Object[]) query.getSingleResult();
+        return withEntityManager(em -> {
+            Query query = em.createNamedQuery(queryName);
+            for (String key : params.keySet()) {
+                query.setParameter(key, params.get(key));
             }
+            return (Object[]) query.getSingleResult();
         });
     }
 
     public Long count(final String queryName, final Map<String, Object> params) {
-        return withEntityManager(new JpaCall<Long>() {
-            @Override
-            public Long call(EntityManager em) {
-                Query query = em.createNamedQuery(queryName);
-                for (String key : params.keySet()) {
-                    query.setParameter(key, params.get(key));
-                }
-                return ((Number) query.getSingleResult()).longValue();
+        return withEntityManager(em -> {
+            Query query = em.createNamedQuery(queryName);
+            for (String key : params.keySet()) {
+                query.setParameter(key, params.get(key));
             }
+            return ((Number) query.getSingleResult()).longValue();
         });
     }
 
     public <T> List<T> fetch(final Class<T> ct, final int limit, final int offset, final String queryName, final Map<String, Object> params) {
-        return withEntityManager(new JpaCall<List<T>>() {
-            @Override
-            public List<T> call(EntityManager em) {
-                TypedQuery<T> query = em.createNamedQuery(queryName, ct);
-                if (offset > 0) query.setFirstResult(offset);
-                if (limit > 0) query.setMaxResults(limit);
+        return withEntityManager(em -> {
+            TypedQuery<T> query = em.createNamedQuery(queryName, ct);
+            if (offset > 0) query.setFirstResult(offset);
+            if (limit > 0) query.setMaxResults(limit);
 
-                for (String key : params.keySet()) {
-                    query.setParameter(key, params.get(key));
-                }
-                return query.getResultList();
+            for (String key : params.keySet()) {
+                query.setParameter(key, params.get(key));
             }
+            return query.getResultList();
         });
     }
 
@@ -85,17 +71,14 @@ public class JPQLFacade extends JpaService {
     }
 
     public List fetch(final int limit, final int offset, final String queryName, final Map<String, Object> params) {
-        return withEntityManager(new JpaCall<List>() {
-            @Override
-            public List call(EntityManager em) {
-                Query query = em.createNamedQuery(queryName);
-                if (offset > 0) query.setFirstResult(offset);
-                if (limit > 0) query.setMaxResults(limit);
-                for (String key : params.keySet()) {
-                    query.setParameter(key, params.get(key));
-                }
-                return query.getResultList();
+        return withEntityManager(em -> {
+            Query query = em.createNamedQuery(queryName);
+            if (offset > 0) query.setFirstResult(offset);
+            if (limit > 0) query.setMaxResults(limit);
+            for (String key : params.keySet()) {
+                query.setParameter(key, params.get(key));
             }
+            return query.getResultList();
         });
     }
 

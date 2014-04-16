@@ -13,7 +13,6 @@ trait NQBuilder {
     try {
       if (offset > 0) query.setFirstResult(offset)
       if (limit > 0) query.setMaxResults(limit)
-
       pm.foreach {
         p =>
           query.setParameter(p._1, p._2)

@@ -1,11 +1,9 @@
 package org.koala.jporm;
 
-import org.koala.jporm.jpa.CQLCall;
-import org.koala.jporm.jpa.JpaCall;
-import org.koala.jporm.jpa.JpaFactory;
-import org.koala.jporm.jpa.JpaService;
+import org.koala.jporm.jpa.CriteriaQueryCall;
+import org.koala.jporm.jpa.EntityService;
+import org.koala.jporm.jpa.PersistenceFactory;
 
-import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,64 +15,55 @@ import java.util.List;
  * Date: 13-4-22
  * Time: 下午2:43
  */
-public class CQLFacade extends JpaService {
+public class CQLFacade extends EntityService {
 
     public CQLFacade(String persistenceName) {
         try {
-            JpaFactory.bind(persistenceName);
+            PersistenceFactory.bind(persistenceName);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public <T> T single(final Class<T> ct, final CQLCall<T> jqc) {
-        return withEntityManager(new JpaCall<T>() {
-            @Override
-            public T call(EntityManager em) {
-                CriteriaBuilder cb = em.getCriteriaBuilder();
-                CriteriaQuery<T> cq = cb.createQuery(ct);
-                jqc.call(cb, cq);
+    public <T> T single(final Class<T> ct, final CriteriaQueryCall<T> jqc) {
+        return withEntityManager(em -> {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(ct);
+            jqc.call(cb, cq);
 
-                TypedQuery<T> query = em.createQuery(cq);
-                return query.getSingleResult();
-            }
+            TypedQuery<T> query = em.createQuery(cq);
+            return query.getSingleResult();
         });
     }
 
-    public <T> Long count(final Class<T> ct, final CQLCall<Long> jqc) {
-        return withEntityManager(new JpaCall<Long>() {
-            @Override
-            public Long call(EntityManager em) {
-                CriteriaBuilder cb = em.getCriteriaBuilder();
-                CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-                Root<T> root = cq.from(ct);
-                cq.select(cb.count(root));
-                jqc.call(cb, cq);
+    public <T> Long count(final Class<T> ct, final CriteriaQueryCall<Long> jqc) {
+        return withEntityManager(em -> {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+            Root<T> root = cq.from(ct);
+            cq.select(cb.count(root));
+            jqc.call(cb, cq);
 
-                TypedQuery<Long> query = em.createQuery(cq);
-                return query.getSingleResult();
-            }
+            TypedQuery<Long> query = em.createQuery(cq);
+            return query.getSingleResult();
         });
     }
 
-    public <T> List<T> fetch(final Class<T> ct, final int limit, final int offset, final CQLCall<T> jqc) {
-        return withEntityManager(new JpaCall<List<T>>() {
-            @Override
-            public List<T> call(EntityManager em) {
-                CriteriaBuilder cb = em.getCriteriaBuilder();
-                CriteriaQuery<T> cq = cb.createQuery(ct);
+    public <T> List<T> fetch(final Class<T> ct, final int limit, final int offset, final CriteriaQueryCall<T> jqc) {
+        return withEntityManager(em -> {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(ct);
 
-                jqc.call(cb, cq);
+            jqc.call(cb, cq);
 
-                TypedQuery<T> query = em.createQuery(cq);
-                if (offset > 0) query.setFirstResult(offset);
-                if (limit > 0) query.setMaxResults(limit);
-                return query.getResultList();
-            }
+            TypedQuery<T> query = em.createQuery(cq);
+            if (offset > 0) query.setFirstResult(offset);
+            if (limit > 0) query.setMaxResults(limit);
+            return query.getResultList();
         });
     }
 
-    public <T> List<T> fetch(final Class<T> ct, final CQLCall<T> jqc) {
+    public <T> List<T> fetch(final Class<T> ct, final CriteriaQueryCall<T> jqc) {
         return fetch(ct, -1, -1, jqc);
     }
 }
