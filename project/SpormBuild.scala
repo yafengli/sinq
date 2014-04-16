@@ -25,6 +25,7 @@ object SpormBuild extends Build {
       publishTo := Some(Resolver.file("file", new File("d:/repository"))),
       libraryDependencies ++= Seq(
         "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),
+        "com.google.guava" % "guava" % $("guava") % "provided",
         "ch.qos.logback" % "logback-classic" % $("logback") % "provided",
         "org.hibernate" % "hibernate-c3p0" % $("hibernate") % "test",
         "com.alibaba" % "druid" % $("druid") % "test",

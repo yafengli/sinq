@@ -16,12 +16,23 @@ class QueryExp[T: Manifest](val em: EntityManager) {
     this
   }
 
-  def single(): T = {
-    em.createQuery(cq).getSingleResult.asInstanceOf[T]
+  def single(): Option[T] = {
+    try {
+      Some(em.createQuery(cq).getSingleResult.asInstanceOf[T])
+    } catch {
+      case e: Exception => None
+    }
+  }
+
+  def fetch(): Option[List[T]] = {
+    try {
+      Some(em.createQuery(cq).getResultList.asInstanceOf[List[T]])
+    } catch {
+      case e: Exception => None
+    }
   }
 }
 
 trait QueryCall[T] {
-
   def where(call: (CriteriaBuilder, CriteriaQuery[T]) => Predicate): QueryCall[T]
 }

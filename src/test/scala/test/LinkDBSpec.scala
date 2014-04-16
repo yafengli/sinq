@@ -33,7 +33,7 @@ class LinkDBSpec extends Specification {
       em =>
         val qe = new QueryExp[Book](em)
         val sl = qe.where((cb, cq, from) => cb.equal(from.get("price"), 12)).single()
-        println(sl)
+        println(">>>>>>>>>>>>>>>>>>>>>" + sl)
     }
     "Single"
   }
