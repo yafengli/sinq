@@ -16,7 +16,6 @@ import java.util.List;
  * Time: 下午2:43
  */
 public class CQLFacade extends EntityService {
-
     public CQLFacade(String persistenceName) {
         try {
             PersistenceFactory.bind(persistenceName);

@@ -29,12 +29,14 @@ class DBIISpec extends Specification {
    stop db                                           ${H2DB.close}
                                                      """
 
-  def single {
+  def single = {
     withEntityManager {
       em =>
         val qe = new QueryExp[Book](em)
-        qe.where((cb, cq, from) => cb.equal(from.get("price"), 12)).single()
+        val sl = qe.where((cb, cq, from) => cb.equal(from.get("price"), 12)).single()
+        println(sl)
     }
+    "Single"
   }
 
   def withEntityManager(call: (EntityManager) => Unit) {

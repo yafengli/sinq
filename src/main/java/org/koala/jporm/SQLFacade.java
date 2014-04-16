@@ -13,7 +13,6 @@ import java.util.Map;
  * Time: 下午2:43
  */
 public class SQLFacade extends EntityService {
-
     public SQLFacade(String persistenceName) {
         try {
             PersistenceFactory.bind(persistenceName);

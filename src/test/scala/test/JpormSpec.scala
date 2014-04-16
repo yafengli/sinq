@@ -21,20 +21,8 @@ class JpormSpec extends Specification {
   close db                  ${H2DB.close}
   """
 
-
-  def init = {
-    println("##########start###############")
-    server = Server.createTcpServer().start()
-    "Init db"
-  }
-
-  def close = {
-    println("##########end###############")
-    server.stop()
-    "close db"
-  }
-
   def test = {
+    /*
     val facade = new JPQLFacade("default")
     val entity = new Student()
     entity.address = "Hello World!"
@@ -64,6 +52,7 @@ class JpormSpec extends Specification {
       obj =>
         println(f"@@${obj.getClass} ${obj.toString.toLong}")
     }
+    */
     "Test Java Persistence API ORM"
   }
 }

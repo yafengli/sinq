@@ -16,8 +16,8 @@ class QueryExp[T: Manifest](val em: EntityManager) {
     this
   }
 
-  def single(): Long = {
-    em.createQuery(cq).getSingleResult.asInstanceOf[Long]
+  def single(): T = {
+    em.createQuery(cq).getSingleResult.asInstanceOf[T]
   }
 }
 

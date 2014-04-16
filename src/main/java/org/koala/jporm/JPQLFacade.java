@@ -14,7 +14,6 @@ import java.util.Map;
  * Time: 下午2:43
  */
 public class JPQLFacade extends EntityService {
-
     public JPQLFacade(String persistenceName) {
         try {
             PersistenceFactory.bind(persistenceName);
