@@ -72,6 +72,7 @@ public class CriteriaProcessorTest {
     public void testAllCourses1() {
         // create a criteria to find all courses.
         CriteriaComposer<Course> courseCriteria = CriteriaComposer.from(Course.class);
+
         List<Course> result = criteriaProcessor.findAllEntity(courseCriteria);
 
         assertNotNull(result);
