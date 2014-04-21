@@ -12,7 +12,7 @@ final class CriteriaComposer[T](val from: Class[T]) {
   val _select = ListBuffer[SelectContainer[_]]()
   val _where = ListBuffer[WhereContainer[_]]()
   val _join = ListBuffer[JoinContainer[_]]()
-  val _having = ListBuffer[HavingContainer]()
+  val _having = ListBuffer[HavingContainer[_]]()
   val _order = ListBuffer[OrderContainer]()
   val multiSelect = ListBuffer[Selection[_]]()
 
@@ -22,39 +22,26 @@ final class CriteriaComposer[T](val from: Class[T]) {
     this
   }
 
-  def and(): CriteriaComposer[T] = {
+  def and[V](attr: String, op: CriteriaOperator, v: V*): CriteriaComposer[T] = {
     lastCallType match {
       case LastCallType.WHERE =>
-        _where.size match {
-          case size: Int if size > 0 =>
-            _where(size - 1).logicOperator = LogicOperator.AND
-          case _ =>
-        }
+        if (_where.size > 0) _where.last.logicOperator = LogicOperator.AND
+        _where += WhereContainer(attr, op, v)
       case LastCallType.HAVING =>
-        _having.size match {
-          case size: Int if size > 0 =>
-            _having(size - 1).logicOperator = LogicOperator.AND
-          case _ =>
-        }
+        if (_having.size > 0) _having.last.logicOperator = LogicOperator.AND
+        _having += HavingContainer(attr, op, v)
     }
-
     this
   }
 
-  def or(): CriteriaComposer[T] = {
+  def or[V](attr: String, op: CriteriaOperator, v: V*): CriteriaComposer[T] = {
     lastCallType match {
       case LastCallType.WHERE =>
-        _where.size match {
-          case size: Int if size > 0 =>
-            _where(size - 1).logicOperator = LogicOperator.OR
-          case _ =>
-        }
+        if (_where.size > 0) _where.last.logicOperator = LogicOperator.OR
+        _where += WhereContainer(attr, op, v)
       case LastCallType.HAVING =>
-        _having.size match {
-          case size: Int if size > 0 =>
-            _having(size - 1).logicOperator = LogicOperator.OR
-          case _ =>
-        }
+        if (_having.size > 0) _having.last.logicOperator = LogicOperator.OR
+        _having += HavingContainer(attr, op, v)
     }
     this
   }
@@ -71,7 +58,9 @@ final class CriteriaComposer[T](val from: Class[T]) {
     this
   }
 
-  def having(): CriteriaComposer[T] = {
+  def having[V](attr: String, op: CriteriaOperator, v: V*): CriteriaComposer[T] = {
+    _having += HavingContainer(attr, op, v)
+    lastCallType = LastCallType.HAVING
     this
   }
 
@@ -89,7 +78,7 @@ case class WhereContainer[V](val attr: String, val op: CriteriaOperator, val vs:
 
 case class JoinContainer[V](val attr: String, val joinType: JoinType)
 
-case class HavingContainer(val attr: String, val op: CriteriaOperator, val vs: V*) {
+case class HavingContainer[V](val attr: String, val op: CriteriaOperator, val vs: V*) {
   var logicOperator: LogicOperator = LogicOperator.AND
   var notOperator: NegationOperator = null
 }
