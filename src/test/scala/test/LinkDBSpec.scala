@@ -3,7 +3,7 @@ package test
 import org.koala.sporm.jpa.JPA
 import org.specs2._
 import javax.persistence.EntityManager
-import demo.ii.QueryExp
+import demo.ii.{CriteriaOperator, CriteriaProcessor, CriteriaComposer, QueryExp}
 import models.Book
 
 /**
@@ -25,6 +25,7 @@ class LinkDBSpec extends Specification {
       open db                                           ${H2DB.init}
       init                                              $init
       single                                            $single
+      link dsl                                          $link
       close db                                          ${H2DB.close}
     """
 
@@ -38,6 +39,17 @@ class LinkDBSpec extends Specification {
         println(">>>>>>>>>>>>>>>>>>>>>" + ls)
     }
     "Single"
+  }
+
+  def link = {
+    withEntityManager {
+      em =>
+        new CriteriaComposer(em,classOf[Book]).where("price", CriteriaOperator.EQUAL, 12).single() match {
+          case Some(s) => println(">>>>>>>>>>>>>>>>>>>>>" + s)
+          case None => println(">>>>>>>>>>>>>>>>>>>>>Empty.")
+        }
+    }
+    "Link DSL"
   }
 
   def withEntityManager(call: (EntityManager) => Unit) {

@@ -1,60 +1,11 @@
 package demo.ii
 
-import javax.persistence.EntityManager
 import javax.persistence.criteria._
 import scala.collection.mutable.ListBuffer
 import demo.ii.CriteriaOperator.CriteriaOperator
-import scala.Some
 
-class CriteriaProcessor(em: EntityManager) {
-
-  import CriteriaProcessor._
-
-  def count[T](cc: CriteriaComposer[T], distinct: Boolean): Long = {
-
-    val cb = em.getCriteriaBuilder
-    val cq = cb.createQuery(classOf[Long])
-    val root = cq.from(cc.from)
-    if (distinct) {
-      cq.select(cb.countDistinct(root).asInstanceOf[Selection[Long]])
-    } else {
-      cq.select(cb.count(root).asInstanceOf[Selection[Long]])
-    }
-    cq.where(generateWhere(cb, cq, cc): _*)
-    cq.having(generateHaving(cb, cq, cc): _*)
-    em.createQuery(cq).getSingleResult
-  }
-
-  def single[T](cc: CriteriaComposer[T]): Option[T] = {
-    try {
-      val cb = em.getCriteriaBuilder
-      val cq = cb.createQuery(cc.from)
-      cq.where(generateWhere(cb, cq, cc): _*)
-      cq.having(generateHaving(cb, cq, cc): _*)
-      Some(em.createQuery(cq).getSingleResult)
-    } catch {
-      case e: Exception =>
-        None
-    }
-  }
-
-  def singleTuple[T](cc: CriteriaComposer[T]): Option[T] = {
-    try {
-      val cb = em.getCriteriaBuilder
-      val cq = cb.createQuery(cc.from)
-      cq.where(generateWhere(cb, cq, cc): _*)
-      cq.having(generateHaving(cb, cq, cc): _*)
-      cq.multiselect(generateSelect(cb, cq, cc): _*)
-      Some(em.createQuery(cq).getSingleResult)
-    } catch {
-      case e: Exception =>
-        None
-    }
-  }
-}
-
-object CriteriaProcessor {
-  private def operator[V <: Comparable](cb: CriteriaBuilder, attr: Expression[_], op: CriteriaOperator, v: V*): Predicate = {
+trait CriteriaProcessor {
+  def operator[V <: Comparable](cb: CriteriaBuilder, attr: Expression[_], op: CriteriaOperator, v: V*): Predicate = {
     op match {
       case CriteriaOperator.BETWEEN => cb.between(attr, v(0), v(1))
       case CriteriaOperator.EQUAL => cb.equal(attr, v(0))
@@ -68,7 +19,7 @@ object CriteriaProcessor {
     }
   }
 
-  private def generateWhere[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Predicate] = {
+  def generateWhere[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Predicate] = {
     val ps = ListBuffer[Predicate]()
     val and_s = ListBuffer[Predicate]()
     val or_s = ListBuffer[Predicate]()
@@ -85,7 +36,7 @@ object CriteriaProcessor {
     ps.toList
   }
 
-  private def generateHaving[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Predicate] = {
+  def generateHaving[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Predicate] = {
     val ps = ListBuffer[Predicate]()
     val and_s = ListBuffer[Predicate]()
     val or_s = ListBuffer[Predicate]()
@@ -102,7 +53,7 @@ object CriteriaProcessor {
     ps.toList
   }
 
-  private def generateSelect[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Selection[_]] = {
+  def generateSelect[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Selection[_]] = {
     val root = cq.from(cc.from)
     cc._select.map {
       s =>

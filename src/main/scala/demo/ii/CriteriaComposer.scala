@@ -6,8 +6,9 @@ import demo.ii.CriteriaOperator.CriteriaOperator
 import demo.ii.AggregateFunction._
 import demo.ii.NegationOperator.NegationOperator
 import demo.ii.LogicOperator.LogicOperator
+import javax.persistence.EntityManager
 
-final class CriteriaComposer[T](val from: Class[T]) {
+final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) extends CriteriaProcessor {
   var lastCallType = LastCallType.WHERE
   val _select = ListBuffer[SelectContainer[_]]()
   val _where = ListBuffer[WhereContainer[_]]()
@@ -67,6 +68,48 @@ final class CriteriaComposer[T](val from: Class[T]) {
   def orderBy(): CriteriaComposer[T] = {
     this
   }
+
+
+  def count(distinct: Boolean): Long = {
+    val cb = em.getCriteriaBuilder
+    val cq = cb.createQuery(classOf[Long])
+    val root = cq.from(this.from)
+    if (distinct) {
+      cq.select(cb.countDistinct(root).asInstanceOf[Selection[Long]])
+    } else {
+      cq.select(cb.count(root).asInstanceOf[Selection[Long]])
+    }
+    cq.where(generateWhere(cb, cq, this): _*)
+    cq.having(generateHaving(cb, cq, this): _*)
+    em.createQuery(cq).getSingleResult
+  }
+
+  def single(): Option[T] = {
+    try {
+      val cb = em.getCriteriaBuilder
+      val cq = cb.createQuery(this.from)
+      cq.where(generateWhere(cb, cq, this): _*)
+      cq.having(generateHaving(cb, cq, this): _*)
+      Some(em.createQuery(cq).getSingleResult)
+    } catch {
+      case e: Exception =>
+        None
+    }
+  }
+
+  def singleTuple(): Option[T] = {
+    try {
+      val cb = em.getCriteriaBuilder
+      val cq = cb.createQuery(this.from)
+      cq.where(generateWhere(cb, cq, this): _*)
+      cq.having(generateHaving(cb, cq, this): _*)
+      cq.multiselect(generateSelect(cb, cq, this): _*)
+      Some(em.createQuery(cq).getSingleResult)
+    } catch {
+      case e: Exception =>
+        None
+    }
+  }
 }
 
 case class SelectContainer[V](val name: String, val alias: String = name, val aFun: AggregateFunction = null)
@@ -88,12 +131,12 @@ case class GroupContainer(val attr: String, val op: CriteriaOperator)
 case class OrderContainer(val attr: String, val op: CriteriaOperator)
 
 object CriteriaComposer {
-  def from[T](entityClass: Class[T]): CriteriaComposer[T] = {
-    new CriteriaComposer[T](entityClass)
+  def from[T](em: EntityManager, entityClass: Class[T]): CriteriaComposer[T] = {
+    new CriteriaComposer[T](em, entityClass)
   }
 
-  def join[V](joinClass: Class[V]): CriteriaComposer[V] = {
-    new CriteriaComposer[V](joinClass)
+  def join[V](em: EntityManager, joinClass: Class[V]): CriteriaComposer[V] = {
+    new CriteriaComposer[V](em, joinClass)
   }
 }
 
