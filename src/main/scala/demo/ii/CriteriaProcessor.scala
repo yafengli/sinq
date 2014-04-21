@@ -4,13 +4,12 @@ import javax.persistence.criteria._
 import scala.collection.mutable.ListBuffer
 import demo.ii.CriteriaOperator.CriteriaOperator
 
-trait CriteriaProcessor[T] {
-  def operator[V](cb: CriteriaBuilder, attr: Expression[V], op: CriteriaOperator, v: V*): Predicate = {
+trait CriteriaProcessor[T <: Comparable[T]] {
+  def operator[V <: Comparable[V]](cb: CriteriaBuilder, attr: Expression[V], op: CriteriaOperator, v: V*): Predicate = {
     op match {
       case CriteriaOperator.BETWEEN =>
-        val s1 = v(0).asInstanceOf[java.lang.Comparable[V]]
-        val s2 = v(0).asInstanceOf[java.lang.Comparable[V]]
-        cb.between(attr, s1, s2)
+        cb.between(attr, v(0), v(1))
+      //        cb.between(attr, v(0), v(1))
       //      case CriteriaOperator.EQUAL => cb.equal(attr, v(0))
       //      case CriteriaOperator.GREATER_THAN => cb.greaterThan(attr, v(0))
       //      case CriteriaOperator.GREATER_THAN_EQUAL => cb.greaterThanOrEqualTo(attr, v(0))
@@ -22,7 +21,7 @@ trait CriteriaProcessor[T] {
     }
   }
 
-  def generateWhere[V](cb: CriteriaBuilder, cq: CriteriaQuery[V], root: Root[_], cc: CriteriaComposer[T]): List[Predicate] = {
+  def generateWhere(cb: CriteriaBuilder, cq: CriteriaQuery[_], root: Root[_], cc: CriteriaComposer[T]): List[Predicate] = {
     val ps = ListBuffer[Predicate]()
     val and_s = ListBuffer[Predicate]()
     val or_s = ListBuffer[Predicate]()
@@ -38,7 +37,7 @@ trait CriteriaProcessor[T] {
     ps.toList
   }
 
-  def generateHaving[V](cb: CriteriaBuilder, cq: CriteriaQuery[V], root: Root[_], cc: CriteriaComposer[T]): List[Predicate] = {
+  def generateHaving(cb: CriteriaBuilder, cq: CriteriaQuery[_], root: Root[_], cc: CriteriaComposer[T]): List[Predicate] = {
     val ps = ListBuffer[Predicate]()
     val and_s = ListBuffer[Predicate]()
     val or_s = ListBuffer[Predicate]()
@@ -54,7 +53,7 @@ trait CriteriaProcessor[T] {
     ps.toList
   }
 
-  def generateSelect[V](cb: CriteriaBuilder, cq: CriteriaQuery[V], root: Root[_], cc: CriteriaComposer[T]): List[Selection[_]] = {
+  def generateSelect(cb: CriteriaBuilder, cq: CriteriaQuery[_], root: Root[_], cc: CriteriaComposer[T]): List[Selection[_]] = {
     cc._select.map {
       s =>
         s.aFun match {
