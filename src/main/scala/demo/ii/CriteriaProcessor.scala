@@ -8,7 +8,8 @@ class CriteriaProcessor(em: EntityManager) {
       val cb = em.getCriteriaBuilder
       val cq = cb.createQuery(cc.from)
       cq.from(cc.from)
-      cq.where(cc._predicates: _*)
+      //TODO
+      //cq.where(cc._where: _*)
       Some(em.createQuery(cq).getSingleResult)
     } catch {
       case e: Exception =>
