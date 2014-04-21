@@ -8,7 +8,7 @@ import demo.ii.NegationOperator.NegationOperator
 import demo.ii.LogicOperator.LogicOperator
 import javax.persistence.EntityManager
 
-final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) extends CriteriaProcessor {
+final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) extends CriteriaProcessor[T] {
   var lastCallType = LastCallType.WHERE
   val _select = ListBuffer[SelectContainer[_]]()
   val _where = ListBuffer[WhereContainer[_]]()
@@ -79,8 +79,8 @@ final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) exten
     } else {
       cq.select(cb.count(root).asInstanceOf[Selection[Long]])
     }
-    cq.where(generateWhere(cb, cq, this): _*)
-    cq.having(generateHaving(cb, cq, this): _*)
+    cq.where(generateWhere(cb, cq, root, this): _*)
+    cq.having(generateHaving(cb, cq, root, this): _*)
     em.createQuery(cq).getSingleResult
   }
 
@@ -88,8 +88,9 @@ final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) exten
     try {
       val cb = em.getCriteriaBuilder
       val cq = cb.createQuery(this.from)
-      cq.where(generateWhere(cb, cq, this): _*)
-      cq.having(generateHaving(cb, cq, this): _*)
+      val root = cq.from(this.from)
+      cq.where(generateWhere(cb, cq, root, this): _*)
+      cq.having(generateHaving(cb, cq, root, this): _*)
       Some(em.createQuery(cq).getSingleResult)
     } catch {
       case e: Exception =>
@@ -101,9 +102,10 @@ final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) exten
     try {
       val cb = em.getCriteriaBuilder
       val cq = cb.createQuery(this.from)
-      cq.where(generateWhere(cb, cq, this): _*)
-      cq.having(generateHaving(cb, cq, this): _*)
-      cq.multiselect(generateSelect(cb, cq, this): _*)
+      val root = cq.from(this.from)
+      cq.where(generateWhere(cb, cq, root, this): _*)
+      cq.having(generateHaving(cb, cq, root, this): _*)
+      cq.multiselect(generateSelect(cb, cq, root, this): _*)
       Some(em.createQuery(cq).getSingleResult)
     } catch {
       case e: Exception =>
@@ -112,7 +114,9 @@ final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) exten
   }
 }
 
-case class SelectContainer[V](val name: String, val alias: String = name, val aFun: AggregateFunction = null)
+case class SelectContainer[V](val name: String, val alias: String, val aFun: AggregateFunction = null) {
+  def this(name: String) = this(name, name, null)
+}
 
 case class WhereContainer[V](val attr: String, val op: CriteriaOperator, val vs: V*) {
   var logicOperator: LogicOperator = _

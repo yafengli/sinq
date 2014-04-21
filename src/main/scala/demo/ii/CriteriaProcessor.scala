@@ -4,26 +4,28 @@ import javax.persistence.criteria._
 import scala.collection.mutable.ListBuffer
 import demo.ii.CriteriaOperator.CriteriaOperator
 
-trait CriteriaProcessor {
-  def operator[V <: Comparable](cb: CriteriaBuilder, attr: Expression[_], op: CriteriaOperator, v: V*): Predicate = {
+trait CriteriaProcessor[T] {
+  def operator[V](cb: CriteriaBuilder, attr: Expression[V], op: CriteriaOperator, v: V*): Predicate = {
     op match {
-      case CriteriaOperator.BETWEEN => cb.between(attr, v(0), v(1))
-      case CriteriaOperator.EQUAL => cb.equal(attr, v(0))
-      case CriteriaOperator.GREATER_THAN => cb.greaterThan(attr, v(0))
-      case CriteriaOperator.GREATER_THAN_EQUAL => cb.greaterThanOrEqualTo(attr, v(0))
-      case CriteriaOperator.IN => attr.in(v: _*)
-      case CriteriaOperator.IS_NULL => cb.isNull(attr)
-      case CriteriaOperator.LESS_THAN => cb.lessThan(attr, v(0))
-      case CriteriaOperator.LESS_THAN_EQUAL => cb.lessThanOrEqualTo(attr, v(0))
+      case CriteriaOperator.BETWEEN =>
+        val s1 = v(0).asInstanceOf[java.lang.Comparable[V]]
+        val s2 = v(0).asInstanceOf[java.lang.Comparable[V]]
+        cb.between(attr, s1, s2)
+      //      case CriteriaOperator.EQUAL => cb.equal(attr, v(0))
+      //      case CriteriaOperator.GREATER_THAN => cb.greaterThan(attr, v(0))
+      //      case CriteriaOperator.GREATER_THAN_EQUAL => cb.greaterThanOrEqualTo(attr, v(0))
+      //      case CriteriaOperator.IN => attr.in(v: _*)
+      //      case CriteriaOperator.IS_NULL => cb.isNull(attr)
+      //      case CriteriaOperator.LESS_THAN => cb.lessThan(attr, v(0))
+      //      case CriteriaOperator.LESS_THAN_EQUAL => cb.lessThanOrEqualTo(attr, v(0))
       case CriteriaOperator.LIKE => cb.like(attr.asInstanceOf[Expression[String]], v(0).asInstanceOf[String])
     }
   }
 
-  def generateWhere[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Predicate] = {
+  def generateWhere[V](cb: CriteriaBuilder, cq: CriteriaQuery[V], root: Root[_], cc: CriteriaComposer[T]): List[Predicate] = {
     val ps = ListBuffer[Predicate]()
     val and_s = ListBuffer[Predicate]()
     val or_s = ListBuffer[Predicate]()
-    val root = cq.from(cc.from)
     cc._where.foreach {
       w =>
         w.logicOperator match {
@@ -36,11 +38,10 @@ trait CriteriaProcessor {
     ps.toList
   }
 
-  def generateHaving[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Predicate] = {
+  def generateHaving[V](cb: CriteriaBuilder, cq: CriteriaQuery[V], root: Root[_], cc: CriteriaComposer[T]): List[Predicate] = {
     val ps = ListBuffer[Predicate]()
     val and_s = ListBuffer[Predicate]()
     val or_s = ListBuffer[Predicate]()
-    val root = cq.from(cc.from)
     cc._having.foreach {
       w =>
         w.logicOperator match {
@@ -53,8 +54,7 @@ trait CriteriaProcessor {
     ps.toList
   }
 
-  def generateSelect[T](cb: CriteriaBuilder, cq: CriteriaQuery[T], cc: CriteriaComposer[T]): List[Selection[_]] = {
-    val root = cq.from(cc.from)
+  def generateSelect[V](cb: CriteriaBuilder, cq: CriteriaQuery[V], root: Root[_], cc: CriteriaComposer[T]): List[Selection[_]] = {
     cc._select.map {
       s =>
         s.aFun match {
