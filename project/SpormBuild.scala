@@ -31,7 +31,6 @@ object SpormBuild extends Build {
         "com.h2database" % "h2" % $("h2") % "test",
         "postgresql" % "postgresql" % "9.1-901.jdbc4" % "test",
         "org.scalatest" % "scalatest_2.10" % "2.1.3" % "test",
-        "org.specs2" %% "specs2" % $("specs2") % "test",
         "junit" % "junit" % "4.10" % "test"
       )
     )

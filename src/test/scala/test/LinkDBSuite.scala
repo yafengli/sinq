@@ -15,7 +15,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
  * Time: 上午11:08
  */
 @RunWith(classOf[JUnitRunner])
-class LinkDBSpec extends FunSuite with BeforeAndAfter {
+class LinkDBSuite extends FunSuite with BeforeAndAfter {
   before {
     H2DB.init
   }
