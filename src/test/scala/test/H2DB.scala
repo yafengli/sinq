@@ -8,14 +8,14 @@ object H2DB {
 
   def init = {
     println("##########start###############")
-    server.start()
+    if (!server.isRunning(false)) server.start()
     JPA.initPersistenceName("default")
     "Init db"
   }
 
   def close = {
     println("##########end###############")
-    server.stop()
+    server.shutdown()
     "close db"
   }
 }

@@ -10,11 +10,13 @@ import models.jm.Game
 import models.sm.AuthorModel.authorExtend
 import models.sm.GameActiveRecord
 import models.sm.GameActiveRecord.gameExtend
-import org.koala.sporm.jpa.{CQExpression, JPA}
-import org.specs2._
+import org.koala.sporm.jpa.CQExpression
 import scala.concurrent.forkjoin.RecursiveAction
 import java.util.concurrent.TimeUnit
 import DB._
+import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
 
 /**
@@ -22,30 +24,17 @@ import DB._
  * Date: 12-12-11
  * Time: 上午11:08
  */
-class DBSpec extends Specification {
-  def init = {
-    JPA.initPersistenceName("default")
-    "call" must have size (4)
+@RunWith(classOf[JUnitRunner])
+class DBSpec extends FunSuite with BeforeAndAfter {
+  before {
+    H2DB.init
   }
 
-  def is = s2"""
+  after {
+    H2DB.close
+  }
 
- This is a specification to check the 'Hello world' string
-
- The 'Hello world' string should
-   init db                                           ${H2DB.init}
-   init                                              $init
-   fetch                                             $fetch
-   single                                            $single
-   or                                                $or
-   count                                             $count
-   stop db                                           ${H2DB.close}
-                                                     """
-
-  /**
-   * 复杂的条件表达式 or
-   */
-  def or = {
+  test("or") {
     time(() => {
       Teacher.fetch(e => {
         val b = e.builder
@@ -61,10 +50,9 @@ class DBSpec extends Specification {
       }
       "Or And"
     })
-    "Or And"
   }
 
-  def java_model() {
+  test("java model") {
     time(() => {
       GameActiveRecord.fetch(_ => Nil) match {
         case Some(list) =>
@@ -88,7 +76,7 @@ class DBSpec extends Specification {
     })
   }
 
-  def scala_model() {
+  test("scala_model") {
     time(() => {
       Book.fetch(_ => Nil) match {
         case Some(list) =>
@@ -112,7 +100,7 @@ class DBSpec extends Specification {
     })
   }
 
-  def all_exps() {
+  test("all_exps") {
     time(() => {
       Book.withEntityManager {
         em => {
@@ -141,7 +129,7 @@ class DBSpec extends Specification {
     })
   }
 
-  def fetch = {
+  test("fetch") {
     time(() => {
       Teacher.fetch(5, 5) {
         e =>
@@ -157,10 +145,9 @@ class DBSpec extends Specification {
       }
       "Fetch"
     })
-    "Fetch"
   }
 
-  def single = {
+  test("single") {
     time(() => {
       Book.single(e => Seq(e.==("id", 9))) match {
         case Some(o) => println(o)
@@ -168,11 +155,10 @@ class DBSpec extends Specification {
       }
       "single"
     })
-    "single"
   }
 
 
-  def count = {
+  test("count") {
     time(() => {
       Book.count {
         e =>
@@ -191,10 +177,9 @@ class DBSpec extends Specification {
       }
       "Fetch count 2"
     })
-    "count 2"
   }
 
-  def exp_extend() {
+  test("exp_extend") {
     time(() => {
       Book.single(e => {
         Seq(e.==(Seq("student", "teacher"))("id", 2L))

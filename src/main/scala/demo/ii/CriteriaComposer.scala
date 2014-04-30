@@ -118,7 +118,7 @@ case class SelectContainer[V](val name: String, val alias: String, val aFun: Agg
   def this(name: String) = this(name, name, null)
 }
 
-case class WhereContainer[V](val attr: String, val op: CriteriaOperator, val vs: V*) {
+case class WhereContainer[V](val attr: String, val op: CriteriaOperator, val vs: Seq[V]) {
   var logicOperator: LogicOperator = _
   var notOperator: NegationOperator = _
 }

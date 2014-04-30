@@ -3,19 +3,21 @@ package demo.ii
 import javax.persistence.criteria._
 import scala.collection.mutable.ListBuffer
 import demo.ii.CriteriaOperator.CriteriaOperator
+import java.util.Date
 
 trait CriteriaProcessor[T] {
-  def operator[V <: Comparable[V]](cb: CriteriaBuilder, attr: Expression[V], op: CriteriaOperator, v: V*): Option[Predicate] = {
-    op match {
-      case CriteriaOperator.BETWEEN => Some(cb.between(attr, v(0), v(1)))
-      case CriteriaOperator.EQUAL => Some(cb.equal(attr, v(0)))
-      case CriteriaOperator.GREATER_THAN => Some(cb.greaterThan(attr, v(0)))
+  def operator[V](cb: CriteriaBuilder, attr: Expression[_ <: V], w: WhereContainer[V]): Predicate = {
+    val v = w.vs
+    w.op match {
+      //      case CriteriaOperator.BETWEEN => cb.between(attr, v(0).asInstanceOf[Comparable[V]], v(1).asInstanceOf[Comparable[V]])
+      case CriteriaOperator.EQUAL => cb.equal(attr, v(0))
+      //      case CriteriaOperator.GREATER_THAN => cb.greaterThan(attr, v(0))
       //      case CriteriaOperator.GREATER_THAN_EQUAL => cb.greaterThanOrEqualTo(attr, v(0))
       //      case CriteriaOperator.IN => attr.in(v: _*)
-      //      case CriteriaOperator.IS_NULL => cb.isNull(attr)
+      case CriteriaOperator.IS_NULL => cb.isNull(attr)
       //      case CriteriaOperator.LESS_THAN => cb.lessThan(attr, v(0))
       //      case CriteriaOperator.LESS_THAN_EQUAL => cb.lessThanOrEqualTo(attr, v(0))
-      //      case CriteriaOperator.LIKE => cb.like(attr.asInstanceOf[Expression[String]], v(0).asInstanceOf[String])
+      case CriteriaOperator.LIKE => cb.like(attr.asInstanceOf[Expression[String]], v(0).asInstanceOf[String])
     }
   }
 
@@ -26,8 +28,8 @@ trait CriteriaProcessor[T] {
     cc._where.foreach {
       w =>
         w.logicOperator match {
-          //case LogicOperator.AND | LogicOperator.NONE => and_s += operator(cb, root.get(w.attr), w.op, w.vs: _*)
-          //case LogicOperator.OR => or_s += operator(cb, root.get(w.attr), w.op, w.vs: _*)
+          case LogicOperator.AND | LogicOperator.NONE => and_s += operator(cb, root.get(w.attr), w)
+          //case LogicOperator.OR => or_s += operator(cb, root.get(w.attr), w.op, w.vs)
           case _ =>
         }
     }
@@ -43,8 +45,8 @@ trait CriteriaProcessor[T] {
     cc._having.foreach {
       w =>
         w.logicOperator match {
-          //case LogicOperator.AND | LogicOperator.NONE => and_s += operator(cb, root.get(w.attr), w.op, w.vs: _*)
-          //case LogicOperator.OR => or_s += operator(cb, root.get(w.attr), w.op, w.vs: _*)
+          //case LogicOperator.AND | LogicOperator.NONE => and_s += operator(cb, root.get(w.attr), w.op, w.vs)
+          //case LogicOperator.OR => or_s += operator(cb, root.get(w.attr), w.op, w.vs)
           case _ =>
         }
     }
@@ -52,7 +54,6 @@ trait CriteriaProcessor[T] {
     ps += cb.or(or_s: _*)
     ps.toList
   }
-
 
   def generateSelect(cb: CriteriaBuilder, cq: CriteriaQuery[_], root: Root[_], cc: CriteriaComposer[T]): List[Selection[_]] = {
     cc._select.map {
@@ -64,6 +65,6 @@ trait CriteriaProcessor[T] {
           case AggregateFunction.MAX => cb.max(root.get(s.name)).alias(s.alias)
           case AggregateFunction.MIN => cb.min(root.get(s.name)).alias(s.alias)
         }
-    } toList
+    }.toList
   }
 }
