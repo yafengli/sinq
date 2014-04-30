@@ -18,16 +18,16 @@ final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) exten
   val multiSelect = ListBuffer[Selection[_]]()
 
   def where[V <: Comparable[V]](attr: String, op: CriteriaOperator, v: Seq[V]): CriteriaComposer[T] = {
-    _where += WhereContainer(attr, op, v)
+    _where += WhereContainer(attr, op, v: _*)
     lastCallType = LastCallType.WHERE
     this
   }
 
-  def and[V](attr: String, op: CriteriaOperator, v: V*): CriteriaComposer[T] = {
+  def and[V <: Comparable[V]](attr: String, op: CriteriaOperator, v: V*): CriteriaComposer[T] = {
     lastCallType match {
       case LastCallType.WHERE =>
         if (_where.size > 0) _where.last.logicOperator = LogicOperator.AND
-        _where += WhereContainer(attr, op, v)
+        _where += WhereContainer(attr, op, v: _*)
       case LastCallType.HAVING =>
         if (_having.size > 0) _having.last.logicOperator = LogicOperator.AND
         _having += HavingContainer(attr, op, v)
@@ -35,11 +35,11 @@ final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) exten
     this
   }
 
-  def or[V](attr: String, op: CriteriaOperator, v: V*): CriteriaComposer[T] = {
+  def or[V <: Comparable[V]](attr: String, op: CriteriaOperator, v: V*): CriteriaComposer[T] = {
     lastCallType match {
       case LastCallType.WHERE =>
         if (_where.size > 0) _where.last.logicOperator = LogicOperator.OR
-        _where += WhereContainer(attr, op, v)
+        _where += WhereContainer(attr, op, v: _*)
       case LastCallType.HAVING =>
         if (_having.size > 0) _having.last.logicOperator = LogicOperator.OR
         _having += HavingContainer(attr, op, v)
