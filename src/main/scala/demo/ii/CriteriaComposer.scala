@@ -17,7 +17,7 @@ final class CriteriaComposer[T](val em: EntityManager, val from: Class[T]) exten
   val _order = ListBuffer[OrderContainer]()
   val multiSelect = ListBuffer[Selection[_]]()
 
-  def where[V](attr: String, op: CriteriaOperator, v: V*): CriteriaComposer[T] = {
+  def where[V <: Comparable[V]](attr: String, op: CriteriaOperator, v: Seq[V]): CriteriaComposer[T] = {
     _where += WhereContainer(attr, op, v)
     lastCallType = LastCallType.WHERE
     this
@@ -118,9 +118,9 @@ case class SelectContainer[V](val name: String, val alias: String, val aFun: Agg
   def this(name: String) = this(name, name, null)
 }
 
-case class WhereContainer[V](val attr: String, val op: CriteriaOperator, val vs: Seq[V]) {
-  var logicOperator: LogicOperator = _
-  var notOperator: NegationOperator = _
+case class WhereContainer[V <: Comparable[V]](val attr: String, val op: CriteriaOperator, val vs: V*) {
+  var logicOperator = LogicOperator.NONE
+  var notOperator = NegationOperator.NONE
 }
 
 case class JoinContainer[V](val attr: String, val joinType: JoinType)

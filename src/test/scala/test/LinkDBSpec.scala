@@ -24,7 +24,7 @@ class LinkDBSpec extends FunSuite with BeforeAndAfter {
     H2DB.close
   }
 
-//  test("single") {
+  //  test("single") {
   //    withEntityManager {
   //      em =>
   //        val qe = new QueryExp[Book](em)
@@ -38,7 +38,7 @@ class LinkDBSpec extends FunSuite with BeforeAndAfter {
   test("link") {
     withEntityManager {
       em =>
-        new CriteriaComposer(em, classOf[Book]).where("price", CriteriaOperator.EQUAL, 12).single() match {
+        new CriteriaComposer(em, classOf[Book]).where("price", CriteriaOperator.EQUAL, 999).single() match {
           case Some(s) => println(">>" + s)
           case None => println("##None.")
         }

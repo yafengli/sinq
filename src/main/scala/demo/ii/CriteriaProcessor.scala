@@ -6,18 +6,20 @@ import demo.ii.CriteriaOperator.CriteriaOperator
 import java.util.Date
 
 trait CriteriaProcessor[T] {
-  def operator[V](cb: CriteriaBuilder, attr: Expression[_ <: V], w: WhereContainer[V]): Predicate = {
+  def operator[V <: Comparable[V]](cb: CriteriaBuilder, root: Root[_], w: WhereContainer[V]): Predicate = {
     val v = w.vs
+    val attr = root.get(w.attr)
     w.op match {
-      //      case CriteriaOperator.BETWEEN => cb.between(attr, v(0).asInstanceOf[Comparable[V]], v(1).asInstanceOf[Comparable[V]])
+      case CriteriaOperator.BETWEEN => cb.between(attr, v(0), v(1))
       case CriteriaOperator.EQUAL => cb.equal(attr, v(0))
-      //      case CriteriaOperator.GREATER_THAN => cb.greaterThan(attr, v(0))
-      //      case CriteriaOperator.GREATER_THAN_EQUAL => cb.greaterThanOrEqualTo(attr, v(0))
-      //      case CriteriaOperator.IN => attr.in(v: _*)
+      case CriteriaOperator.GREATER_THAN => cb.greaterThan(attr, v(0))
+      case CriteriaOperator.GREATER_THAN_EQUAL => cb.greaterThanOrEqualTo(attr, v(0))
+      case CriteriaOperator.IN => attr.in(v)
       case CriteriaOperator.IS_NULL => cb.isNull(attr)
-      //      case CriteriaOperator.LESS_THAN => cb.lessThan(attr, v(0))
-      //      case CriteriaOperator.LESS_THAN_EQUAL => cb.lessThanOrEqualTo(attr, v(0))
+      case CriteriaOperator.LESS_THAN => cb.lessThan(attr, v(0))
+      case CriteriaOperator.LESS_THAN_EQUAL => cb.lessThanOrEqualTo(attr, v(0))
       case CriteriaOperator.LIKE => cb.like(attr.asInstanceOf[Expression[String]], v(0).asInstanceOf[String])
+      case _ => println(f"@@@@@@@${w.op.toString}"); null
     }
   }
 
@@ -28,13 +30,13 @@ trait CriteriaProcessor[T] {
     cc._where.foreach {
       w =>
         w.logicOperator match {
-          case LogicOperator.AND | LogicOperator.NONE => and_s += operator(cb, root.get(w.attr), w)
-          //case LogicOperator.OR => or_s += operator(cb, root.get(w.attr), w.op, w.vs)
-          case _ =>
+          case LogicOperator.AND | LogicOperator.NONE => and_s += operator(cb, root, w)
+          //          case LogicOperator.OR => or_s += operator(cb, root, w)
+          case _ => println(f"#####${w.logicOperator}")
         }
     }
-    ps += cb.and(and_s: _*)
-    ps += cb.or(or_s: _*)
+    if (and_s.size > 0) ps += cb.and(and_s: _*)
+    if (or_s.size > 0) ps += cb.or(or_s: _*)
     ps.toList
   }
 
@@ -50,8 +52,8 @@ trait CriteriaProcessor[T] {
           case _ =>
         }
     }
-    ps += cb.and(and_s: _*)
-    ps += cb.or(or_s: _*)
+    if (and_s.size > 0) ps += cb.and(and_s: _*)
+    if (or_s.size > 0) ps += cb.or(or_s: _*)
     ps.toList
   }
 
