@@ -30,7 +30,7 @@ trait CriteriaProcessor[T] {
     cc._where.foreach {
       w =>
         w.logicOperator match {
-          case LogicOperator.AND | LogicOperator.NONE => and_s += operator(cb, root, w)
+//          case LogicOperator.AND | LogicOperator.NONE => and_s += operator(cb, root, w)
           //          case LogicOperator.OR => or_s += operator(cb, root, w)
           case _ => println(f"#####${w.logicOperator}")
         }

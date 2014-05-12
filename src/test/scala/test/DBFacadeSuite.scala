@@ -9,9 +9,6 @@ import scala.concurrent.forkjoin.ForkJoinPool
 import scala.concurrent.forkjoin.ForkJoinTask
 import scala.concurrent.forkjoin.RecursiveAction
 
-import org.specs2.Specification
-
-import javax.persistence.Tuple
 import models.Book
 import models.Student
 import org.koala.sporm.SpormFacade

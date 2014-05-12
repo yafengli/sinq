@@ -2,9 +2,7 @@ package test
 
 import org.koala.sporm.jpa.JPA
 import javax.persistence.EntityManager
-import demo.ii.{CriteriaOperator, CriteriaComposer, QueryExp}
-import models.Book
-import scala.Some
+import demo.ii.CriteriaComposer
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -38,10 +36,13 @@ class LinkDBSuite extends FunSuite with BeforeAndAfter {
   test("link") {
     withEntityManager {
       em =>
-        new CriteriaComposer(em, classOf[Book]).where("price", CriteriaOperator.EQUAL, 999).single() match {
+
+      /**
+      new CriteriaComposer(em, classOf[Book]).where("price", CriteriaOperator.EQUAL, 999).single() match {
           case Some(s) => println(">>" + s)
           case None => println("##None.")
         }
+        */
     }
   }
 
