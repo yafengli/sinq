@@ -17,6 +17,7 @@ object SpormBuild extends Build {
       name := "sporm",
       organization := "org.koala",
       version := $("prod"),
+      scalaVersion := "2.11.1",
       resolvers ++= Seq(
         "Local Maven Repository" at "file:///f:/repository/",
         "OSC Nexus" at "http://maven.oschina.net/content/groups/public/"
