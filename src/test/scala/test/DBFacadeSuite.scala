@@ -19,7 +19,7 @@ class DBFacadeSuite extends FunSuite with BeforeAndAfter {
   import DB._
 
   before {
-    H2DB.init
+    H2DB.open
   }
 
   after {
@@ -101,7 +101,6 @@ class DBFacadeSuite extends FunSuite with BeforeAndAfter {
         println("#multi:" + list)
       case None =>
     }
-    "multi"
   }
 
   def concurrent(t: Int): String = {

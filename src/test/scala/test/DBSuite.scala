@@ -27,7 +27,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class DBSuite extends FunSuite with BeforeAndAfter {
   before {
-    H2DB.init
+    H2DB.open
   }
 
   after {

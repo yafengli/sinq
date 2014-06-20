@@ -15,7 +15,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class LinkDBSuite extends FunSuite with BeforeAndAfter {
   before {
-    H2DB.init
+    H2DB.open
   }
 
   after {

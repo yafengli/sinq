@@ -14,8 +14,6 @@ class DemoSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Hello World!") {
-    println("Hello World!")
-    println("Hello World!")
-    println("Hello World!")
+    (0 to 5).foreach(i => println(s"[${i}]Hello World!"))
   }
 }
