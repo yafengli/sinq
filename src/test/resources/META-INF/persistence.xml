@@ -33,6 +33,7 @@
             <property name="hibernate.c3p0.max_statements" value="3000"/>
             <!-- 每隔120秒检查连接池里的空闲连接 ，单位是秒-->
             <property name="hibernate.c3p0.idle_test_period" value="120"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
     </persistence-unit>
 </persistence>

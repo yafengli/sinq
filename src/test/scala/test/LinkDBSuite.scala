@@ -1,9 +1,11 @@
 package test
 
-import org.koala.sporm.jpa.JPA
 import javax.persistence.EntityManager
-import demo.ii.CriteriaComposer
+
+import demo.ii.{CriteriaOperator, CriteriaComposer, QueryExp}
+import models.Book
 import org.junit.runner.RunWith
+import org.koala.sporm.jpa.JPA
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -22,23 +24,23 @@ class LinkDBSuite extends FunSuite with BeforeAndAfter {
     H2DB.close
   }
 
-  //  test("single") {
-  //    withEntityManager {
-  //      em =>
-  //        val qe = new QueryExp[Book](em)
-  //        val sg = qe.where((cb, cq, from) => cb.equal(from.get("price"), 12)).single()
-  //        val ls = qe.where((cb, cq, from) => cb.gt(from.get("price"), 12)).fetch()
-  //        println(">>>>>>>>>>>>>>>>>>>>>" + sg)
-  //        println(">>>>>>>>>>>>>>>>>>>>>" + ls)
-  //    }
-  //  }
+  test("single") {
+    withEntityManager {
+      em =>
+        val qe = new QueryExp[Book](em)
+        val sg = qe.where((cb, cq, from) => cb.equal(from.get("price"), 12)).single()
+        val ls = qe.where((cb, cq, from) => cb.gt(from.get("price"), 12)).fetch()
+        println(">>>>>>>>>>>>>>>>>>>>>" + sg)
+        println(">>>>>>>>>>>>>>>>>>>>>" + ls)
+    }
+  }
 
   test("link") {
     withEntityManager {
       em =>
 
       /**
-      new CriteriaComposer(em, classOf[Book]).where("price", CriteriaOperator.EQUAL, 999).single() match {
+      new CriteriaComposer(em, classOf[Book]).where("price", CriteriaOperator.EQUAL, Seq(999)).single() match {
           case Some(s) => println(">>" + s)
           case None => println("##None.")
         }

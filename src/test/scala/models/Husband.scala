@@ -3,6 +3,8 @@ package models
 import javax.persistence._
 import org.koala.sporm.jpa.CQModel
 
+import scala.beans.BeanProperty
+
 /**
  * User: YaFengLi
  * Date: 12-12-3
@@ -10,7 +12,7 @@ import org.koala.sporm.jpa.CQModel
  */
 @Entity
 @Table(name = "t_husband")
-case class Husband(var name: String, var age: Int) {
+case class Husband(@BeanProperty var name: String,@BeanProperty var age: Int) {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_husband")
   @TableGenerator(name = "seq_t_husband", table = "seq_t_husband", allocationSize = 1)
