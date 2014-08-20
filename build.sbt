@@ -7,7 +7,7 @@ lazy val $ = scala.io.Source.fromFile(new File("version.properties")).getLines()
   (m.group(1), m.group(2))
 }).toMap
 
-lazy val root = (project in file(".")).settings(graphSettings: _*)
+lazy val root = project.in(file(".")).settings(graphSettings: _*)
 
 name := "sporm"
 
