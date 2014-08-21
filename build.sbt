@@ -11,6 +11,8 @@ lazy val root = project.in(file(".")).settings(graphSettings: _*)
 
 name := "sporm"
 
+organization := "org.koala"
+
 version := $("prod")
 
 scalaVersion := "2.11.1"
