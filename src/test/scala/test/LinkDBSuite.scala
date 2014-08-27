@@ -2,7 +2,7 @@ package test
 
 import javax.persistence.EntityManager
 
-import demo.ii.{CriteriaOperator, CriteriaComposer, QueryExp}
+import demo.ii.QueryExp
 import models.Book
 import org.junit.runner.RunWith
 import org.koala.sporm.jpa.JPA
