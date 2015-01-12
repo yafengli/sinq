@@ -1,8 +1,9 @@
-##Build from the source
+## Build from the source
 
         >sbt publish-local
 
-##Install
+## Install
+
 + SBT:`libraryDependencies += "org.koala" %% "sporm" % "X.Y.Z"`
 
 + Maven:
