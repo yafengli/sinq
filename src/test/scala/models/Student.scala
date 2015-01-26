@@ -1,8 +1,8 @@
 package models
 
+import java.util.{HashSet, Set}
 import javax.persistence._
-import java.util.Set
-import java.util.HashSet
+
 import org.koala.sporm.jpa.CQModel
 
 import scala.beans.BeanProperty
@@ -14,14 +14,17 @@ case class Student(@BeanProperty var name: String, @BeanProperty var age: Int, @
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_student")
   @TableGenerator(name = "seq_t_student", table = "seq_t_student", allocationSize = 1)
+  @BeanProperty
   var id: Long = _
 
   @ManyToOne()
   @JoinColumn(name = "teacher_id")
+  @BeanProperty
   var teacher: Teacher = _
 
 
   @OneToMany(cascade = Array(CascadeType.REMOVE), mappedBy = "student")
+  @BeanProperty
   var books: Set[Book] = new HashSet[Book]()
 
   def this() = this(null, -1, null)
@@ -36,7 +39,6 @@ case class Student(@BeanProperty var name: String, @BeanProperty var age: Int, @
   }
 
   override def toString = id + ":" + name + ":" + age + ":" + address
-
 }
 
 object Student extends CQModel[Student]

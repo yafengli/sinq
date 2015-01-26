@@ -16,9 +16,11 @@ case class Husband(@BeanProperty var name: String,@BeanProperty var age: Int) {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_husband")
   @TableGenerator(name = "seq_t_husband", table = "seq_t_husband", allocationSize = 1)
+  @BeanProperty
   var id: Long = _
 
   @OneToOne(fetch = FetchType.EAGER, optional = false)
+  @BeanProperty
   var teacher: Teacher = _
 
   def this() = this(null, -1)

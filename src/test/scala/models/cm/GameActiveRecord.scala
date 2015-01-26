@@ -1,4 +1,4 @@
-package models.sm
+package models.cm
 
 import org.koala.sporm.jpa.BaseBuilder
 import org.koala.sporm.jpa.CQModel
