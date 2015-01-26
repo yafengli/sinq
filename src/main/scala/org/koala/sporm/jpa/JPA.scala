@@ -1,12 +1,14 @@
 package org.koala.sporm.jpa
 
-import scala.collection.mutable
-import javax.persistence.{EntityManagerFactory, EntityManager, Persistence}
+import javax.persistence.{EntityManager, EntityManagerFactory, Persistence}
+
 import org.slf4j.LoggerFactory
+
+import scala.collection.mutable
 
 trait JPA {
 
-  import JPA._
+  import org.koala.sporm.jpa.JPA._
 
   def withTransaction[T](call: EntityManager => T): Option[T] = {
     val em = createEntityManager()
@@ -71,20 +73,22 @@ object JPA {
     bind(pn(0))
   }
 
-  def lookEntityManagerFactory(): EntityManagerFactory = {
-    val pn = PN_T.get()
-    if (EMF_MAP.size == 1) EMF_MAP.toSeq.head._2
-    else if (!EMF_MAP.contains(pn)) throw new Exception("#Not found persistence name BIND for current thread.")
-    else EMF_MAP(pn)
+  def lookEntityManagerFactory(): Option[EntityManagerFactory] = {
+    PN_T.get() match {
+      case pn: String if EMF_MAP.contains(pn) => Some(EMF_MAP(pn))
+      case _ => None
+    }
   }
 
-  def lookEntityManagerFactory(pn: String): EntityManagerFactory = {
-    if (!EMF_MAP.contains(pn)) throw new Exception("#Not found persistence name INIT.")
-    else EMF_MAP(pn)
+  def lookEntityManagerFactory(pn: String): Option[EntityManagerFactory] = {
+    if (EMF_MAP.contains(pn)) Some(EMF_MAP(pn)) else None
   }
 
   def createEntityManager(): EntityManager = {
-    lookEntityManagerFactory().createEntityManager()
+    lookEntityManagerFactory() match {
+      case Some(emf) => emf.createEntityManager()
+      case None => throw new Exception("#Not found persistence name INIT.")
+    }
   }
 
   def releaseAll() {
