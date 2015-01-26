@@ -2,28 +2,22 @@ package test
 
 import java.util.concurrent.TimeUnit
 
-import scala.collection.JavaConversions.asScalaBuffer
-import scala.collection.JavaConversions.bufferAsJavaList
-import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.forkjoin.ForkJoinPool
-import scala.concurrent.forkjoin.ForkJoinTask
-import scala.concurrent.forkjoin.RecursiveAction
-
-import models.Book
-import models.Student
-import org.koala.sporm.SpormFacade
+import models.{Book, Student}
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
+
+import scala.collection.JavaConversions.{bufferAsJavaList, _}
+import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.forkjoin.{ForkJoinTask, RecursiveAction}
 
 class DBFacadeSuite extends FunSuite with BeforeAndAfter {
 
-  import DB._
-
   before {
-    H2DB.open
+    open
   }
 
   after {
-    H2DB.close
+    close
   }
 
   test("in") {
@@ -115,13 +109,11 @@ class DBFacadeSuite extends FunSuite with BeforeAndAfter {
     val start = System.currentTimeMillis()
     val name = f()
     val stop = System.currentTimeMillis()
-    println(f"---[${name}}][${DB.size}]--#time use ${stop - start}ms.")
+    println(f"---[${name}}][#time use ${stop - start}ms.")
   }
 }
 
 case class FetchAction(var count: Int) extends RecursiveAction {
-
-  import DB._
 
   def compute() {
     if (count == 1) {
@@ -132,18 +124,9 @@ case class FetchAction(var count: Int) extends RecursiveAction {
       val count = facade.count(classOf[Student])(e => {
         Array(e.!=("name", id.toString), e.!=("age", id), e.!=("address", id.toString))
       })
-      println(f"#id:${id} size:${size} count:${count}")
-      DB.synchronized {
-        DB.size += 1
-      }
+      println(f"#id:${id} count:${count}")
     } else if (count > 1) {
       ForkJoinTask.invokeAll(new FetchAction(count - 1), new FetchAction(1))
     }
   }
-}
-
-object DB {
-  val facade = SpormFacade("default")
-  val pool = new ForkJoinPool(8)
-  var size = 0
 }

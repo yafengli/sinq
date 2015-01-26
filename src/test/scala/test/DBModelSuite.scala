@@ -1,22 +1,20 @@
 package test
 
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.persistence.criteria.Predicate
-import models.Book
-import models.Book_
-import models.Teacher
-import models.jm.Author
-import models.jm.Game
+
 import models.cm.AuthorModel.authorExtend
 import models.cm.GameActiveRecord
 import models.cm.GameActiveRecord.gameExtend
-import org.koala.sporm.jpa.CQExpression
-import scala.concurrent.forkjoin.RecursiveAction
-import java.util.concurrent.TimeUnit
-import DB._
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import models.jm.{Author, Game}
+import models.{Book, Book_, Teacher}
 import org.junit.runner.RunWith
+import org.koala.sporm.jpa.CQExpression
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.{BeforeAndAfter, FunSuite}
+
+import scala.concurrent.forkjoin.{ForkJoinTask, RecursiveAction}
 
 
 /**
@@ -26,12 +24,15 @@ import org.scalatest.junit.JUnitRunner
  */
 @RunWith(classOf[JUnitRunner])
 class DBSuite extends FunSuite with BeforeAndAfter {
+
+  import test.H2DB._
+
   before {
-    H2DB.open
+    open
   }
 
   after {
-    H2DB.close
+    close
   }
 
   test("or") {
@@ -211,18 +212,13 @@ class DBSuite extends FunSuite with BeforeAndAfter {
 
 case class ModelAction(var count: Int) extends RecursiveAction {
 
-  import DB._
 
   def compute() {
     if (count == 1) {
       val id = Thread.currentThread().getId
       val count = Book.count(e => Seq(e.>=(Seq("student"))("id", 12)))
-      println(f"#id:${id} size:${size} count:${count}")
-      DB.synchronized {
-        DB.size += 1
-      }
+      println(f"#id:${id} count:${count}")
     } else if (count > 1) {
-      import scala.concurrent.forkjoin.ForkJoinTask
       ForkJoinTask.invokeAll(new ModelAction(count - 1), new ModelAction(1))
     }
   }
