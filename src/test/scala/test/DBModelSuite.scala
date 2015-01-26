@@ -13,9 +13,9 @@ import org.junit.runner.RunWith
 import org.koala.sporm.jpa.CQExpression
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 import scala.concurrent.forkjoin.{ForkJoinTask, RecursiveAction}
-
 
 /**
  * User: YaFengLi
@@ -24,9 +24,6 @@ import scala.concurrent.forkjoin.{ForkJoinTask, RecursiveAction}
  */
 @RunWith(classOf[JUnitRunner])
 class DBSuite extends FunSuite with BeforeAndAfter {
-
-  import test.H2DB._
-
   before {
     open
   }
