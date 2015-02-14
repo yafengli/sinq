@@ -13,7 +13,7 @@
         <class>models.jm.Player</class>
         <properties>
             <property name="hibernate.connection.provider_class"
-                      value="com.alibaba.druid.support.hibernate.DruidConnectionProvider"/>
+                      value="com.alibaba.support.support.hibernate.DruidConnectionProvider"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="driverClassName" value="org.h2.Driver"/>
             <property name="url" value="jdbc:h2:tcp://localhost/~/test"/>

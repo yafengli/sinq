@@ -4,7 +4,7 @@ import javax.persistence.{EntityManager, EntityManagerFactory, Persistence}
 
 import org.slf4j.LoggerFactory
 
-import scala.collection.mutable
+import scala.collection.concurrent.TrieMap
 
 trait JPA {
 
@@ -47,51 +47,76 @@ trait JPA {
 object JPA {
   val logger = LoggerFactory.getLogger(classOf[JPA])
 
-  private val EMF_MAP = mutable.HashMap[String, EntityManagerFactory]()
+  private val EMF_MAP = TrieMap[String, EntityManagerFactory]()
   private val PN_T = new ThreadLocal[String]
 
   /**
-   * bind persistence name bind to current thread
-   * @param pn
+   * bind persistence name to current thread
+   * @param pn persistence name
    */
   def bind(pn: String) {
     if (pn != null) {
       PN_T.set(pn)
+      if (!EMF_MAP.contains(pn)) EMF_MAP += (pn -> Persistence.createEntityManagerFactory(pn))
     }
     else throw new Exception("#JPA PersistenceUnitName is NULL.")
   }
 
   /**
-   * multi persistence name init
-   * @param pn
+   * multi persistence name init.
+   * @param pn persistence name
    */
   def initPersistenceName(pn: String*) {
-    pn.foreach {
-      un =>
-        EMF_MAP += (un -> Persistence.createEntityManagerFactory(un))
-    }
+    pn.foreach(n => EMF_MAP += (n -> Persistence.createEntityManagerFactory(n)))
     bind(pn(0))
   }
 
-  def lookEntityManagerFactory(): Option[EntityManagerFactory] = {
+  /**
+   * loop the current thread persistence name refer to EntityManagerFactory.
+   * @return Option EntityManagerFactory
+   */
+  def entityManagerFactory(): Option[EntityManagerFactory] = {
     PN_T.get() match {
       case pn: String if EMF_MAP.contains(pn) => Some(EMF_MAP(pn))
       case _ => None
     }
   }
 
-  def lookEntityManagerFactory(pn: String): Option[EntityManagerFactory] = {
+  /**
+   * loop the current thread persistence name refer to EntityManagerFactory.
+   * @param pn persistence name
+   * @return Option EntityManagerFactory
+   */
+  def entityManagerFactory(pn: String): Option[EntityManagerFactory] = {
     if (EMF_MAP.contains(pn)) Some(EMF_MAP(pn)) else None
   }
 
+  /**
+   * create EntityManager.
+   * @return Option EntityManager
+   */
   def createEntityManager(): EntityManager = {
-    lookEntityManagerFactory() match {
+    entityManagerFactory() match {
       case Some(emf) => emf.createEntityManager()
       case None => throw new Exception("#Not found persistence name INIT.")
     }
   }
 
-  def releaseAll() {
+  /**
+   * create EntityManager by thread local persistence name.
+   * @return Option EntityManager
+   */
+  def createEntityManager(pn: String): EntityManager = {
+    entityManagerFactory(pn) match {
+      case Some(emf) => emf.createEntityManager()
+      case None => throw new Exception("#Not found persistence name INIT.")
+    }
+  }
+
+  /**
+   * release all EntityManagerFactory.
+   */
+  def release() {
     EMF_MAP.foreach(_._2.close())
     EMF_MAP.clear()
   }

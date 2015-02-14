@@ -11,14 +11,14 @@
         <class>models.Student</class>
         <class>models.Book</class>
         <properties>
+            <property name="hibernate.connection.provider_class"
+                      value="org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider"/>
             <!-- hibernate的c3p0连接池配置（需要jar包：c3p0-x.x.x.jar） -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
             <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
             <property name="hibernate.connection.url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
             <property name="hibernate.connection.username" value="postgres"/>
 
-            <property name="hibernate.connection.provider_class"
-                      value="org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider"/>
             <!-- 最小连接数 -->
             <property name="hibernate.c3p0.min_size" value="5"/>
             <!-- 最大连接数 -->

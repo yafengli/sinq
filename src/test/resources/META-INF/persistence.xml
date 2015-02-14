@@ -12,27 +12,19 @@
         <class>models.jm.Game</class>
         <class>models.jm.Player</class>
         <properties>
-            <property name="hibernate.connection.provider_class"
-                      value="org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider"/>
-
+            <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
+            <property name="driverClassName" value="org.h2.Driver"/>
+            <property name="url" value="jdbc:h2:~/test"/>
+            <property name="username" value="sa"/>
+            <property name="password" value=""/>
+            <!-- optional -->
+            <property name="validationQuery" value="SELECT 'x'"/>
+            <property name="initialSize" value="1"/>
+            <property name="maxActive" value="20"/>
+            <property name="minIdle" value="5"/>
+            <property name="maxWait" value="6000"/>
+            <!-- hibernate -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-            <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>
-            <property name="hibernate.connection.url" value="jdbc:h2:~/hello"/>
-            <property name="hibernate.connection.username" value="sa"/>
-            <property name="hibernate.connection.password" value=""/>
-
-            <!-- 最小连接数 -->
-            <property name="hibernate.c3p0.min_size" value="5"/>
-            <!-- 最大连接数 -->
-            <property name="hibernate.c3p0.max_size" value="20"/>
-            <!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
-            <property name="c3p0.maxIdleTime" value="60"/>
-            <!-- 获得连接的超时时间,如果超过这个时间,会抛出异常，单位毫秒 -->
-            <property name="hibernate.c3p0.timeout" value="3000"/>
-            <!-- 最大的PreparedStatement的数量 -->
-            <property name="hibernate.c3p0.max_statements" value="3000"/>
-            <!-- 每隔120秒检查连接池里的空闲连接 ，单位是秒-->
-            <property name="hibernate.c3p0.idle_test_period" value="120"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
     </persistence-unit>
