@@ -1,6 +1,6 @@
-sporm
+Sinq
 =====
-A very simple scalable Object/Relation Mapping library for Java Persistence API.
+Sinq is a very simple scalable Object/Relation Mapping library for Java Persistence API.
 
 目标
 ====
@@ -63,7 +63,7 @@ A very simple scalable Object/Relation Mapping library for Java Persistence API.
 
         @Entity
         @Table(name = "t_user")
-        class User {
+        class User extends CQModel{
             @Id
             @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_book")
             @TableGenerator(name = "seq_t_book", table = "seq_t_book", allocationSize = 1)
@@ -83,7 +83,7 @@ A very simple scalable Object/Relation Mapping library for Java Persistence API.
             }
         }
 
-        object User extends CQModel
+        object User 
 
         //Usage:
         val user = new User("name",10)
@@ -91,4 +91,4 @@ A very simple scalable Object/Relation Mapping library for Java Persistence API.
         user.delete()
         user.update()
 
-        val user = JPA.select().where().groupBy().single().getOrElse(new User)
+        val user = User.select().where().groupBy().single() //return Option[User]
