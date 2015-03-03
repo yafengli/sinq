@@ -33,20 +33,21 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 + `and`与`or`连接`expression`
 + 例如：
 
-        `ge("age",1).and(eq("name","John"))`条件为`where age >= 1 and name = 'John'`
-        `ge("age",1).and(eq("name","John").or(eq("id",5L)))`条件为`where age >= 1 and (name = 'John' or id = 5)`
-        `gt("age",1).and(eq("name","John").or(ge("id",5L).and(le("id",10L))))`条件为`where age > 1 and (name = 'John' or (id > 5 and id < 10)`
+        ge("age",1).and(eq("name","John"))                                          //表达式 age >= 1 and name = 'John'
+        ge("age",1).and(eq("name","John").or(eq("id",5L)))                          //表达式 age >= 1 and (name = 'John' or id = 5)
+        gt("age",1).and(eq("name","John").or(ge("id",5L).and(le("id",10L))))        //表达式 age > 1 and (name = 'John' or (id > 5 and id < 10)
 
-+ `gt`/`ge`/`lt`/`le`/`in`/`eq`/`between`
++ `gt`/`ge`/`lt`/`le`/`in`/`eq`/`between`等
 
 #### 函数
-+ `count`,`avg`,`sum`:使用SQL函数
-+ `select(column("col_1","col_2").single()`:单对象(NoEntity)查询single：
++ `count`,`avg`,`sum`,`min`,`max`,`first`,`last`:使用SQL函数
++ `select(column(USER.ID,USER.NAME).single()`:单对象(NoEntity)查询single：
 + `collect`:多对象(Entity/Array[Object])查询
 + `limit、groupBy、orderBy、join、having on`
 + `query(sql:String):Seq[Array[AnyRef]]`:执行sql查询
++ `execute(sql:String):Int`:执行sql
 
-##### 获取dml与ddl
+##### 获取SQL字符串
 + 获取SQL字符串`.sql()`
 
 #### 例子
