@@ -47,8 +47,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 + `query(sql:String):Seq[Array[AnyRef]]`:执行sql查询
 
 ##### 获取dml与ddl
-+ 获取数据操纵字符串`.dml()`
-+ 获取数据定义字符串`.ddl()`
++ 获取SQL字符串`.sql()`
 
 #### 例子
 + Entity:`User.scala`
@@ -67,12 +66,22 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
             var name:String = _
             @BeanProperty
             @Column
+            var address:String = _
+            @BeanProperty
+            @Column
             var age:Int = _
 
             def this(id:Long,name:String,age:Int) = {
                 this.name = name
                 this.age = age
             }
+        }
+
+        object USER {
+            val ID = "id"
+            val NAME = "name"
+            val ADDRESS="address"
+            val AGE = "age"
         }
 
         object IUser extends JPA{
@@ -92,10 +101,14 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
 + Custom Usage:
 
-        val user = select.where().groupBy().single()
-        val count = select(Count("id"),Column("id","name"),Sum("id").where().single()
+        val user = select().from(USER).where().groupBy().single()
+        val count = select(Count(USER.ID),Column(USER.ID,USER.NAME),Sum(USER.ID).from(USER).where().single()
 
 + Complete Usage:
 
-        val user = select(Column("id","name")).where(Eq("name","123").and(Ge("age",12).or(Lt("number",12)))).leftJoin(classOf[T]).
+        val query = select(Column(USER.ID,USER.NAME)).from(USER).leftJoin(BOOK).on(Eq(USER.ID,BOOK.UID)).where(Eq(USER.NAME,"123").and(Ge(USER.AGE,12).or(Eq(USER.ADDRESS,"NJ"))))
+
+        query.single()    //Option[AnyRef]
+        query.collect()   //Iterator[AnyRef]
+        query.sql()       //SQL string
 
