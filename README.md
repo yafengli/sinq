@@ -40,30 +40,22 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 + `gt`/`ge`/`lt`/`le`/`in`/`eq`/`between`
 
 #### 函数
-+ `count`,`avg`,`sum`,
-
-+ 单对象(NoEntity)查询single：`select(column("col_1","col_2").single()`
-+ 多对象(Entity/Array[Object])查询collect
-+ 数目查询count
-+ limit、groupBy、orderBy、join、having on
-+ 查询语句字符串sql
-+ 执行sql查询query(sql:String):Seq[Array[AnyRef]]
-
-####
++ `count`,`avg`,`sum`:使用SQL函数
++ `select(column("col_1","col_2").single()`:单对象(NoEntity)查询single：
++ `collect`:多对象(Entity/Array[Object])查询
++ `limit、groupBy、orderBy、join、having on`
++ `query(sql:String):Seq[Array[AnyRef]]`:执行sql查询
 
 ##### 获取dml与ddl
-
 + 获取数据操纵字符串`.dml()`
 + 获取数据定义字符串`.ddl()`
 
 #### 例子
-+ Entity:
-
-        User.scala
++ Entity:`User.scala`
 
         @Entity
         @Table(name = "t_user")
-        class User extends CQModel{
+        class User {
             @Id
             @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_book")
             @TableGenerator(name = "seq_t_book", table = "seq_t_book", allocationSize = 1)
@@ -83,12 +75,27 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
             }
         }
 
-        object User 
+        object IUser extends JPA{
+          implicit def stream(a: User) = new SinqStream[User] {}
+        }
 
-        //Usage:
++ Import Library:
+
+        import IUser._
+
++ Simple Usage:
+
         val user = new User("name",10)
-        user.insert()
-        user.delete()
-        user.update()
+        insert(user)
+        delete(user)
+        update(user)
 
-        val user = User.select().where().groupBy().single() //return Option[User]
++ Custom Usage:
+
+        val user = select.where().groupBy().single()
+        val count = select(Count("id"),Column("id","name"),Sum("id").where().single()
+
++ Complete Usage:
+
+        val user = select(Column("id","name")).where(Eq("name","123").and(Ge("age",12).or(Lt("number",12)))).leftJoin(classOf[T]).
+

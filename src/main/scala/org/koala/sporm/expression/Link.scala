@@ -1,8 +1,16 @@
 package org.koala.sporm.expression
 
-/**
- * Created by Administrator on 2015/3/3.
- */
 trait Link {
+  val buffer = new StringBuffer()
+
+  def and(link: Link): Unit = {
+    this.buffer.append(link.buffer.toString)
+  }
+
+  def or(link: Link): Unit
+}
+
+object Link {
+
 
 }

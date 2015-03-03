@@ -10,6 +10,7 @@ scalaVersion := "2.11.4"
 
 libraryDependencies ++= Seq(
   "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),
+  "org.hibernate" % "hibernate-jpamodelgen" % $("hibernate"),
   "com.google.guava" % "guava" % $("guava") % "provided",
   "ch.qos.logback" % "logback-classic" % $("logback") % "provided",
   "org.hibernate" % "hibernate-c3p0" % $("hibernate") % "provided",
