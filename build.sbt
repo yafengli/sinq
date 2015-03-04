@@ -6,7 +6,7 @@ organization := "org.koala"
 
 version := $("prod")
 
-scalaVersion := "2.11.4"
+scalaVersion := $("scala")
 
 libraryDependencies ++= Seq(
   "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),

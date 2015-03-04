@@ -1,43 +1,43 @@
 Sinq
-=====
+====
 Sinq is a very simple scalable Object/Relation Mapping library for Java Persistence API.
+
+[TOC]
+
 
 目标
 ====
-1.使用SQL；
-2.使用JPA；
-3.支持Scala和Java；
-4.提供Functional链式操作；
+* 使用SQL；
+* 使用JPA；
+* 支持Scala和Java；
+* 提供Functional链式操作；
 
-#### 目标
-+ 完整支持SQL语句；
+#### 增删改(CRUD)
++ <b>`insert`</b>
++ <b>`find`</b>
++ `delete`
++ `update`
++ <b>AT&T:&copy;</b>
 
-#### 增删改
-+ insert
-+ delete
-+ update
+#### 查询(Query)
++ 单结果`single()`
++ 多结果`collect()`
 
-#### 查询结果(Query)
-+ 单结果single()
-+ 多结果collect()
+#### 结果集(Entity/Tuple)
++ JPA Entity:`select(classOf[T])`
++ Tuple:`select(Column(USER.ID,USER.NAME))`
 
-#### JPA Entity
-+ 查询：`select(classOf[T]).single()`与`select(classOf[T]).collect()`
-
-
-
-#### NoJPA Entity
-+ 查询：`select(column("col_1","col_2")).single()`与`select(column("col_1","col_2")).collect()`
-
-#### where
+#### Select语句
+*
+#### where语句
 + `and`与`or`连接`expression`
-+ 例如：
-
-        ge("age",1).and(eq("name","John"))                                          //表达式 age >= 1 and name = 'John'
-        ge("age",1).and(eq("name","John").or(eq("id",5L)))                          //表达式 age >= 1 and (name = 'John' or id = 5)
-        gt("age",1).and(eq("name","John").or(ge("id",5L).and(le("id",10L))))        //表达式 age > 1 and (name = 'John' or (id > 5 and id < 10)
-
 + `gt`/`ge`/`lt`/`le`/`in`/`eq`/`between`等
+
+#### 举例
++ `ge("age",1).and(eq("name","John"))`表达式:`age >= 1 and name = 'John'`
++ `ge("age",1).and(eq("name","John").or(eq("id",5L)))`表达式:`age >= 1 and (name = 'John' or id = 5)`
++ `gt("age",1).and(eq("name","John").or(ge("id",5L).and(le("id",10L))))`表达式:`age > 1 and (name = 'John' or (id > 5 and id < 10)`
+
 
 #### 函数
 + `count`,`avg`,`sum`,`min`,`max`,`first`,`last`:使用SQL函数
@@ -78,38 +78,55 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
             }
         }
 
-        object USER {
+        object USER extends Table {
             val ID = "id"
             val NAME = "name"
             val ADDRESS="address"
             val AGE = "age"
-        }
 
-        object IUser extends JPA{
-          implicit def stream(a: User) = new SinqStream[User] {}
+            override def tableName():String = "t_user"
         }
 
 + Import Library:
 
-        import IUser._
+        import io.SinqStream._
+
+        implict val stream = new SinqStream()
 
 + Simple Usage:
 
         val user = new User("name",10)
-        insert(user)
-        delete(user)
-        update(user)
+        stream.insert(user)
+        stream.delete(user)
+        stream.update(user)
 
 + Custom Usage:
 
-        val user = select().from(USER).where().groupBy().single()
-        val count = select(Count(USER.ID),Column(USER.ID,USER.NAME),Sum(USER.ID).from(USER).where().single()
+        stream.select(classOf[User])
+              .from(USER)
+              .where()
+              .groupBy()
+              .orderBy(ASC)
+              .limit(10)
+              .offset(50)
+              .single()
+
+        stream.select(Count(USER.ID),Column(USER.ID,USER.NAME),Sum(USER.ID)
+              .from(USER)
+              .where()
+              .groupBy()
+              .orderBy(ASC)
+              .limit(10)
+              .offset(50)
+              .single()
 
 + Complete Usage:
 
-        val query = select(Column(USER.ID,USER.NAME)).from(USER).leftJoin(BOOK).on(Eq(USER.ID,BOOK.UID)).where(Eq(USER.NAME,"123").and(Ge(USER.AGE,12).or(Eq(USER.ADDRESS,"NJ"))))
+        val query = stream.select(Column(USER.ID,USER.NAME))
+                          .from(USER).leftJoin(BOOK)
+                          .on(Eq(USER.ID,BOOK.UID))
+                          .where(Eq(USER.NAME,"123").and(Ge(USER.AGE,12).or(Eq(USER.ADDRESS,"NJ"))))
 
         query.single()    //Option[AnyRef]
         query.collect()   //Iterator[AnyRef]
         query.sql()       //SQL string
-
