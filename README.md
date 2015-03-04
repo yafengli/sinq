@@ -2,22 +2,19 @@ Sinq
 ====
 Sinq is a very simple scalable Object/Relation Mapping library for Java Persistence API.
 
-[TOC]
-
-
 目标
 ====
-* 使用SQL；
-* 使用JPA；
-* 支持Scala和Java；
-* 提供Functional链式操作；
+* 使用__SQL__；
+* 使用__JPA__；
+* 支持__Scala__；
+* 提供直观的__Functional Chain__操作；
 
 #### 增删改(CRUD)
-+ <b>`insert`</b>
-+ <b>`find`</b>
++ `insert`
++ `find`
 + `delete`
 + `update`
-+ <b>AT&T:&copy;</b>
++ AT&T:&copy;
 
 #### 查询(Query)
 + 单结果`single()`
@@ -30,7 +27,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 #### Select语句
 *
 #### where语句
-+ `and`与`or`连接`expression`
++ `and`与`or`连接`condition`
 + `gt`/`ge`/`lt`/`le`/`in`/`eq`/`between`等
 
 #### 举例
