@@ -1,8 +1,11 @@
 package org.koala.sporm.expression
 
-/**
- * Created by Administrator on 2015/3/3.
- */
-class Ge {
+class Ge extends Condition
 
+object Ge {
+  def apply(column: String, value: AnyRef): Condition = {
+    val ge = new Ge
+    ge.linkCache.append(s" ${column} >= ${value}")
+    ge
+  }
 }

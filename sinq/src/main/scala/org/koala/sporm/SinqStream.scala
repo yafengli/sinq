@@ -1,6 +1,6 @@
 package org.koala.sporm
 
-import org.koala.sporm.expression.Link
+import org.koala.sporm.expression.Condition
 
 object SinqStream {
   private val sql = new StringBuffer()
@@ -27,13 +27,13 @@ trait M1 {
 }
 
 trait M2 {
-  def leftJoin(tableName: String, on: Link): M3 = new M3 {}
+  def leftJoin(tableName: String, on: Condition): M3 = new M3 {}
 
-  def rightJoin(tableName: String, on: Link): M3 = new M3 {}
+  def rightJoin(tableName: String, on: Condition): M3 = new M3 {}
 
-  def fullJoin(tableName: String, on: Link): M3 = new M3 {}
+  def fullJoin(tableName: String, on: Condition): M3 = new M3 {}
 
-  def where(tableName: String, on: Link): M3 = new M3 {}
+  def where(tableName: String, on: Condition): M3 = new M3 {}
 }
 
 trait M3
