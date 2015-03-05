@@ -27,7 +27,6 @@ lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq_core).se
   libraryDependencies ++= Seq(
     "org.jinq" % "jinq-jpa-scala" % $("jinq"),//jinq
     "com.google.guava" % "guava" % $("guava"),
-    "org.hibernate" % "hibernate-c3p0" % $("hibernate") % "test",
     "com.alibaba" % "druid" % $("druid") % "test",
     "com.h2database" % "h2" % $("h2") % "test",
     "junit" % "junit" % $("junit") % "test",
