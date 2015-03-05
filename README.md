@@ -10,11 +10,10 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 * 提供直观的__Functional Chain__操作；
 
 #### 增删改(CRUD)
-+ `insert`
-+ `find`
-+ `delete`
-+ `update`
-+ AT&T:&copy;
++ `insert(obj:Entity)`
++ `find(pk:AnyRef)`
++ `delete(obj:Entity)`
++ `update(obj:Entity)`
 
 #### 查询(Query)
 + 单结果`single()`
@@ -25,7 +24,9 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 + Tuple:`select(Column(USER.ID,USER.NAME))`
 
 #### Select语句
-*
+* `select[T](ct:Class[T])`
+* `select(columns:Column*)`
+
 #### where语句
 + `and`与`or`连接`condition`
 + `gt`/`ge`/`lt`/`le`/`in`/`eq`/`between`等

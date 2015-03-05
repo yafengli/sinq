@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0"
+                 xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd ">
+    <package>models</package>
+    <entity class="models.Student">
+        <named-query name="find_ok">
+            <query>
+                select t from Student as t where t.age = :age
+            </query>
+        </named-query>
+        <named-native-query name="student.n_find_m">
+            <query>
+            select count(*) from t_student t where t.age = :age
+        </query>
+        </named-native-query>
+        <named-native-query name="student.n_find_mt">
+            <query>
+            select count(*),sum(t.age) from t_student t where t.age > :age
+        </query>
+        </named-native-query>
+    </entity>
+    <entity class="models.jm.Author">
+        <named-query name="t_find">
+            <query>
+                select t from Author t where t.name = :name
+            </query>
+        </named-query>
+    </entity>
+</entity-mappings>

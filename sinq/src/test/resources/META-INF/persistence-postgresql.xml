@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <mapping-file>META-INF/query-models.xml</mapping-file>
+        <class>models.Teacher</class>
+        <class>models.Student</class>
+        <class>models.Book</class>
+        <class>models.jm.Author</class>
+        <class>models.jm.Game</class>
+        <class>models.jm.Player</class>
+        <properties>
+            <property name="hibernate.connection.provider_class"
+                      value="com.alibaba.support.support.hibernate.DruidConnectionProvider"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
+            <property name="driverClassName" value="org.postgresql.Driver"/>
+            <property name="url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
+            <property name="username" value="postgres"/>
+            <property name="password" value=""/>
+
+            <property name="hibernate.max_fetch_depth" value="3"/>
+            <property name="hibernate.jdbc.fetch_size" value="100"/>
+            <property name="hibernate.jdbc.batch_size" value="50"/>
+
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
+        </properties>
+    </persistence-unit>
+</persistence>
