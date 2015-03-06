@@ -1,3 +1,4 @@
+import org.koala.sbt.SbtAppPlugin._
 import Build._
 
 lazy val root = project.in(file(".")).aggregate(sinq, sinq_example)
@@ -25,11 +26,11 @@ lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq).setting
   version := $("prod"),
   scalaVersion := $("scala"),
   libraryDependencies ++= Seq(
-    "org.jinq" % "jinq-jpa-scala" % $("jinq"),//jinq
+    "org.jinq" % "jinq-jpa-scala" % $("jinq"), //jinq
     "com.google.guava" % "guava" % $("guava"),
     "com.alibaba" % "druid" % $("druid") % "test",
     "com.h2database" % "h2" % $("h2") % "test",
     "junit" % "junit" % $("junit") % "test",
     "org.scalatest" %% "scalatest" % $("scalatest") % "test"
   )
-)
+).settings(appSettings: _*).settings(prefix := "sinq_example-" + $("prod"),dirSetting ++= Seq("doc" -> "doc"))
