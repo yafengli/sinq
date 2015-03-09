@@ -2,46 +2,65 @@ package org.koala.sporm
 
 import org.koala.sporm.expression.Condition
 
-object SinqStream {
-  private val sql = new StringBuffer()
+case class SinqStream() {
+  val sql = new StringBuffer()
 
-  def select(): M1 = new M1 {}
+  def select(fields: String*): From = {
+    sql.append("select ")
+    contact(fields.toList)
+    From(sql)
+  }
+
+  private def contact(fields: List[String]): Unit = {
+    fields match {
+      case head :: first :: tail =>
+        sql.append(head).append(",").append(first)
+        contact(tail)
+      case last :: Nil => sql.append(last)
+      case Nil =>
+    }
+  }
+}
+
+case class From(val sql: StringBuffer) {
+
+
+  def from(tableName: String): Where = {
+    sql.append(" from ").append(tableName)
+    Where(sql)
+  }
 }
 
 
-trait MResult {
-  def where(): MWhere = new MWhere {}
+case class Where(val sql: StringBuffer) {
+  def where(condition: Condition): End = {
+    sql.append(" where ")
+    sql.append(condition.linkCache.toString)
+    End(sql)
+  }
 }
 
-//select ... from
-trait MWhere {
-  def orderBy(): M3 = new M3 {}
 
-  def limit(): M3 = new M3 {}
+case class End(val sql: StringBuffer) {
 
+  def groupBy(column: String): End = {
+    sql.append(s" groupBy ${column}")
+    this
+  }
+
+  def orderBy(column: String, order: String): End = {
+    sql.append(s" orderBy ${column} ${order}")
+    this
+  }
+
+  def limit(limit: Int, offset: Int): End = {
+    sql.append(s" limit ${limit} offset ${offset}")
+    this
+  }
+
+  def toSql(): String = sql.toString
+
+  def single[T](): T = null.asInstanceOf[T]
+
+  def collect[T](): List[T] = Nil
 }
-
-//where ...
-trait M1 {
-  def from(): M2 = new M2 {}
-}
-
-trait M2 {
-  def leftJoin(tableName: String, on: Condition): M3 = new M3 {}
-
-  def rightJoin(tableName: String, on: Condition): M3 = new M3 {}
-
-  def fullJoin(tableName: String, on: Condition): M3 = new M3 {}
-
-  def where(tableName: String, on: Condition): M3 = new M3 {}
-}
-
-trait M3
-
-trait M4
-
-trait M5
-
-trait M6
-
-
