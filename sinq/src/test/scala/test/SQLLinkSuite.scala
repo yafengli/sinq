@@ -13,7 +13,9 @@ class SQLLinkSuite extends FunSuite with BeforeAndAfter {
   after {
   }
   test("SQL String link.") {
-    println("::" + Eq("name", "hello").and(Ge("age", 11).or(Ge("id", 5))).linkCache.toString + "::")
+    val condition = Eq("name", "hello").and(Ge("age", 11).or(Ge("id", 5)))
+    println("::" + condition.linkCache.toString + "::")
+    println("::" + condition.paramsMap + "::")
   }
 }
 
