@@ -1,17 +1,19 @@
 package org.koala.sporm
 
 import org.koala.sporm.expression.Condition
+import org.koala.sporm.jpa.JPA
 
 import scala.collection.mutable
+import scala.collection.JavaConversions._
 
-case class SinqStream() {
+case class SinqStream() extends JPA {
   val sql = new StringBuffer()
 
-  val paramsMap = mutable.Map[String, Any]()
+  val params = mutable.Map[String, Any]()
 
   def select(fields: String*): From = {
     sql.append("select ")
-    contact(fields.toList)
+    if (fields == null) sql.append("*") else contact(fields.toList)
     From(this)
   }
 
@@ -23,6 +25,29 @@ case class SinqStream() {
       case last :: Nil => sql.append(last)
       case Nil =>
     }
+  }
+
+  def insert[T](t: T): Unit = {
+    withTransaction(_.persist(t))
+  }
+
+  def delete[T](t: T): Unit = {
+    withTransaction(_.remove(t))
+  }
+
+  def update[T](t: T): Unit = {
+    withTransaction(_.merge(t))
+  }
+
+  def count[T](t: Class[T]): Long = {
+    withEntityManager {
+      em =>
+        val cb = em.getCriteriaBuilder
+        val c = cb.createQuery(classOf[java.lang.Long])
+        val root = c.from(t)
+        c.select(cb.count(root.get("id")))
+        em.createQuery(c).getSingleResult.longValue()
+    } getOrElse (0)
   }
 }
 
@@ -38,22 +63,22 @@ case class Where(from: From) {
 
   def where(condition: Condition): End = {
     from.sinq.sql.append(" where ")
-    from.sinq.paramsMap ++= condition.paramsMap
+    from.sinq.params ++= condition.paramsMap
     from.sinq.sql.append(condition.linkCache.toString)
     End(this)
   }
 }
 
 
-case class End(where: Where) {
+case class End(where: Where) extends JPA {
 
   def groupBy(column: String): End = {
-    where.from.sinq.sql.append(s" groupBy ${column}")
+    where.from.sinq.sql.append(s" group by ${column}")
     this
   }
 
   def orderBy(column: String, order: String): End = {
-    where.from.sinq.sql.append(s" orderBy ${column} ${order}")
+    where.from.sinq.sql.append(s" order by ${column} ${order}")
     this
   }
 
@@ -62,11 +87,25 @@ case class End(where: Where) {
     this
   }
 
-  def toSql(): String = where.from.sinq.sql.toString
+  def sql(): String = where.from.sinq.sql.toString
 
-  def params(): Map[String, Any] = where.from.sinq.paramsMap.toMap
+  def params(): Map[String, Any] = where.from.sinq.params.toMap
 
-  def single[T](): T = null.asInstanceOf[T]
+  def single[T](): Option[T] = withEntityManager[T] {
+    em =>
+      val query = em.createNativeQuery(sql())
+      params().foreach(t => query.setParameter(t._1, t._2))
 
-  def collect[T](): List[T] = Nil
+      val result = query.getSingleResult
+      result.asInstanceOf[T]
+  }
+
+  def collect[T](t: Class[T]): List[T] = withEntityManager[List[T]] {
+    em =>
+      val query = if (sql().indexOf("select * from") >= 0) em.createNamedQuery(sql(), t) else em.createNativeQuery(sql())
+      params().foreach(t => query.setParameter(t._1, t._2))
+
+      val result = query.getResultList
+      result.asInstanceOf[List[T]]
+  } getOrElse (Nil)
 }

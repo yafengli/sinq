@@ -19,6 +19,7 @@ object H2DB {
   }
 
   def close {
+    JPA.release()
     server.stop()
     println("##########end###############")
   }

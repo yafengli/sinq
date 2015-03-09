@@ -1,8 +1,9 @@
 package test
 
-import demo.ii.{CriteriaComposer, CriteriaOperator, QueryExp}
-import models.Book
+import models.Student
 import org.junit.runner.RunWith
+import org.koala.sporm.SinqStream
+import org.koala.sporm.expression.{Eq, Ge}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -21,25 +22,21 @@ class DBBasicSuite extends FunSuite with BeforeAndAfter {
     H2DB.close
   }
 
-  test("single") {
-    Book.withEntityManager {
-      em =>
-        val qe = new QueryExp[Book](em)
-        val sg = qe.where((cb, cq, from) => cb.equal(from.get("price"), 12)).single()
-        val ls = qe.where((cb, cq, from) => cb.gt(from.get("price"), 12)).fetch()
-        println(">>>>" + sg)
-        println(">>>>" + ls)
+  test("Default SQL String link.") {
+    val sinq = SinqStream()
+    val count = sinq.count(classOf[Student])
+    if (count <= 0) {
+      val student = Student("YaFengLi", 12, "NanJing 1999.")
+      //      sinq.insert(student)
     }
-  }
 
-  test("link") {
-    Book.withEntityManager {
-      em =>
-//        new CriteriaComposer(em, classOf[Book]).where("price", CriteriaOperator.EQUAL, Seq(999L)).single() match {
-//          case Some(s) => println(">>" + s)
-//          case None => println("##None.")
-//        }
-    }
+    val result = sinq.select("id", "name").from("t_student").where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)))).orderBy("id", "ASC").limit(10, 0)
+
+    println(s"##count:${count}##")
+    println("::" + result.sql() + "::")
+    println("::" + result.params() + "::")
+    val t = result.single()
+    println("::" + t.getClass + "::")
   }
 }
 
