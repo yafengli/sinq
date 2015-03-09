@@ -2,13 +2,17 @@ package org.koala.sporm
 
 import org.koala.sporm.expression.Condition
 
+import scala.collection.mutable
+
 case class SinqStream() {
   val sql = new StringBuffer()
+
+  val paramsMap = mutable.Map[String, Any]()
 
   def select(fields: String*): From = {
     sql.append("select ")
     contact(fields.toList)
-    From(sql)
+    From(this)
   }
 
   private def contact(fields: List[String]): Unit = {
@@ -22,43 +26,45 @@ case class SinqStream() {
   }
 }
 
-case class From(val sql: StringBuffer) {
-
-
+case class From(sinq: SinqStream) {
   def from(tableName: String): Where = {
-    sql.append(" from ").append(tableName)
-    Where(sql)
+    sinq.sql.append(" from ").append(tableName)
+    Where(this)
   }
 }
 
 
-case class Where(val sql: StringBuffer) {
+case class Where(from: From) {
+
   def where(condition: Condition): End = {
-    sql.append(" where ")
-    sql.append(condition.linkCache.toString)
-    End(sql)
+    from.sinq.sql.append(" where ")
+    from.sinq.paramsMap ++= condition.paramsMap
+    from.sinq.sql.append(condition.linkCache.toString)
+    End(this)
   }
 }
 
 
-case class End(val sql: StringBuffer) {
+case class End(where: Where) {
 
   def groupBy(column: String): End = {
-    sql.append(s" groupBy ${column}")
+    where.from.sinq.sql.append(s" groupBy ${column}")
     this
   }
 
   def orderBy(column: String, order: String): End = {
-    sql.append(s" orderBy ${column} ${order}")
+    where.from.sinq.sql.append(s" orderBy ${column} ${order}")
     this
   }
 
   def limit(limit: Int, offset: Int): End = {
-    sql.append(s" limit ${limit} offset ${offset}")
+    where.from.sinq.sql.append(s" limit ${limit} offset ${offset}")
     this
   }
 
-  def toSql(): String = sql.toString
+  def toSql(): String = where.from.sinq.sql.toString
+
+  def params(): Map[String, Any] = where.from.sinq.paramsMap.toMap
 
   def single[T](): T = null.asInstanceOf[T]
 

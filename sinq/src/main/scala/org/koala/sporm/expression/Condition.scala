@@ -34,7 +34,7 @@ trait Condition {
   private def link(condition: Condition, operation: String): Unit = {
     this.linkCache.append(operation)
     condition.linkCache match {
-      case lc if lc.indexOf(operation) >= 0 =>
+      case lc if lc.indexOf(AND) >= 0 || lc.indexOf(OR) >= 0 =>
         this.linkCache.append(START_BRACKET)
         this.linkCache.append(lc.toString)
         this.linkCache.append(END_BRACKET)

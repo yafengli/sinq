@@ -21,7 +21,7 @@ class SQLLinkSuite extends FunSuite with BeforeAndAfter {
 
   test("Default SQL String link.") {
     val sinq = SinqStream()
-    val result = sinq.select("f_1", "f_2").from("T_USER").where(Eq("name", "hello").and(Ge("age", 11).or(Ge("id", 5)))).groupBy("f_1").limit(10, 30).orderBy("f_s", "ASC")
+    val result = sinq.select("f_1", "f_2").from("T_USER").where(Eq("name", "hello").and(Ge("age", 11).or(Ge("id", 5)))).groupBy("f_1").orderBy("f_s", "ASC").limit(10, 30)
     println("::" + result.toSql() + "::")
   }
 }
