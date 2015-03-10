@@ -33,17 +33,14 @@ class DBBasicSuite extends FunSuite with BeforeAndAfter {
     val result = sinq.select("id", "name").from("t_student").where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)))).orderBy("id", "ASC").limit(10, 0)
 
     println(s"##count:${count}##")
-    println("::" + result.sql() + "::")
-    println("::" + result.params() + "::")
+    //println("::" + result.sql() + "::")
+    //println("::" + result.params() + "::")
 
     result.single() match {
       case Array(id, name) => println(s"id:${id} name:${name}")
       case _ => println("None")
     }
-
-
-    val result2 = sinq.select("*").from("t_student").where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)))).orderBy("id", "ASC").limit(10, 0)
-
+    val result2 = sinq.select().from("t_student").where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)))).orderBy("id", "ASC").limit(10, 0)
     result2.single(classOf[Student]) match {
       case Some(t) => println(s"T:${t}")
       case None => println("None")

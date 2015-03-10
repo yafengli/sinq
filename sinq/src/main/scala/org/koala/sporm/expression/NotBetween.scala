@@ -1,8 +1,8 @@
 package org.koala.sporm.expression
 
-class Between extends Condition
+class NotBetween extends Condition
 
-object Between {
+object NotBetween {
   def apply(column: String, start: AnyRef, end: AnyRef): Condition = {
     val notEq = new NotEq
     val key_1 = notEq.key(column)
@@ -10,7 +10,7 @@ object Between {
 
     val key_2 = notEq.key(column)
     notEq.paramsMap += (key_2 -> end)
-    notEq.linkCache.append(s"${column} between :${key_1} and :${key_2}")
+    notEq.linkCache.append(s"${column} not between :${key_1} and :${key_2}")
     notEq
   }
 }

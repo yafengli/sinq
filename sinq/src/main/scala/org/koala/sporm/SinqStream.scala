@@ -8,10 +8,9 @@ import scala.collection.mutable
 case class SinqStream() extends JPA {
 
   def select(fields: String*): From = {
-    val sql = new StringBuffer()
+    val sql = new StringBuffer("select ")
     val params = mutable.Map[String, Any]()
-    sql.append("select ")
-    if (fields == null) sql.append("*") else contact(fields.toList, sql)
+    if (fields.size == 0) sql.append("*") else contact(fields.toList, sql)
     From(this, sql, params)
   }
 
@@ -45,7 +44,7 @@ case class SinqStream() extends JPA {
         val root = c.from(t)
         c.select(cb.count(root.get("id")))
         em.createQuery(c).getSingleResult.longValue()
-    } getOrElse (0)
+    } getOrElse 0
   }
 }
 
@@ -56,7 +55,6 @@ case class From(sinq: SinqStream, sql: StringBuffer, params: mutable.Map[String,
   }
 }
 
-
 case class Where(from: From) {
 
   def where(condition: Condition): End = {
@@ -66,7 +64,6 @@ case class Where(from: From) {
     End(this)
   }
 }
-
 
 case class End(where: Where) extends JPA {
 
@@ -89,7 +86,6 @@ case class End(where: Where) extends JPA {
 
   def params(): Map[String, Any] = where.from.params.toMap
 
-
   def single(): Array[AnyRef] = withEntityManager[Array[AnyRef]] {
     em =>
       val query = em.createNativeQuery(sql())
@@ -97,8 +93,7 @@ case class End(where: Where) extends JPA {
 
       val result = query.getSingleResult
       result.asInstanceOf[Array[AnyRef]]
-  } getOrElse (null)
-
+  } getOrElse null
 
   def single[T](ct: Class[T]): Option[T] = withEntityManager[T] {
     em =>
@@ -116,5 +111,5 @@ case class End(where: Where) extends JPA {
 
       val result = query.getResultList
       result.asInstanceOf[List[T]]
-  } getOrElse (Nil)
+  } getOrElse Nil
 }

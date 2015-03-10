@@ -1,8 +1,13 @@
 package org.koala.sporm.expression
 
-/**
- * Created by Administrator on 2015/3/3.
- */
-class Le {
+class Le extends Condition
 
+object Le {
+  def apply(column: String, value: AnyVal): Condition = {
+    val le = new Le
+    val key = le.key(column)
+    le.paramsMap += (key -> value)
+    le.linkCache.append(s"${column} <= :${key}")
+    le
+  }
 }
