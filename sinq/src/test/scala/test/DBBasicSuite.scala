@@ -30,6 +30,7 @@ class DBBasicSuite extends FunSuite with BeforeAndAfter {
       .where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)).and(In("id", Set(1L, 2L, 3L, 4L))))).orderBy("id", "ASC").limit(10, 0)
 
     println(query.sql())
+    println(query.single())
   }
 
   test("Default SQL String link.") {
