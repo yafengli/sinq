@@ -3,7 +3,7 @@ package test
 import models.Student
 import org.junit.runner.RunWith
 import org.koala.sporm.SinqStream
-import org.koala.sporm.expression.{Eq, Ge}
+import org.koala.sporm.expression.{Eq, Ge, In}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -14,12 +14,22 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
  */
 @RunWith(classOf[JUnitRunner])
 class DBBasicSuite extends FunSuite with BeforeAndAfter {
+
   before {
     H2DB.open
   }
 
   after {
     H2DB.close
+  }
+
+  test("SQL Build.") {
+    val sinq = SinqStream()
+    val query = sinq.select("id", "name")
+      .from("t_student")
+      .where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)).and(In("id", Set(1L, 2L, 3L, 4L))))).orderBy("id", "ASC").limit(10, 0)
+
+    println(query.sql())
   }
 
   test("Default SQL String link.") {

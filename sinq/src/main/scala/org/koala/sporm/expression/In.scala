@@ -1,8 +1,14 @@
 package org.koala.sporm.expression
 
-/**
- * Created by Administrator on 2015/3/3.
- */
-class In {
 
+class In extends Condition
+
+object In {
+  def apply(column: String, cols: Set[AnyRef]): Condition = {
+    val in = new In
+    val key = in.key(column)
+    in.paramsMap += (key -> cols)
+    in.linkCache.append(s"${column} in (:${key})")
+    in
+  }
 }
