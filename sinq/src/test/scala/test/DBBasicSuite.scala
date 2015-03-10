@@ -3,7 +3,7 @@ package test
 import models.Student
 import org.junit.runner.RunWith
 import org.koala.sporm.SinqStream
-import org.koala.sporm.expression.{Eq, Ge, In}
+import org.koala.sporm.expression.{CDB, Eq, Ge, In}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -21,6 +21,18 @@ class DBBasicSuite extends FunSuite with BeforeAndAfter {
 
   after {
     H2DB.close
+  }
+
+  test("ONE SQL Build.") {
+    val cdb = CDB()
+
+    val sinq = SinqStream()
+    val query = sinq.select("id", "name")
+      .from("t_student")
+      .where(cdb.eq("name", "YaFengLi").and(cdb.ge("age", 11).or(cdb.ge("id", -1L)))).orderBy("id", "ASC").limit(10, 0)
+
+    println(query.sql())
+    println(query.single())
   }
 
   test("SQL Build.") {

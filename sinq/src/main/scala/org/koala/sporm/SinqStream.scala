@@ -1,6 +1,6 @@
 package org.koala.sporm
 
-import org.koala.sporm.expression.Condition
+import org.koala.sporm.expression.{CDB, Condition}
 import org.koala.sporm.jpa.JPA
 
 import scala.collection.mutable
@@ -61,6 +61,13 @@ case class Where(from: From) {
     from.sql.append(" where ")
     from.params ++= condition.paramsMap
     from.sql.append(condition.linkCache.toString)
+    End(this)
+  }
+
+  def where(cdb: CDB): End = {
+    from.sql.append(" where ")
+    from.params ++= cdb.paramsMap.map(t => t.toString -> t)
+    from.sql.append(cdb.linkCache.toString)
     End(this)
   }
 }
