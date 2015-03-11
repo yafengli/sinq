@@ -3,7 +3,7 @@ package test
 import models.Student
 import org.junit.runner.RunWith
 import org.koala.sporm.SinqStream
-import org.koala.sporm.expression.{CDB, Eq, Ge, In}
+import org.koala.sporm.expression.{Eq, Ge, In}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -23,28 +23,10 @@ class DBBasicSuite extends FunSuite with BeforeAndAfter {
     H2DB.close
   }
 
-  test("ONE SQL Build.") {
-    val cdb = CDB()
-
-    val sinq = SinqStream()
-    val query = sinq.select("id", "name")
-      .from("t_student")
-      .where(cdb.eq("name", "YaFengLi").and(cdb.ge("age", 11).or(cdb.ge("id", -1L)))).orderBy("id", "ASC").limit(10, 0)
-
-    println(query.sql())
-    println(query.single())
-  }
-
   test("SQL Build.") {
-    val sinq = SinqStream()
-    val query = sinq.select("id", "name")
-      .from("t_student")
-      .where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)).and(In("id", Set(1L, 2L, 3L, 4L))))).orderBy("id", "ASC").limit(10, 0)
-
-    println(query.sql())
-    println(query.single())
+    val condition = Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)).or(In("id", Set(1L, 2L, 3L))))
+    println(condition.linkCache.toString)
   }
-
   test("Default SQL String link.") {
     val sinq = SinqStream()
     val count = sinq.count(classOf[Student])
@@ -68,7 +50,5 @@ class DBBasicSuite extends FunSuite with BeforeAndAfter {
       case Some(t) => println(s"T:${t}")
       case None => println("None")
     }
-
-    Stream(1, 2, 3, 4, 5).exists(_ >= 3)
   }
 }
