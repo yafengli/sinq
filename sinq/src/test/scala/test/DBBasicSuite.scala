@@ -28,16 +28,15 @@ class DBBasicSuite extends FunSuite with BeforeAndAfter {
     println(condition.linkCache.toString)
   }
   test("Default SQL String link.") {
-    val sinq = SinqStream()
-    val count = sinq.count(classOf[Student])
-    if (count <= 0) {
-      val student = Student("YaFengLi", 12, "NanJing 1999.")
-      //      sinq.insert(student)
+    val stream = SinqStream()
+
+    stream.select().from("t_student").where(null).collect(classOf[Student]) match {
+      case head :: tail => tail.foreach(stream.delete(_))
+      case Nil => stream.insert(Student("YaFengLi", 12, "NanJing 1999."))
     }
 
-    val result = sinq.select("id", "name").from("t_student").where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)))).orderBy("id", "ASC").limit(10, 0)
+    val result = stream.select("id", "name").from("t_student").where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)))).orderBy("id", "ASC").limit(10, 0)
 
-    println(s"##count:${count}##")
     //println("::" + result.sql() + "::")
     //println("::" + result.params() + "::")
 
@@ -45,7 +44,7 @@ class DBBasicSuite extends FunSuite with BeforeAndAfter {
       case Array(id, name) => println(s"id:${id} name:${name}")
       case _ => println("None")
     }
-    val result2 = sinq.select().from("t_student").where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)))).orderBy("id", "ASC").limit(10, 0)
+    val result2 = stream.select().from("t_student").where(Eq("name", "YaFengLi").and(Ge("age", 11).or(Ge("id", -1)))).orderBy("id", "ASC").limit(10, 0)
     result2.single(classOf[Student]) match {
       case Some(t) => println(s"T:${t}")
       case None => println("None")

@@ -44,10 +44,10 @@ trait Condition {
 }
 
 object Condition {
-  val AND: String = " and "
-  val OR: String = " or "
-  val START_BRACKET: String = "("
-  val END_BRACKET: String = ")"
+  val AND = " and "
+  val OR = " or "
+  val START_BRACKET = "("
+  val END_BRACKET = ")"
 
   def apply(): Condition = {
     new Condition {}

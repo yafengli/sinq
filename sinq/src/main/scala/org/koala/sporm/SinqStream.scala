@@ -11,7 +11,7 @@ case class SinqStream() extends JPA {
     val sql = new StringBuffer("select ")
     val params = mutable.Map[String, Any]()
     if (fields.size == 0) sql.append("*") else contact(fields.toList, sql)
-    From(this, sql, params)
+    From(sql, params)
   }
 
   private def contact(fields: List[String], sql: StringBuffer): Unit = {
@@ -39,33 +39,32 @@ case class SinqStream() extends JPA {
   def count[T](t: Class[T]): Long = {
     withEntityManager {
       em =>
-        val cb = em.getCriteriaBuilder
-        val c = cb.createQuery(classOf[java.lang.Long])
-        val root = c.from(t)
-        c.select(cb.count(root.get("id")))
-        em.createQuery(c).getSingleResult.longValue()
+        val query = em.createQuery(s"select count(t) from ${t.getName} t", classOf[java.lang.Long])
+        query.getSingleResult.longValue()
     } getOrElse 0
   }
 }
 
-case class From(sinq: SinqStream, sql: StringBuffer, params: mutable.Map[String, Any]) {
+protected case class From(sql: StringBuffer, params: mutable.Map[String, Any]) {
   def from(tableName: String): Where = {
     sql.append(" from ").append(tableName)
     Where(this)
   }
 }
 
-case class Where(from: From) {
+protected case class Where(from: From) {
 
   def where(condition: Condition): End = {
-    from.sql.append(" where ")
-    from.params ++= condition.paramsMap
-    from.sql.append(condition.linkCache.toString)
+    if (condition != null) {
+      from.sql.append(" where ")
+      from.params ++= condition.paramsMap
+      from.sql.append(condition.linkCache.toString)
+    }
     End(this)
   }
 }
 
-case class End(where: Where) extends JPA {
+protected case class End(where: Where) extends JPA {
 
   def groupBy(column: String): End = {
     where.from.sql.append(s" group by ${column}")
@@ -106,7 +105,7 @@ case class End(where: Where) extends JPA {
 
   def collect[T](t: Class[T]): List[T] = withEntityManager[List[T]] {
     em =>
-      val query = if (sql().indexOf("select * from") >= 0) em.createNamedQuery(sql(), t) else em.createNativeQuery(sql())
+      val query = if (sql().indexOf("select * from") >= 0) em.createNativeQuery(sql(), t) else em.createNativeQuery(sql())
       params().foreach(t => query.setParameter(t._1, t._2))
 
       val result = query.getResultList
