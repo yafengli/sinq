@@ -19,11 +19,7 @@ class SelectInfo {
   var limit: (Int, Int) = _
 }
 
-trait Table {
-  def name(): String
-
-  def as(): String
-}
+case class Table(val name: String, val as: String)
 
 trait Join
 

@@ -1,8 +1,7 @@
 package org.koala.sporm
 
-import org.koala.sporm.expression.Condition
 import org.koala.sporm.jpa.JPA
-import org.koala.sporm.rs.{ConditionII, JoinInner, Column, SelectInfo}
+import org.koala.sporm.rs.{Column, ConditionII, SelectInfo}
 
 class SinqIIStream extends JPA {
 
@@ -15,17 +14,16 @@ class SinqIIStream extends JPA {
 
 
 case class FromII(info: SelectInfo) {
-  def where():WhereII = {
-
+  def where(): WhereII = {
+    //TODO
+    null
   }
 }
 
 case class WhereII(info: SelectInfo) {
   def where(condition: ConditionII): EndII = {
     if (condition != null) {
-      from.sql.append(" where ")
-      from.params ++= condition.paramsMap
-      from.sql.append(condition.linkCache.toString)
+      //TODO
     }
     EndII(info)
   }
@@ -33,24 +31,24 @@ case class WhereII(info: SelectInfo) {
 
 protected case class EndII(info: SelectInfo) extends JPA {
 
-  def groupBy(column: String): End = {
-    where.from.sql.append(s" group by ${column}")
+  def groupBy(column: String): EndII = {
+    //where.from.sql.append(s" group by ${column}")
     this
   }
 
-  def orderBy(column: String, order: String): End = {
-    where.from.sql.append(s" order by ${column} ${order}")
+  def orderBy(column: String, order: String): EndII = {
+    //where.from.sql.append(s" order by ${column} ${order}")
     this
   }
 
-  def limit(limit: Int, offset: Int): End = {
-    where.from.sql.append(s" limit ${limit} offset ${offset}")
+  def limit(limit: Int, offset: Int): EndII = {
+    // where.from.sql.append(s" limit ${limit} offset ${offset}")
     this
   }
 
-  def sql(): String = where.from.sql.toString
+  def sql(): String = info.toString //where.from.sql.toString
 
-  def params(): Map[String, Any] = where.from.params.toMap
+  def params(): Map[String, Any] = null //where.from.params.toMap
 
   def single(): Array[AnyRef] = withEntityManager[Array[AnyRef]] {
     em =>
