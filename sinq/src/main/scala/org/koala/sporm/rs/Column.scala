@@ -16,4 +16,10 @@ object Column {
       override def name(): String = s"${cl}"
     }
   }
+
+  def apply(col: String): Column = {
+    new Column {
+      override def name(): String = s"${col}"
+    }
+  }
 }

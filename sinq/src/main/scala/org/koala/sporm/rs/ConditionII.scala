@@ -17,12 +17,9 @@ trait ConditionII {
   var flag: String = _
   @BeanProperty
   var root: ConditionII = _
-  @BeanProperty
-  var buffer = new StringBuffer()
-  @BeanProperty
-  var params = mutable.ArrayBuffer[Any]()
-
-  val to = mutable.ArrayBuffer[ConditionII]()
+  lazy val buffer = new StringBuffer()
+  lazy val params = mutable.ArrayBuffer[Any]()
+  lazy val to = mutable.ArrayBuffer[ConditionII]()
 
   def and(link: ConditionII): ConditionII = {
     if (this.getFrom == null) this.setRoot(this) else this.setRoot(this.getFrom.getRoot)
@@ -39,31 +36,29 @@ trait ConditionII {
   }
 
   def toSql(): String = {
-    if (this.getFrom != null) {
-      this.setBuffer(this.getFrom.getBuffer)
-      this.setParams(this.getFrom.getParams)
-    }
-    endLoop(this, this.getBuffer)
-    this.getBuffer.toString
+    endLoop(this)
+    this.getRoot.buffer.toString
   }
 
-  private def endLoop(link: ConditionII, buffer: StringBuffer): Unit = {
-    if (link.getFrom != null) buffer.append(link.getFlag)
+  private def endLoop(link: ConditionII): Unit = {
+    if (link.getFrom != null) this.getRoot.buffer.append(link.getFlag)
     if (link.getFrom != null && link.to.nonEmpty) {
-      buffer.append(START_BRACKET)
-      buffer.append(link.alias())
+      this.getRoot.buffer.append(START_BRACKET)
+      this.getRoot.buffer.append(link.rule())
     }
-    else buffer.append(link.alias())
+    else this.getRoot.buffer.append(link.rule())
 
-    if (link.to.isEmpty) buffer.append(END_BRACKET)
+    if (link.to.isEmpty) this.getRoot.buffer.append(END_BRACKET)
 
-    link.to.foreach(endLoop(_, buffer))
+    link.to.foreach(endLoop(_))
   }
 
-  protected def store(values: Any*): Unit = {
-    println(this.getRoot)
-    values.foreach(this.getRoot.getParams += _)
+  protected def rule(): String = {
+    values.foreach(this.getRoot.params += _)
+    alias()
   }
+
+  def values: Seq[Any]
 
   def alias(): String
 

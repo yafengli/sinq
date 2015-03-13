@@ -7,7 +7,7 @@ class SinqIIStream extends JPA {
 
   def select(cols: String*): FromII = {
     val info = new SelectInfo()
-    info.select ++= Column(cols: _*)
+    cols.foreach(info.select += Column(_))
     FromII(info)
   }
 }

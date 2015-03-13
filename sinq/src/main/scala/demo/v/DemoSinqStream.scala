@@ -1,5 +1,7 @@
 package demo.v
 
+import org.koala.sporm.rs.{Column, Ge, Le}
+
 import scala.beans.BeanProperty
 
 abstract class SayHi[T: Manifest] {
@@ -26,14 +28,9 @@ trait Link {
   @BeanProperty
   var flag: String = _
 
-
-  @BeanProperty
-  var buffer = new StringBuffer()
-
-  @BeanProperty
-  var params = mutable.ArrayBuffer[Any]()
-
-  val to = mutable.ArrayBuffer[Link]()
+  lazy val buffer = new StringBuffer()
+  lazy val params = mutable.ArrayBuffer[Any]()
+  lazy val to = mutable.ArrayBuffer[Link]()
 
   def and(link: Link): Link = {
     if (this.getFrom == null) this.setRoot(this) else this.setRoot(this.getFrom.getRoot)
@@ -50,31 +47,29 @@ trait Link {
   }
 
   def toSql(): String = {
-    if (this.getFrom != null) {
-      this.setBuffer(this.getFrom.getBuffer)
-      this.setParams(this.getFrom.getParams)
-    }
-    endLoop(this, this.getBuffer)
-    this.getBuffer.toString
+    endLoop(this)
+    this.getRoot.buffer.toString
   }
 
-  private def endLoop(link: Link, buffer: StringBuffer): Unit = {
-    if (link.getFrom != null) buffer.append(link.getFlag)
+  private def endLoop(link: Link): Unit = {
+    if (link.getFrom != null) this.getRoot.buffer.append(link.getFlag)
     if (link.getFrom != null && link.to.nonEmpty) {
-      buffer.append(START_BRACKET)
-      buffer.append(link.alias())
+      this.getRoot.buffer.append(START_BRACKET)
+      this.getRoot.buffer.append(link.rule())
     }
-    else buffer.append(link.alias())
+    else this.getRoot.buffer.append(link.rule())
 
-    if (link.to.isEmpty) buffer.append(END_BRACKET)
+    if (link.to.isEmpty) this.getRoot.buffer.append(END_BRACKET)
 
-    link.to.foreach(endLoop(_, buffer))
+    link.to.foreach(endLoop(_))
   }
 
-  protected def store(values: Any*): Unit = {
-    println(this.getRoot)
-    values.foreach(this.getRoot.getParams += _)
+  protected def rule(): String = {
+    values.foreach(this.getRoot.params += _)
+    alias()
   }
+
+  def values: Seq[Any]
 
   def alias(): String
 
@@ -96,22 +91,26 @@ trait Link {
   }
 }
 
-case class L1(val col: String, val value: Any) extends Link {
-  override def alias(): String = {
-    store(value)
-    s"${col} = ?"
-  }
+case class L1(val col: String, val values: Seq[Any]) extends Link {
+  override def alias(): String = s"${col} = ?"
 }
 
-case class L2(val col: String, val value: Any) extends Link {
-  override def alias(): String = {
-    store(value)
-    s"${col} >= ?"
-  }
+case class L2(val col: String, val values: Seq[Any]) extends Link {
+  override def alias(): String = s"${col} >= ?"
 }
+
+trait Hello {
+  def name: String
+}
+
+case class HelloImpl(val name: String) extends Hello
 
 object BootLink extends App {
-  val link = L1("name", "1").and(L1("age", 2).or(L2("id", 3))).or(L1("address", 4).and(L2("email", "5")))
+  val link = L1("name", Seq("1")).and(L1("age", Seq(2)).or(L2("id", "3"))).or(L1("address", "4").and(L2("email", "5")))
   println(s"::${link.toSql()}::")
-  link.getParams.foreach(println(_))
+  link.params.foreach(println(_))
+
+  val cd = Ge(Column("name"), Seq(1)).and(Le(Column("age"), Seq(2)).or(Ge(Column("id"), Seq("3")))).or(Ge(Column("address"), Seq(4)).and(Le(Column("email"), Seq("5"))))
+  println(cd.toSql())
+  cd.params.foreach(println(_))
 }
