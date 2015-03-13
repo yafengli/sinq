@@ -1,7 +1,8 @@
 package demo.v
 
-import org.koala.sporm.SinqIIStream
-import org.koala.sporm.rs._
+import io.sinq.SinqIIStream
+import io.sinq.expression.{Le, Ge}
+import io.sinq.rs._
 
 object DemoSinqStream extends App {
 

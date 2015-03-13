@@ -1,4 +1,6 @@
-package org.koala.sporm.rs
+package io.sinq.expression
+
+import io.sinq.rs.Column
 
 case class Ge(val col: Column, val values: Seq[Any]) extends ConditionII {
   override def alias(): String = s"${col.name()} >= ?"

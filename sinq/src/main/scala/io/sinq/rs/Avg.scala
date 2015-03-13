@@ -1,4 +1,4 @@
-package org.koala.sporm.rs
+package io.sinq.rs
 
 case class Avg(val col: String) extends Column {
 

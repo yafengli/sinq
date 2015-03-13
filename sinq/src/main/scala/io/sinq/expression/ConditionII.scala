@@ -1,11 +1,11 @@
-package org.koala.sporm.rs
+package io.sinq.expression
 
 import scala.beans.BeanProperty
 import scala.collection.mutable
 
 trait ConditionII {
 
-  import org.koala.sporm.rs.ConditionII._
+  import io.sinq.expression.ConditionII._
 
   @BeanProperty
   var from: ConditionII = _

@@ -1,8 +1,5 @@
-package org.koala.sporm.rs
+package io.sinq.rs
 
-trait Alias {
-  def name(): String
-}
 
 trait Column extends Alias
 

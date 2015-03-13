@@ -1,33 +1,34 @@
-package org.koala.sporm
+package io.sinq
 
+import io.sinq.expression.ConditionII
+import io.sinq.rs._
 import org.koala.sporm.jpa.JPA
-import org.koala.sporm.rs._
 
 case class SinqIIStream() extends JPA {
 
   def select(cols: Column*): FromII = {
-    val info = new SelectInfo()
+    val info = new QueryInfo()
     info.select ++= cols
     FromII(info)
   }
 }
 
 
-case class FromII(info: SelectInfo) {
+case class FromII(info: QueryInfo) {
   def from(tables: Table*): WhereII = {
     info.from ++= tables
     WhereII(info)
   }
 }
 
-case class WhereII(info: SelectInfo) {
+case class WhereII(info: QueryInfo) {
   def where(condition: ConditionII): EndII = {
     info.setCondition(condition)
     EndII(info)
   }
 }
 
-protected case class EndII(info: SelectInfo) extends JPA {
+protected case class EndII(info: QueryInfo) extends JPA {
 
   def groupBy(cols: Column*): EndII = {
     info.groupBy ++= cols
