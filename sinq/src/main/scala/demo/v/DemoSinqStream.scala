@@ -1,7 +1,7 @@
 package demo.v
 
 import io.sinq.SinqIIStream
-import io.sinq.expression.{Le, Ge}
+import io.sinq.expression.{Ge, Le}
 import io.sinq.rs._
 
 object DemoSinqStream extends App {
@@ -15,7 +15,9 @@ object DemoSinqStream extends App {
   val sinq = SinqIIStream()
   val _table = Table("t_student", "t")
   val columns = Column(_table, "id", "name")
-  val query = sinq.select(columns: _*).from(_table).where(cd).groupBy(columns: _*).orderBy(Order("ASC", columns: _*)).limit(10, 5)
+  val query = sinq.select(columns: _*).from(_table).where(cd).groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
 
+  println(query.sql())
+  println(query.sql())
   println(query.sql())
 }

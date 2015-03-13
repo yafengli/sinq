@@ -66,7 +66,7 @@ protected case class EndII(info: QueryInfo) extends JPA {
     if (info.getOrder != null) {
       buffer.append("order by ")
       contact(info.getOrder.cols.toList, buffer)
-      buffer.append(info.getOrder.order).append(" ")
+      buffer.append(info.getOrder.orderDesc.name()).append(" ")
     }
 
     info.getLimit match {
