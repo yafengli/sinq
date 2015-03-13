@@ -80,17 +80,19 @@ trait Link {
 
   protected def nodeInit(link: Link, root: Link): Unit = {
     link.setFrom(this)
-    rootNode(link, root)
+    nodeUp(link, root)
+    nodeDown(link, root)
     this.to += link
   }
 
-  protected def rootNode(link: Link, root: Link): Unit = {
+  protected def nodeUp(link: Link, root: Link): Unit = {
     link.setRoot(root)
-    println("rn:" + link + " :" + root)
-    if (link.getFrom != null) {
-      link.getFrom.setRoot(root)
-      rootNode(link.getFrom, root)
-    }
+    if (link.getFrom != null) nodeUp(link.getFrom, root)
+  }
+
+  protected def nodeDown(link: Link, root: Link): Unit = {
+    link.setRoot(root)
+    link.to.foreach(nodeDown(_, root))
   }
 }
 
