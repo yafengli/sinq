@@ -8,7 +8,6 @@ import scala.collection.mutable
 class QueryInfo {
   val select = mutable.ArrayBuffer[Column]()
   val from = mutable.ArrayBuffer[Table]()
-  val params = mutable.ArrayBuffer[Any]()
   val groupBy = mutable.ArrayBuffer[Column]()
 
   @BeanProperty

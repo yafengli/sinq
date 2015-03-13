@@ -87,8 +87,7 @@ protected case class EndII(info: QueryInfo) extends JPA {
     buffer.append(" ")
   }
 
-  //  def params(): Map[String, Any] = info.params
-  def params(): Array[Any] = info.params.toArray
+  def params(): Array[Any] = info.getCondition.params.toArray
 
   def single(): Array[AnyRef] = withEntityManager[Array[AnyRef]] {
     em =>
