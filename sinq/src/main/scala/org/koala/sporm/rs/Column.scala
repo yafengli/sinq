@@ -1,8 +1,10 @@
 package org.koala.sporm.rs
 
-trait Column {
+trait Alias {
   def name(): String
 }
+
+trait Column extends Alias
 
 object Column {
   def apply(t: Table, columns: String*): Seq[Column] = {

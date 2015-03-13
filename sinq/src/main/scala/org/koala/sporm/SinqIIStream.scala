@@ -1,59 +1,98 @@
 package org.koala.sporm
 
 import org.koala.sporm.jpa.JPA
-import org.koala.sporm.rs.{Column, ConditionII, SelectInfo}
+import org.koala.sporm.rs._
 
-class SinqIIStream extends JPA {
+case class SinqIIStream() extends JPA {
 
-  def select(cols: String*): FromII = {
+  def select(cols: Column*): FromII = {
     val info = new SelectInfo()
-    cols.foreach(info.select += Column(_))
+    info.select ++= cols
     FromII(info)
   }
 }
 
 
 case class FromII(info: SelectInfo) {
-  def where(): WhereII = {
-    //TODO
-    null
+  def from(tables: Table*): WhereII = {
+    info.from ++= tables
+    WhereII(info)
   }
 }
 
 case class WhereII(info: SelectInfo) {
   def where(condition: ConditionII): EndII = {
-    if (condition != null) {
-      //TODO
-    }
+    info.setCondition(condition)
     EndII(info)
   }
 }
 
 protected case class EndII(info: SelectInfo) extends JPA {
 
-  def groupBy(column: String): EndII = {
-    //where.from.sql.append(s" group by ${column}")
+  def groupBy(cols: Column*): EndII = {
+    info.groupBy ++= cols
     this
   }
 
-  def orderBy(column: String, order: String): EndII = {
-    //where.from.sql.append(s" order by ${column} ${order}")
+  def orderBy(order: Order): EndII = {
+    info.setOrder(order)
     this
   }
 
   def limit(limit: Int, offset: Int): EndII = {
-    // where.from.sql.append(s" limit ${limit} offset ${offset}")
+    info.setLimit(limit, offset)
     this
   }
 
-  def sql(): String = info.toString //where.from.sql.toString
+  def sql(): String = {
+    val buffer = new StringBuffer("select ")
+    contact(info.select.toList, buffer)
 
-  def params(): Map[String, Any] = null //where.from.params.toMap
+    buffer.append("from ")
+    contact(info.from.toList, buffer)
+
+    if (info.getCondition != null) {
+      buffer.append("where ")
+      buffer.append(info.getCondition.translate())
+      buffer.append(" ")
+    }
+
+    if (info.groupBy.length > 0) {
+      buffer.append("group by ")
+      contact(info.groupBy.toList, buffer)
+    }
+
+    if (info.getOrder != null) {
+      buffer.append("order by ")
+      contact(info.getOrder.cols.toList, buffer)
+      buffer.append(info.getOrder.order).append(" ")
+    }
+
+    info.getLimit match {
+      case (limit, offset) => buffer.append(s"limit ${limit} offset ${offset}")
+      case null =>
+    }
+    buffer.toString
+  }
+
+  private def contact(list: List[Alias], buffer: StringBuffer): Unit = {
+    list match {
+      case head :: second :: tails =>
+        buffer.append(head.name()).append(",").append(second.name())
+        contact(tails, buffer)
+      case last :: Nil => buffer.append(last.name())
+      case Nil =>
+    }
+    buffer.append(" ")
+  }
+
+  //  def params(): Map[String, Any] = info.params
+  def params(): Array[Any] = info.params.toArray
 
   def single(): Array[AnyRef] = withEntityManager[Array[AnyRef]] {
     em =>
       val query = em.createNativeQuery(sql())
-      params().foreach(t => query.setParameter(t._1, t._2))
+      (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       val result = query.getSingleResult
       result.asInstanceOf[Array[AnyRef]]
@@ -62,7 +101,7 @@ protected case class EndII(info: SelectInfo) extends JPA {
   def single[T](ct: Class[T]): Option[T] = withEntityManager[T] {
     em =>
       val query = em.createNativeQuery(sql(), ct)
-      params().foreach(t => query.setParameter(t._1, t._2))
+      (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       val result = query.getSingleResult
       result.asInstanceOf[T]
@@ -71,7 +110,7 @@ protected case class EndII(info: SelectInfo) extends JPA {
   def collect[T](t: Class[T]): List[T] = withEntityManager[List[T]] {
     em =>
       val query = if (sql().indexOf("select * from") >= 0) em.createNativeQuery(sql(), t) else em.createNativeQuery(sql())
-      params().foreach(t => query.setParameter(t._1, t._2))
+      (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       val result = query.getResultList
       result.asInstanceOf[List[T]]

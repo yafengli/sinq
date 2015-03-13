@@ -1,5 +1,7 @@
 package org.koala.sporm.rs
 
+import org.koala.sporm.WhereII
+
 import scala.beans.BeanProperty
 import scala.collection.mutable
 
@@ -16,12 +18,21 @@ class SelectInfo {
   var where: String = _
 
   @BeanProperty
+  var condition: ConditionII = _
+
+  @BeanProperty
   var limit: (Int, Int) = _
+  @BeanProperty
+  var order: Order = _
 }
 
-case class Table(val name: String, val as: String)
+case class Table(val name: String, val as: String) extends Alias
 
-trait Join
+case class Order(val order: String, val cols: Column*)
+
+trait Join {
+  def on(condition: ConditionII): WhereII
+}
 
 trait JoinInner extends Join
 
