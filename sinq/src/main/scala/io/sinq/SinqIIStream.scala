@@ -47,7 +47,7 @@ protected case class EndII(info: QueryInfo) extends JPA {
 
   def sql(): String = {
     val buffer = new StringBuffer("select ")
-    contact(info.select.toList, buffer)
+    if (info.select.length == 0) buffer.append("* ") else contact(info.select.toList, buffer)
 
     buffer.append("from ")
     contact(info.from.toList, buffer)
