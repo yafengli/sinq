@@ -21,4 +21,10 @@ object Column {
       override def name(): String = s"${col}"
     }
   }
+
+  def apply(t: Table, col: String): Column = {
+    new Column {
+      override def name(): String = s"${t.as}.${col}"
+    }
+  }
 }

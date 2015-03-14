@@ -1,3 +1,5 @@
 package io.sinq.rs
 
-case class Table(val name: String, val as: String) extends Alias
+case class Table(val tableName: String, override val as: String) extends Alias {
+  override def name(): String = s"${tableName} ${as}"
+}

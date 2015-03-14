@@ -10,17 +10,20 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class SQLLinkSuite extends FunSuite with BeforeAndAfter {
   before {
+    H2DB.open
   }
 
   after {
+    H2DB.close
   }
 
   test("SINQ II SQL.") {
-    val cd = Ge(Column("name"), Seq(1)).and(Le(Column("age"), Seq(2)).or(Ge(Column("id"), Seq("3")))).or(Ge(Column("address"), Seq(4)).and(Le(Column("email"), Seq("5"))))
-
     val sinq = SinqIIStream()
+
     val _table = Table("t_student", "t")
     val columns = Column(_table, "id", "name")
+    val cd = Eq(Column(_table, "name"), Seq("1")).and(Ge(Column(_table, "age"), Seq(2)).or(Ge(Column(_table, "id"), Seq(3))).or(In(Column(_table, "id"), Seq(4l))))
+
     val query = sinq.select(columns: _*).from(_table).where(cd).groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
 
     line({ () => println(cd.translate())}, 2)
@@ -41,12 +44,13 @@ class SQLLinkSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("SINQ II QUERY.") {
-    val cd = Eq(Column("name"), Seq("YaFengLi")).and(Ge(Column("age"), Seq(11)).or(Ge(Column("id"), Seq(-1))).or(In(Column("id"), Seq(1L, 2L, 3L))))
-
     val sinq = SinqIIStream()
+
     val _table = Table("t_student", "t")
     val columns = Column(_table, "id", "name")
-    val query = sinq.select(columns: _*).from(_table).where(cd).groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
+    val cd = Eq(Column(_table, "name"), Seq("YaFengLi")).and(Ge(Column(_table, "age"), Seq(11)).or(Ge(Column(_table, "id"), Seq(-1))))//.or(Le(Column(_table, "id"), Seq(5L))))
+
+    val query = sinq.select(columns: _*).from(_table).where(cd)//.groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
 
     query.single() match {
       case Array(id, name) => println(s"id:${id} name:${name}")

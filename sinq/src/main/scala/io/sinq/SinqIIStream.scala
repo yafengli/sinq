@@ -92,6 +92,13 @@ protected case class EndII(info: QueryInfo) extends JPA {
   def single(): Array[AnyRef] = withEntityManager[Array[AnyRef]] {
     em =>
       val query = em.createNativeQuery(sql())
+
+      println(s"len:${params().length} ${params().size}")
+
+      (0 until params().length).foreach {
+        i =>
+          println(s"${i}:${params()(i)}")
+      }
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       val result = query.getSingleResult
