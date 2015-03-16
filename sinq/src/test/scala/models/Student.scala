@@ -3,8 +3,6 @@ package models
 import java.util.{HashSet, Set}
 import javax.persistence._
 
-import org.koala.sporm.jpa.CQModel
-
 import scala.beans.BeanProperty
 
 
@@ -40,5 +38,3 @@ case class Student(@BeanProperty var name: String, @BeanProperty var age: Int, @
 
   override def toString = id + ":" + name + ":" + age + ":" + address
 }
-
-object Student extends CQModel[Student]

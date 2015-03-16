@@ -3,8 +3,6 @@ package models
 import java.util
 import javax.persistence._
 
-import org.koala.sporm.jpa.CQModel
-
 import scala.beans.BeanProperty
 
 @Entity
@@ -27,5 +25,3 @@ case class Teacher(@BeanProperty var name: String, @BeanProperty var age: Int = 
   def this() = this(null, -1, null)
 
 }
-
-object Teacher extends CQModel[Teacher]

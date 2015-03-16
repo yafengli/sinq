@@ -1,6 +1,6 @@
 package test
 
-import io.sinq.SinqIIStream
+import io.sinq.SinqStream
 import models.Book
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
 class DBFacadeSuite extends FunSuite with BeforeAndAfter {
-  val sinq = SinqIIStream()
+  val sinq = SinqStream()
   before {
     H2DB.open
   }

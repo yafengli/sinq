@@ -1,8 +1,8 @@
 package test
 
+import io.sinq.jpa.JPA
 import org.h2.tools.Server
 import org.koala.sporm.SpormFacade
-import org.koala.sporm.jpa.JPA
 
 import scala.concurrent.forkjoin.ForkJoinPool
 

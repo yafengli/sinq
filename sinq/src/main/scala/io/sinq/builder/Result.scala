@@ -1,71 +1,28 @@
-package io.sinq
+package io.sinq.builder
 
+import io.sinq.expression.Condition
+import io.sinq.rs.{Alias, Column, Order}
 
-import io.sinq.expression.ConditionII
-import io.sinq.rs._
-import org.koala.sporm.jpa.JPA
+import scala.collection.JavaConversions._
 
-case class SinqIIStream() extends JPA {
+case class Result(info: QueryInfo) {
 
-  def select(cols: Column*): FromII = {
-    val info = new QueryInfo()
-    info.select ++= cols
-    FromII(info)
-  }
-
-  def insert[T](t: T): Unit = {
-    withTransaction(_.persist(t))
-  }
-
-  def delete[T](t: T): Unit = {
-    withTransaction(_.remove(t))
-  }
-
-  def update[T](t: T): Unit = {
-    withTransaction(_.merge(t))
-  }
-
-  def count[T](t: Class[T]): Long = {
-    withEntityManager {
-      em =>
-        val query = em.createQuery(s"select count(t) from ${t.getName} t", classOf[java.lang.Long])
-        query.getSingleResult.longValue()
-    } getOrElse 0
-  }
-}
-
-object SinqIIStream {
-  def apply(pn: String): SinqIIStream = {
-    JPA.bind(pn)
-    SinqIIStream()
-  }
-}
-
-case class FromII(info: QueryInfo) {
-  def from(tables: Table*): EndII = {
-    info.from ++= tables
-    EndII(info)
-  }
-}
-
-protected case class EndII(info: QueryInfo) extends JPA {
-
-  def where(condition: ConditionII = null): EndII = {
+  def where(condition: Condition = null): Result = {
     if (condition != null) info.setCondition(condition)
-    EndII(info)
+    Result(info)
   }
 
-  def groupBy(cols: Column*): EndII = {
+  def groupBy(cols: Column*): Result = {
     info.groupBy ++= cols
     this
   }
 
-  def orderBy(order: Order): EndII = {
+  def orderBy(order: Order): Result = {
     info.setOrder(order)
     this
   }
 
-  def limit(limit: Int, offset: Int): EndII = {
+  def limit(limit: Int, offset: Int): Result = {
     info.setLimit(limit, offset)
     this
   }
@@ -115,40 +72,29 @@ protected case class EndII(info: QueryInfo) extends JPA {
 
   def params(): List[Any] = if (info != null && info.getCondition != null && info.getCondition.params() != null) info.getCondition.params.toList else Nil
 
-  def single(): Array[AnyRef] = withEntityManager[Array[AnyRef]] {
+  def single(): Option[Any] = info.stream.withEntityManager[Any] {
     em =>
       val query = em.createNativeQuery(sql())
-
-      println(s"len:${params().length} ${params().size}")
-
-      (0 until params().length).foreach {
-        i =>
-          println(s"${i}:${params()(i)}")
-      }
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
-      val result = query.getSingleResult
-      result.asInstanceOf[Array[AnyRef]]
-  } getOrElse null
+      if (query.getResultList.size() != 1) null else query.getSingleResult.asInstanceOf[Any]
+  }
 
-  def single[T](ct: Class[T]): Option[T] = withEntityManager[T] {
+  def single[T](ct: Class[T]): Option[T] = info.stream.withEntityManager[T] {
     em =>
       val query = em.createNativeQuery(sql(), ct)
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
-      val result = query.getSingleResult
-      result.asInstanceOf[T]
+      if (query.getResultList.size() != 1) null.asInstanceOf[T] else query.getSingleResult.asInstanceOf[T]
   }
 
-  import scala.collection.JavaConversions._
-
-  def collect[T](t: Class[T]): List[T] = withEntityManager[java.util.List[T]] {
+  def collect[T](t: Class[T]): List[T] = info.stream.withEntityManager[List[T]] {
     em =>
       val query = if (sql().indexOf("select * from") >= 0) em.createNativeQuery(sql(), t) else em.createNativeQuery(sql())
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       val result = query.getResultList
-      result.asInstanceOf[java.util.List[T]]
+      result.asInstanceOf[java.util.List[T]].toList
 
-  } getOrElse (new java.util.ArrayList()) toList
+  } getOrElse Nil
 }

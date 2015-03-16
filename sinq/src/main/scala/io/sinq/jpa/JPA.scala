@@ -1,4 +1,4 @@
-package org.koala.sporm.jpa
+package io.sinq.jpa
 
 import javax.persistence.{EntityManager, EntityManagerFactory, Persistence}
 
@@ -8,7 +8,7 @@ import scala.collection.concurrent.TrieMap
 
 trait JPA {
 
-  import org.koala.sporm.jpa.JPA._
+  import io.sinq.jpa.JPA._
 
   def withTransaction[T](call: EntityManager => T): Option[T] = {
     val em = createEntityManager()

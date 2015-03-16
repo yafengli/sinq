@@ -1,7 +1,6 @@
 package models
 
 import javax.persistence._
-import org.koala.sporm.jpa.CQModel
 
 import scala.beans.BeanProperty
 
@@ -12,7 +11,7 @@ import scala.beans.BeanProperty
  */
 @Entity
 @Table(name = "t_husband")
-case class Husband(@BeanProperty var name: String,@BeanProperty var age: Int) {
+case class Husband(@BeanProperty var name: String, @BeanProperty var age: Int) {
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_husband")
   @TableGenerator(name = "seq_t_husband", table = "seq_t_husband", allocationSize = 1)
@@ -30,5 +29,3 @@ case class Husband(@BeanProperty var name: String,@BeanProperty var age: Int) {
     this.teacher = teacher
   }
 }
-
-object Husband extends CQModel[Husband]

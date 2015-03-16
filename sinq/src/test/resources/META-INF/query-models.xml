@@ -21,11 +21,4 @@
         </query>
         </named-native-query>
     </entity>
-    <entity class="models.jm.Author">
-        <named-query name="t_find">
-            <query>
-                select t from Author t where t.name = :name
-            </query>
-        </named-query>
-    </entity>
 </entity-mappings>

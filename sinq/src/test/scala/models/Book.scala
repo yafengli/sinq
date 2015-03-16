@@ -2,8 +2,6 @@ package models
 
 import javax.persistence._
 
-import org.koala.sporm.jpa.CQModel
-
 import scala.beans.BeanProperty
 
 /**
@@ -33,5 +31,3 @@ case class Book(@BeanProperty var name: String, @BeanProperty var price: Int) {
     this.student = student
   }
 }
-
-object Book extends CQModel[Book]

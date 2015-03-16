@@ -1,9 +1,9 @@
 package test
 
 import demo.models.User
+import io.sinq.jpa.JPA
 import org.jinq.jpa.{JPQL, JinqJPAScalaIteratorProvider}
 import org.junit.runner.RunWith
-import org.koala.sporm.jpa.JPA
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 

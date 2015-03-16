@@ -1,10 +1,10 @@
 package io.sinq.rs
 
-import io.sinq.EndII
-import io.sinq.expression.ConditionII
+import io.sinq.builder.Result
+import io.sinq.expression.Condition
 
 trait Join {
-  def on(condition: ConditionII): EndII
+  def on(condition: Condition): Result
 }
 
 trait JoinInner extends Join
