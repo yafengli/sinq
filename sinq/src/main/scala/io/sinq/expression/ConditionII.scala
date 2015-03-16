@@ -30,6 +30,7 @@ trait ConditionII {
   def and(link: ConditionII): ConditionII = {
     if (this.getFrom == null) this.setRoot(this) else this.setRoot(this.getFrom.getRoot)
     link.setFlag(AND)
+    link.setClose(true)
     nodeInit(link, this.getRoot)
     this.getRoot
   }
@@ -37,6 +38,7 @@ trait ConditionII {
   def or(link: ConditionII): ConditionII = {
     if (this.getFrom == null) this.setRoot(this) else this.setRoot(this.getFrom.getRoot)
     link.setFlag(OR)
+    link.setClose(true)
     nodeInit(link, this.getRoot)
     this.getRoot
   }
@@ -56,12 +58,12 @@ trait ConditionII {
   }
 
   private def endLoop(link: ConditionII, buffer: StringBuffer, params: mutable.ArrayBuffer[Any]): Unit = {
-    if (link.getClose) buffer.append(START_BRACKET)
     if (link.getFrom != null) buffer.append(link.getFlag)
+    if (link.getClose && link.to.size > 0) buffer.append(START_BRACKET)
     link.values.foreach(params += _)
     buffer.append(link.toField())
     link.to.foreach(endLoop(_, buffer, params))
-    if (link.getClose) buffer.append(END_BRACKET)
+    if (link.getClose && link.to.size > 0) buffer.append(END_BRACKET)
   }
 
   protected def nodeInit(link: ConditionII, root: ConditionII): Unit = {

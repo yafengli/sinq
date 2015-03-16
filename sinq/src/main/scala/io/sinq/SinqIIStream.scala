@@ -1,5 +1,6 @@
 package io.sinq
 
+
 import io.sinq.expression.ConditionII
 import io.sinq.rs._
 import org.koala.sporm.jpa.JPA
@@ -11,24 +12,41 @@ case class SinqIIStream() extends JPA {
     info.select ++= cols
     FromII(info)
   }
-}
 
+  def insert[T](t: T): Unit = {
+    withTransaction(_.persist(t))
+  }
 
-case class FromII(info: QueryInfo) {
-  def from(tables: Table*): WhereII = {
-    info.from ++= tables
-    WhereII(info)
+  def delete[T](t: T): Unit = {
+    withTransaction(_.remove(t))
+  }
+
+  def update[T](t: T): Unit = {
+    withTransaction(_.merge(t))
+  }
+
+  def count[T](t: Class[T]): Long = {
+    withEntityManager {
+      em =>
+        val query = em.createQuery(s"select count(t) from ${t.getName} t", classOf[java.lang.Long])
+        query.getSingleResult.longValue()
+    } getOrElse 0
   }
 }
 
-case class WhereII(info: QueryInfo) {
-  def where(condition: ConditionII): EndII = {
-    info.setCondition(condition)
+case class FromII(info: QueryInfo) {
+  def from(tables: Table*): EndII = {
+    info.from ++= tables
     EndII(info)
   }
 }
 
 protected case class EndII(info: QueryInfo) extends JPA {
+
+  def where(condition: ConditionII = null): EndII = {
+    if (condition != null) info.setCondition(condition)
+    EndII(info)
+  }
 
   def groupBy(cols: Column*): EndII = {
     info.groupBy ++= cols
@@ -87,7 +105,7 @@ protected case class EndII(info: QueryInfo) extends JPA {
     buffer.append(" ")
   }
 
-  def params(): Array[Any] = info.getCondition.params.toArray
+  def params(): List[Any] = if (info != null && info.getCondition != null && info.getCondition.params() != null) info.getCondition.params.toList else Nil
 
   def single(): Array[AnyRef] = withEntityManager[Array[AnyRef]] {
     em =>
@@ -114,12 +132,15 @@ protected case class EndII(info: QueryInfo) extends JPA {
       result.asInstanceOf[T]
   }
 
-  def collect[T](t: Class[T]): List[T] = withEntityManager[List[T]] {
+  import scala.collection.JavaConversions._
+
+  def collect[T](t: Class[T]): List[T] = withEntityManager[java.util.List[T]] {
     em =>
       val query = if (sql().indexOf("select * from") >= 0) em.createNativeQuery(sql(), t) else em.createNativeQuery(sql())
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       val result = query.getResultList
-      result.asInstanceOf[List[T]]
-  } getOrElse Nil
+      result.asInstanceOf[java.util.List[T]]
+
+  } getOrElse (new java.util.ArrayList()) toList
 }
