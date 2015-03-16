@@ -72,7 +72,7 @@ protected case class EndII(info: QueryInfo) extends JPA {
 
   def sql(): String = {
     val buffer = new StringBuffer("select ")
-    if (info.select.length == 0) buffer.append("* ") else contact(info.select.toList, buffer)
+    if (info.select.length == 0) buffer.append("*").append(" ") else contact(info.select.toList, buffer)
 
     buffer.append("from ")
     contact(info.from.toList, buffer)
@@ -103,13 +103,14 @@ protected case class EndII(info: QueryInfo) extends JPA {
 
   private def contact(list: List[Alias], buffer: StringBuffer): Unit = {
     list match {
-      case head :: second :: tails =>
-        buffer.append(head.name()).append(",").append(second.name())
-        contact(tails, buffer)
-      case last :: Nil => buffer.append(last.name())
       case Nil =>
+      case last :: Nil => buffer.append(last.name()).append(" ")
+      case head :: second :: Nil =>
+        buffer.append(head.name()).append(",").append(second.name()).append(" ")
+      case head :: second :: tails =>
+        buffer.append(head.name()).append(",").append(second.name()).append(",")
+        contact(tails, buffer)
     }
-    buffer.append(" ")
   }
 
   def params(): List[Any] = if (info != null && info.getCondition != null && info.getCondition.params() != null) info.getCondition.params.toList else Nil
