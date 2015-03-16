@@ -19,9 +19,8 @@ trait ConditionII {
   var root: ConditionII = _
 
   @BeanProperty
-  var add = true
+  var close = false
 
-  lazy val params = mutable.ArrayBuffer[Any]()
   lazy val to = mutable.ArrayBuffer[ConditionII]()
 
   def values: Seq[Any]
@@ -44,29 +43,25 @@ trait ConditionII {
 
   def translate(): String = {
     val buffer = new StringBuffer()
-    endLoop(this, buffer)
+    val params = mutable.ArrayBuffer[Any]()
+    endLoop(this, buffer, params)
     buffer.toString
   }
 
-  private def endLoop(link: ConditionII, buffer: StringBuffer): Unit = {
-    if (link.getFrom != null) buffer.append(link.getFlag)
-    if (link.getFrom != null && link.to.nonEmpty) {
-      buffer.append(START_BRACKET)
-      buffer.append(link.rule())
-    }
-    else buffer.append(link.rule())
-
-    if (link.to.isEmpty) buffer.append(END_BRACKET)
-
-    link.to.foreach(endLoop(_, buffer))
+  def params(): Seq[Any] = {
+    val buffer = new StringBuffer()
+    val params = mutable.ArrayBuffer[Any]()
+    endLoop(this, buffer, params)
+    params.toSeq
   }
 
-  protected def rule(): String = {
-    if (this.getAdd) {
-      values.foreach(this.getRoot.params += _)
-      this.setAdd(false)
-    }
-    toField()
+  private def endLoop(link: ConditionII, buffer: StringBuffer, params: mutable.ArrayBuffer[Any]): Unit = {
+    if (link.getClose) buffer.append(START_BRACKET)
+    if (link.getFrom != null) buffer.append(link.getFlag)
+    link.values.foreach(params += _)
+    buffer.append(link.toField())
+    link.to.foreach(endLoop(_, buffer, params))
+    if (link.getClose) buffer.append(END_BRACKET)
   }
 
   protected def nodeInit(link: ConditionII, root: ConditionII): Unit = {
