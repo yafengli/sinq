@@ -23,7 +23,7 @@ class CollectSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Collect.") {
-    val query = sinq.select(_all: _*).from(_table).where(condition).orderBy(Order(ASC, _all: _*)).limit(10, 0) //.groupBy(columns: _*)
+    val query = sinq.select(_all: _*).from(_table).where(condition).orderBy(Order(ASC, _all: _*)).limit(10, 0)
     query.collect(classOf[Array[Any]]).foreach {
       case Array(id, name) => println(s"#id:${id} name:${name}")
       case _ =>

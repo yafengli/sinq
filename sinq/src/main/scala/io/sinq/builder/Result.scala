@@ -77,7 +77,10 @@ case class Result(info: QueryInfo) {
       val query = em.createNativeQuery(sql())
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
-      if (query.getResultList.size() != 1) null else query.getSingleResult.asInstanceOf[Any]
+      query.getResultList.toList match {
+        case s if s == Nil || s.length != 1 => null
+        case s if s.length == 1 => s(0)
+      }
   }
 
   def single[T](ct: Class[T]): Option[T] = info.stream.withEntityManager[T] {
@@ -85,7 +88,10 @@ case class Result(info: QueryInfo) {
       val query = em.createNativeQuery(sql(), ct)
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
-      if (query.getResultList.size() != 1) null.asInstanceOf[T] else query.getSingleResult.asInstanceOf[T]
+      query.getResultList.toList match {
+        case s if s == Nil || s.length != 1 => null.asInstanceOf[T]
+        case s if s.length == 1 => s(0).asInstanceOf[T]
+      }
   }
 
   def collect[T](t: Class[T]): List[T] = info.stream.withEntityManager[List[T]] {
