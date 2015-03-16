@@ -26,7 +26,7 @@ trait ConditionII {
 
   def values: Seq[Any]
 
-  def alias(): String
+  def toField(): String
 
   def and(link: ConditionII): ConditionII = {
     if (this.getFrom == null) this.setRoot(this) else this.setRoot(this.getFrom.getRoot)
@@ -66,7 +66,7 @@ trait ConditionII {
       values.foreach(this.getRoot.params += _)
       this.setAdd(false)
     }
-    alias()
+    toField()
   }
 
   protected def nodeInit(link: ConditionII, root: ConditionII): Unit = {
@@ -95,3 +95,16 @@ object ConditionII {
   val END_BRACKET = ")"
 }
 
+trait Tuple1Condition extends ConditionII {
+  def paramValue: Any
+
+  override def values: Seq[Any] = Seq(paramValue)
+}
+
+trait Tuple2Condition extends ConditionII {
+  def paramValue1: Any
+
+  def paramValue2: Any
+
+  override def values: Seq[Any] = Seq(paramValue1, paramValue2)
+}

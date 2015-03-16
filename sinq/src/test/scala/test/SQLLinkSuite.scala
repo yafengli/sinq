@@ -22,7 +22,7 @@ class SQLLinkSuite extends FunSuite with BeforeAndAfter {
 
     val _table = Table("t_student", "t")
     val columns = Column(_table, "id", "name")
-    val cd = Eq(Column(_table, "name"), Seq("1")).and(Ge(Column(_table, "age"), Seq(2)).or(Ge(Column(_table, "id"), Seq(3))).or(In(Column(_table, "id"), Seq(4l))))
+    val cd = Eq(Column(_table, "name"), "1").and(Ge(Column(_table, "age"), 2).or(Ge(Column(_table, "id"), 3)).or(In(Column(_table, "id"), 4l)))
 
     val query = sinq.select(columns: _*).from(_table).where(cd).groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
 
@@ -48,9 +48,9 @@ class SQLLinkSuite extends FunSuite with BeforeAndAfter {
 
     val _table = Table("t_student", "t")
     val columns = Column(_table, "id", "name")
-    val cd = Eq(Column(_table, "name"), Seq("YaFengLi")).and(Ge(Column(_table, "age"), Seq(11)).or(Ge(Column(_table, "id"), Seq(-1))))//.or(Le(Column(_table, "id"), Seq(5L))))
+    val cd = Eq(Column(_table, "id"), "2").and(Ge(Column(_table, "age"), 11).or(Ge(Column(_table, "id"), -1))) //.or(Le(Column(_table, "id"), Seq(5L))))
 
-    val query = sinq.select(columns: _*).from(_table).where(cd)//.groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
+    val query = sinq.select(columns: _*).from(_table).where(cd) //.groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
 
     query.single() match {
       case Array(id, name) => println(s"id:${id} name:${name}")
