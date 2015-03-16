@@ -11,7 +11,6 @@ object H2DB {
 
   lazy val facade = SpormFacade("default")
   lazy val pool = new ForkJoinPool(8)
-
   def open {
     if (!server.isRunning(false)) server.start()
     JPA.initPersistenceName("default")

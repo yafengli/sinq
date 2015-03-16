@@ -34,6 +34,13 @@ case class SinqIIStream() extends JPA {
   }
 }
 
+object SinqIIStream {
+  def apply(pn: String): SinqIIStream = {
+    JPA.bind(pn)
+    SinqIIStream()
+  }
+}
+
 case class FromII(info: QueryInfo) {
   def from(tables: Table*): EndII = {
     info.from ++= tables
