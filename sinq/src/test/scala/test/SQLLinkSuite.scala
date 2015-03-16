@@ -26,12 +26,12 @@ class SQLLinkSuite extends FunSuite with BeforeAndAfter {
 
     val query = sinq.select(columns: _*).from(_table).where(cd).groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
 
-
-    println(cd.translate())
-    cd.params.foreach(println(_))
-
-    println(cd.translate())
-    cd.params.foreach(println(_))
+    (0 to 2).foreach {
+      i =>
+        println(cd.translate())
+        cd.params.foreach(println(_))
+        println("####################################")
+    }
   }
 
   test("SINQ II QUERY.") {
@@ -42,8 +42,12 @@ class SQLLinkSuite extends FunSuite with BeforeAndAfter {
 
     val query = sinq.select(columns: _*).from(_table).where(cd) //.groupBy(columns: _*).orderBy(Order(ASC, columns: _*)).limit(10, 5)
 
-    println(cd.params.size)
-    println(cd.translate())
+    (0 to 2).foreach {
+      i =>
+        println(cd.translate())
+        cd.params.foreach(println(_))
+        println("####################################")
+    }
 
     query.single() match {
       case Array(id, name) => println(s"id:${id} name:${name}")
