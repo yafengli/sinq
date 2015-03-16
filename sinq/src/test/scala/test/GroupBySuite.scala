@@ -22,11 +22,16 @@ class GroupBySuite extends FunSuite with BeforeAndAfter {
     close
   }
 
-  test("Single.") {
-    val query = sinq.select(Count(_id),Count(_name)).from(_table).where(condition).groupBy(_id)
+  test("Group By.") {
+    val query = sinq.select(Count(_id), Count(_name)).from(_table).where(condition).groupBy(_id)
     query.single() match {
       case Some(Array(id, name)) => println(s"id:${id} name:${name}")
-      case Some(t) => println(s"t:${t}")
+      case None => println("None")
+    }
+
+    val query2 = sinq.select(Count(_id)).from(_table).where(condition).groupBy(_id)
+    query2.single() match {
+      case Some(count) => println(s"count:${count}")
       case None => println("None")
     }
   }

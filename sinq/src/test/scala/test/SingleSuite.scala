@@ -2,7 +2,7 @@ package test
 
 import io.sinq.SinqStream
 import io.sinq.expression._
-import io.sinq.rs.{ASC, Order}
+import io.sinq.rs.{Count, ASC, Order}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -26,6 +26,12 @@ class SingleSuite extends FunSuite with BeforeAndAfter {
     val query = sinq.select(_all: _*).from(_table).where(condition)
     query.single() match {
       case Some(Array(id, name)) => println(s"id:${id} name:${name}")
+      case None => println("None")
+    }
+
+    val query2 = sinq.select(_id).from(_table).where(condition)
+    query2.single() match {
+      case Some(id) => println(s"id:${id}")
       case None => println("None")
     }
   }
