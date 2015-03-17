@@ -1,16 +1,29 @@
 package io.sinq.rs
 
 import io.sinq.expression.Condition
-import io.sinq.provider.Result
+import io.sinq.provider.{QueryInfo, Result, ResultImpl}
+
+import scala.beans.BeanProperty
 
 trait Join {
-  def on(condition: Condition): Result
+  def on(condition: Condition): Result = {
+    this.setCondition(condition)
+    info.setJoin(this)
+    ResultImpl(info)
+  }
+
+  def table: Table
+
+  def info: QueryInfo
+
+  @BeanProperty
+  var condition: Condition = _
 }
 
-trait JoinInner extends Join
+case class JoinInner(val table: Table, val info: QueryInfo) extends Join
 
-trait JoinLeft extends Join
+case class JoinLeft(val table: Table, val info: QueryInfo) extends Join
 
-trait JoinRight extends Join
+case class JoinRight(val table: Table, val info: QueryInfo) extends Join
 
-trait JoinFull extends Join
+case class JoinFull(val table: Table, val info: QueryInfo) extends Join
