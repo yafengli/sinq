@@ -20,8 +20,13 @@ class DBFacadeSuite extends FunSuite with BeforeAndAfter {
   test("withEntityManager") {
     val list = sinq.withEntityManager {
       em =>
-        val query = em.createQuery("select b from Book b where b.id in :ids")
-        query.setParameter("ids", Seq(1L, 2L, 3L, 4L))
+        val query = em.createNativeQuery("select t.id,t.name,t.age from t_student t where t.id between ? and ? or t.name in (?,?,?,?)")
+        query.setParameter(1, -1)
+        query.setParameter(2, 12)
+        query.setParameter(3, "YaFengLi:1")
+        query.setParameter(4, "YaFengLi:2")
+        query.setParameter(5, "YaFengLi:3")
+        query.setParameter(6, "YaFengLi:4")
         query.getResultList.toList.asInstanceOf[List[Book]]
     }
     println("#list:" + list)

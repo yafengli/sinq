@@ -130,6 +130,5 @@ case class ResultImpl(info: QueryInfo) extends Result {
 
       val result = query.getResultList
       result.asInstanceOf[java.util.List[T]].toList
-
   } getOrElse Nil
 }
