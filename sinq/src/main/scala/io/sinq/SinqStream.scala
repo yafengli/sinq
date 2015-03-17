@@ -1,14 +1,14 @@
 package io.sinq
 
-import io.sinq.provider.{JPA, From, QueryInfo}
+import io.sinq.provider._
 import io.sinq.rs._
 
 class SinqStream extends JPA {
 
-  def select(cols: Column*): From = {
+  def select(cols: Column*): Select = {
     val info = QueryInfo(this)
     info.select ++= cols
-    From(info)
+    SelectImpl(info)
   }
 
   def find[T](id: AnyRef, t: Class[T]): Option[T] = {

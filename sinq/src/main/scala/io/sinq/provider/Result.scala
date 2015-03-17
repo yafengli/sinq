@@ -1,13 +1,11 @@
 package io.sinq.provider
 
 import io.sinq.builder.SqlBuilder
-import io.sinq.expression.Condition
 import io.sinq.rs._
 
 import scala.collection.JavaConversions._
 
 trait Result {
-  def where(condition: Condition = null): Result
 
   def groupBy(cols: Column*): Result
 
@@ -27,11 +25,6 @@ trait Result {
 }
 
 case class ResultImpl(info: QueryInfo) extends Result {
-
-  def where(condition: Condition = null): ResultImpl = {
-    if (condition != null) info.setCondition(condition)
-    ResultImpl(info)
-  }
 
   def groupBy(cols: Column*): ResultImpl = {
     info.groupBy ++= cols
