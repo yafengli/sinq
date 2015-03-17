@@ -1,18 +1,24 @@
 package test
 
+import java.util.concurrent.{CountDownLatch, TimeUnit}
+
+import init.{STUDENT, H2DB}
 import io.sinq.SinqStream
 import io.sinq.expression._
-import io.sinq.rs.{Count, ASC, Order}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.H2DB._
+import H2DB._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 @RunWith(classOf[JUnitRunner])
 class SingleSuite extends FunSuite with BeforeAndAfter {
 
   val sinq = SinqStream()
-  val condition = Eq(_id, 1).and(Le(_id, 12).or(Ge(_age, 11L).and(In(_id, Seq(1, 2, 3))))).or(Ge(_age, 15L))
+  val condition = Eq(STUDENT.id, 1).or(Le(STUDENT.id, 12).and(Ge(STUDENT.age, 11L).and(In(STUDENT.id, Seq(1, 2, 3))).or(Ge(STUDENT.age, 15L))))
 
   before {
     open
@@ -21,20 +27,20 @@ class SingleSuite extends FunSuite with BeforeAndAfter {
   after {
     close
   }
-
   test("Single.") {
-    val query = sinq.select(_all: _*).from(_table).where(condition)
-    query.single() match {
-      case Some(Array(id, name)) => println(s"id:${id} name:${name}")
-      case None => println("None")
+    val latch = new CountDownLatch(1)
+    Future {
+      val query = sinq.select(STUDENT.* : _*).from(STUDENT).where(condition)
+      query.single() match {
+        case Some(Array(id, name, age)) => println(s"id:${id} name:${name} age:${age}")
+        case None => println("None")
+      }
+      latch.countDown()
+    } onComplete {
+      case Success(r) => println(s"Success-1:${r}")
+      case Failure(t) => println(s"Failure-1:${t}")
     }
-
-    val query2 = sinq.select(_id).from(_table).where(condition)
-    query2.single() match {
-      case Some(id) => println(s"id:${id}")
-      case None => println("None")
-    }
+    latch.await(10, TimeUnit.SECONDS)
   }
 }
-
 

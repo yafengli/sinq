@@ -50,6 +50,8 @@ object JPA {
   private val EMF_MAP = TrieMap[String, EntityManagerFactory]()
   private val PN_T = new ThreadLocal[String]
 
+  val JPA_PERSISTENCE_DEFAULT_NAME = "sinq.jpa.persistence.name"
+
   /**
    * bind persistence name to current thread
    * @param pn persistence name
@@ -69,6 +71,7 @@ object JPA {
   def initPersistenceName(pn: String*) {
     pn.foreach(n => EMF_MAP += (n -> Persistence.createEntityManagerFactory(n)))
     bind(pn(0))
+    System.setProperty(JPA_PERSISTENCE_DEFAULT_NAME, pn(0))
   }
 
   /**
@@ -76,9 +79,11 @@ object JPA {
    * @return Option EntityManagerFactory
    */
   def entityManagerFactory(): Option[EntityManagerFactory] = {
-    PN_T.get() match {
-      case pn: String if EMF_MAP.contains(pn) => Some(EMF_MAP(pn))
-      case _ => None
+    val pn = if (PN_T.get() != null) PN_T.get() else System.getProperty(JPA_PERSISTENCE_DEFAULT_NAME)
+    if (EMF_MAP.contains(pn)) Some(EMF_MAP(pn))
+    else {
+      logger.error(s"##Not found persistence name:[${pn}].")
+      None
     }
   }
 

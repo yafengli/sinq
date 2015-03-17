@@ -12,11 +12,11 @@ import scala.collection.JavaConversions._
 @RunWith(classOf[JUnitRunner])
 class JinqScalaSuite extends FunSuite with BeforeAndAfter with JPA {
   before {
-    H2DB.open
+    init.H2DB.open
   }
 
   after {
-    H2DB.close
+    init.H2DB.close
   }
   test("Jinq Scala And") {
     val streams = new JinqJPAScalaIteratorProvider(JPA.entityManagerFactory().get)

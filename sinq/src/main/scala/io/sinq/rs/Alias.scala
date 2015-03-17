@@ -1,7 +1,7 @@
 package io.sinq.rs
 
 trait Alias {
-  def name(): String
+  def identifier(): String
 
   def as(): String = null
 }

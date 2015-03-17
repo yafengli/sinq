@@ -48,7 +48,7 @@ case class Result(info: QueryInfo) {
     if (info.getOrder != null) {
       buffer.append("order by ")
       contact(info.getOrder.cols.toList, buffer)
-      buffer.append(info.getOrder.orderDesc.name()).append(" ")
+      buffer.append(info.getOrder.orderDesc.identifier()).append(" ")
     }
 
     info.getLimit match {
@@ -61,11 +61,11 @@ case class Result(info: QueryInfo) {
   private def contact(list: List[Alias], buffer: StringBuffer): Unit = {
     list match {
       case Nil =>
-      case last :: Nil => buffer.append(last.name()).append(" ")
+      case last :: Nil => buffer.append(last.identifier()).append(" ")
       case head :: second :: Nil =>
-        buffer.append(head.name()).append(",").append(second.name()).append(" ")
+        buffer.append(head.identifier()).append(",").append(second.identifier()).append(" ")
       case head :: second :: tails =>
-        buffer.append(head.name()).append(",").append(second.name()).append(",")
+        buffer.append(head.identifier()).append(",").append(second.identifier()).append(",")
         contact(tails, buffer)
     }
   }
