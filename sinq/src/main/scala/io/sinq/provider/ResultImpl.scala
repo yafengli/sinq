@@ -1,5 +1,6 @@
 package io.sinq.provider
 
+import io.sinq.builder.SqlBuilder
 import io.sinq.expression.Condition
 import io.sinq.rs._
 
@@ -48,61 +49,7 @@ case class ResultImpl(info: QueryInfo) extends Result {
   }
 
   def sql(): String = {
-    //select
-    val buffer = new StringBuffer("select ")
-    if (info.select.length == 0) buffer.append("*").append(" ") else contact(info.select.toList, buffer)
-
-    //from
-    buffer.append("from ")
-    contact(info.from.toList, buffer)
-
-    //join
-    if (info.getJoin != null) {
-      info.getJoin match {
-        case JoinInner => buffer.append(s"join ")
-        case JoinLeft => buffer.append(s"left join ")
-        case JoinRight => buffer.append(s"right join ")
-        case JoinFull => buffer.append(s"full join ")
-      }
-      buffer.append(s"${info.getJoin.table.identifier()} on ").append(info.getJoin.getCondition.translate()).append(" ")
-    }
-    
-    //where
-    if (info.getCondition != null) {
-      buffer.append("where ")
-      buffer.append(info.getCondition.translate())
-      buffer.append(" ")
-    }
-
-    //group by
-    if (info.groupBy.length > 0) {
-      buffer.append("group by ")
-      contact(info.groupBy.toList, buffer)
-    }
-    //order by
-    if (info.getOrder != null) {
-      buffer.append("order by ")
-      contact(info.getOrder.cols.toList, buffer)
-      buffer.append(info.getOrder.orderDesc.identifier()).append(" ")
-    }
-    //limit offset
-    info.getLimit match {
-      case (limit, offset) => buffer.append(s"limit ${limit} offset ${offset}")
-      case null =>
-    }
-    buffer.toString
-  }
-
-  private def contact(list: List[Alias], buffer: StringBuffer): Unit = {
-    list match {
-      case Nil =>
-      case last :: Nil => buffer.append(last.identifier()).append(" ")
-      case head :: second :: Nil =>
-        buffer.append(head.identifier()).append(",").append(second.identifier()).append(" ")
-      case head :: second :: tails =>
-        buffer.append(head.identifier()).append(",").append(second.identifier()).append(",")
-        contact(tails, buffer)
-    }
+    SqlBuilder(info).build()
   }
 
   def params(): List[Any] = if (info != null && info.getCondition != null && info.getCondition.params() != null) info.getCondition.params.toList else Nil
