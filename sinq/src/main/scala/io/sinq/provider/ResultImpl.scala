@@ -1,28 +1,48 @@
-package io.sinq.builder
+package io.sinq.provider
 
 import io.sinq.expression.Condition
 import io.sinq.rs.{Alias, Column, Order}
 
 import scala.collection.JavaConversions._
 
-case class Result(info: QueryInfo) {
+trait Result {
+  def where(condition: Condition = null): Result
 
-  def where(condition: Condition = null): Result = {
+  def groupBy(cols: Column*): Result
+
+  def orderBy(order: Order): Result
+
+  def limit(limit: Int, offset: Int): Result
+
+  def sql(): String
+
+  def single(): Option[Any]
+
+  def single[T](ct: Class[T]): Option[T]
+
+  def collect(): List[Any]
+
+  def collect[T](t: Class[T]): List[T]
+}
+
+case class ResultImpl(info: QueryInfo) extends Result {
+
+  def where(condition: Condition = null): ResultImpl = {
     if (condition != null) info.setCondition(condition)
-    Result(info)
+    ResultImpl(info)
   }
 
-  def groupBy(cols: Column*): Result = {
+  def groupBy(cols: Column*): ResultImpl = {
     info.groupBy ++= cols
     this
   }
 
-  def orderBy(order: Order): Result = {
+  def orderBy(order: Order): ResultImpl = {
     info.setOrder(order)
     this
   }
 
-  def limit(limit: Int, offset: Int): Result = {
+  def limit(limit: Int, offset: Int): ResultImpl = {
     info.setLimit(limit, offset)
     this
   }
@@ -93,6 +113,15 @@ case class Result(info: QueryInfo) {
         case s if s.length == 1 => s(0).asInstanceOf[T]
       }
   }
+
+  def collect(): List[Any] = info.stream.withEntityManager[List[Any]] {
+    em =>
+      val query = em.createNativeQuery(sql())
+      (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
+
+      val result = query.getResultList
+      result.asInstanceOf[java.util.List[Any]].toList
+  } getOrElse Nil
 
   def collect[T](t: Class[T]): List[T] = info.stream.withEntityManager[List[T]] {
     em =>

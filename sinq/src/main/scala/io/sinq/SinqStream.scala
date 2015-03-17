@@ -1,7 +1,6 @@
 package io.sinq
 
-import io.sinq.builder.{From, QueryInfo}
-import io.sinq.jpa.JPA
+import io.sinq.provider.{JPA, From, QueryInfo}
 import io.sinq.rs._
 
 class SinqStream extends JPA {
@@ -10,6 +9,10 @@ class SinqStream extends JPA {
     val info = QueryInfo(this)
     info.select ++= cols
     From(info)
+  }
+
+  def find[T](id: AnyRef, t: Class[T]): Option[T] = {
+    withEntityManager(_.find(t, id))
   }
 
   def insert[T](t: T): Unit = {
@@ -22,14 +25,6 @@ class SinqStream extends JPA {
 
   def update[T](t: T): Unit = {
     withTransaction(_.merge(t))
-  }
-
-  def count[T](t: Class[T]): Long = {
-    withEntityManager {
-      em =>
-        val query = em.createQuery(s"select count(t) from ${t.getName} t", classOf[java.lang.Long])
-        query.getSingleResult.longValue()
-    } getOrElse 0
   }
 }
 

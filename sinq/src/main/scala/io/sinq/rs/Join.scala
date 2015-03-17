@@ -1,7 +1,7 @@
 package io.sinq.rs
 
-import io.sinq.builder.Result
 import io.sinq.expression.Condition
+import io.sinq.provider.Result
 
 trait Join {
   def on(condition: Condition): Result

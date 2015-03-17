@@ -1,6 +1,6 @@
 package test
 
-import io.sinq.jpa.JPA
+import io.sinq.provider.JPA
 import org.h2.tools.Server
 import org.koala.sporm.SpormFacade
 

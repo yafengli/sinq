@@ -4,14 +4,14 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
 目标
 ====
-* 使用__SQL__；
 * 使用__JPA__；
+* 使用__SQL__；
 * 支持__Scala__；
 * 提供直观的__Functional Chain__操作；
 
 #### 增删改(CRUD)
 + `insert(obj:Entity)`
-+ `find(pk:AnyRef)`
++ `find(pk:AnyRef,t:Class[T])`
 + `delete(obj:Entity)`
 + `update(obj:Entity)`
 

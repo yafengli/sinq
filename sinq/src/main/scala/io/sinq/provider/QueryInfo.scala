@@ -1,4 +1,4 @@
-package io.sinq.builder
+package io.sinq.provider
 
 import io.sinq.SinqStream
 import io.sinq.expression.Condition

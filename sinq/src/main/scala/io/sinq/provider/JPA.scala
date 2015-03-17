@@ -1,4 +1,4 @@
-package io.sinq.jpa
+package io.sinq.provider
 
 import javax.persistence.{EntityManager, EntityManagerFactory, Persistence}
 
@@ -8,7 +8,7 @@ import scala.collection.concurrent.TrieMap
 
 trait JPA {
 
-  import io.sinq.jpa.JPA._
+  import io.sinq.provider.JPA._
 
   def withTransaction[T](call: EntityManager => T): Option[T] = {
     val em = createEntityManager()
