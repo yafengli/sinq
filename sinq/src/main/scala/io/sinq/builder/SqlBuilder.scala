@@ -1,6 +1,6 @@
 package io.sinq.builder
 
-import io.sinq.provider.QueryInfo
+import io.sinq.provider._
 import io.sinq.rs._
 
 trait Builder {

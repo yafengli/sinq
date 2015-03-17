@@ -1,5 +1,7 @@
 package io.sinq.expression
 
+import io.sinq.rs.Column
+
 import scala.beans.BeanProperty
 import scala.collection.mutable
 
@@ -23,7 +25,7 @@ trait Condition {
 
   lazy val to = mutable.ArrayBuffer[Condition]()
 
-  def values: Seq[Any]
+  def values: List[Any]
 
   def toField(): String
 
@@ -92,16 +94,20 @@ object Condition {
   val END_BRACKET = ")"
 }
 
-trait Tuple1Condition extends Condition {
-  def paramValue: Any
+trait Tuple1Condition[T <: Any] extends Condition {
+  def paramValue: T
 
-  override def values: Seq[Any] = Seq(paramValue)
+  override def values: List[Any] = paramValue match {
+    case col: Column => Nil
+    case cols: Seq[Any] => cols.toList
+    case _ => List(paramValue)
+  }
 }
 
-trait Tuple2Condition extends Condition {
-  def paramValue1: Any
+trait Tuple2Condition[T <: Any] extends Condition {
+  def paramValue1: T
 
-  def paramValue2: Any
+  def paramValue2: T
 
-  override def values: Seq[Any] = Seq(paramValue1, paramValue2)
+  override def values: List[Any] = List(paramValue1, paramValue2)
 }

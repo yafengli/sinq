@@ -2,9 +2,6 @@ package io.sinq.expression
 
 import io.sinq.rs.Column
 
-/**
- * Created by Administrator on 2015/3/16.
- */
-case class Le(val col: Column, val paramValue: Any) extends Tuple1Condition {
+case class Le[T](val col: Column, val paramValue: T) extends Tuple1Condition[T] {
   override def toField(): String = s"${col.identifier()} <= ?"
 }

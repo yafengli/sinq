@@ -2,7 +2,7 @@ package io.sinq.expression
 
 import io.sinq.rs.Column
 
-case class Ge(val col: Column, val paramValue: Any) extends Tuple1Condition {
+case class Ge[T](val col: Column, val paramValue: T) extends Tuple1Condition[T] {
   override def toField(): String = s"${col.identifier()} >= ?"
 }
 

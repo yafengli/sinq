@@ -2,10 +2,8 @@ package io.sinq.expression
 
 import io.sinq.rs.Column
 
-case class In(val col: Column, val paramValue: Seq[Any]) extends Tuple1Condition {
+case class In[T](val col: Column, val paramValue: Seq[T]) extends Tuple1Condition[Seq[T]] {
   override def toField(): String = s"${col.identifier()} in (${split(paramValue.toList)})"
-
-  override def values: Seq[Any] = paramValue
 
   private def split(list: List[Any]): String = {
     list match {
