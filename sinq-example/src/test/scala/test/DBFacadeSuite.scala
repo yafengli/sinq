@@ -6,7 +6,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import scala.collection.JavaConversions._
 
 class DBFacadeSuite extends FunSuite with BeforeAndAfter {
-  val sinq = SinqStream()
+  val sinq = SinqStream("h2")
   before {
     H2DB.open
   }

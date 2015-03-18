@@ -2,7 +2,6 @@ package test
 
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
-import init.H2DB._
 import init.STUDENT
 import io.sinq.SinqStream
 import io.sinq.expression._
@@ -17,13 +16,13 @@ import scala.util.{Failure, Success}
 
 @RunWith(classOf[JUnitRunner])
 class SingleSuite extends FunSuite with BeforeAndAfter {
-  val sinq = SinqStream()
+  val sinq = SinqStream("h2")
   before {
-    open
+    H2DB.open
   }
 
   after {
-    close
+    H2DB.close
   }
   test("Single.") {
     val latch = new CountDownLatch(1)

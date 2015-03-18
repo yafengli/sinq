@@ -9,7 +9,6 @@ import io.sinq.rs.Count
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.H2DB._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -18,15 +17,15 @@ import scala.util.{Failure, Success}
 @RunWith(classOf[JUnitRunner])
 class GroupBySuite extends FunSuite with BeforeAndAfter {
 
-  val sinq = SinqStream()
+  val sinq = SinqStream("h2")
   val condition = Between(STUDENT.id, 1, 12).or(Ge(STUDENT.age, 15L))
 
   before {
-    open
+    H2DB.open
   }
 
   after {
-    close
+    H2DB.close
   }
 
   test("Group By.") {

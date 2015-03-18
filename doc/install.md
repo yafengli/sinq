@@ -3,7 +3,7 @@
         sbt
         >project sinq
         >package
-        >publish-local
+        >publishLocal
 
 ## Install
 

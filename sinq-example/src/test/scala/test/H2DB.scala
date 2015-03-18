@@ -7,14 +7,15 @@ object H2DB {
   val server = Server.createTcpServer()
 
   def open {
-    if (!server.isRunning(false)) server.start()
-    JPA.initPersistenceName("default")
+    server.start()
+    JPA.initPersistenceName("h2")
     println("##########H2 DB Server is started.###############")
   }
 
   def close {
-    JPA.release()
     server.stop()
+    server.shutdown()
+    JPA.release()
     println("##########H2 DB Server is closed.###############")
   }
 }

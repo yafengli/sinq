@@ -1,6 +1,5 @@
 package test
 
-import init.H2DB._
 import init.STUDENT
 import io.sinq.SinqStream
 import models.{Husband, Student, Teacher}
@@ -11,14 +10,14 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class DBInitSuite extends FunSuite with BeforeAndAfter {
 
-  val sinq = SinqStream()
+  val sinq = SinqStream("h2")
 
   before {
-    open
+    H2DB.open
   }
 
   after {
-    close
+    H2DB.close
   }
 
   test("DB Init.") {

@@ -18,7 +18,7 @@ case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
   var id: Long = _
 
   @OneToOne(fetch = FetchType.EAGER, optional = false)
-  @JoinColumn("u_id")
+  @JoinColumn(name = "u_id")
   @BeanProperty
   var user: User = _
 

@@ -2,7 +2,6 @@ package test
 
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
-import init.H2DB._
 import init.{STUDENT, TEACHER}
 import io.sinq.SinqStream
 import io.sinq.expression._
@@ -19,15 +18,15 @@ import scala.util.{Failure, Success}
 @RunWith(classOf[JUnitRunner])
 class JoinSuite extends FunSuite with BeforeAndAfter {
 
-  val sinq = SinqStream()
+  val sinq = SinqStream("h2")
   val condition = Between(STUDENT.id, 1, 12).or(In(STUDENT.name, Seq("YaFengli:0", "YaFengli:1", "YaFengli:2", "YaFengli:3")))
 
   before {
-    open
+    H2DB.open
   }
 
   after {
-    close
+    H2DB.close
   }
   test("Join.") {
     val latch = new CountDownLatch(1)

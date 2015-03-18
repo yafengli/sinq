@@ -8,7 +8,7 @@ object H2DB {
 
   def open {
     if (!server.isRunning(false)) server.start()
-    JPA.initPersistenceName("default")
+    JPA.initPersistenceName("h2")
     println("##########H2 DB Server is started.###############")
   }
 
