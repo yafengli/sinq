@@ -6,10 +6,9 @@
 
     <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <mapping-file>META-INF/query-models.xml</mapping-file>
         <class>models.Teacher</class>
+        <class>models.Husband</class>
         <class>models.Student</class>
-        <class>models.Book</class>
         <properties>
             <property name="hibernate.connection.provider_class"
                       value="org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider"/>
