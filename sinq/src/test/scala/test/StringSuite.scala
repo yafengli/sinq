@@ -1,5 +1,9 @@
 package test
 
+import init.{STUDENT, TEACHER}
+import io.sinq.SinqStream
+import io.sinq.expression.{Eq, Ge, In, Le}
+import io.sinq.rs.{ASC, Order}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -7,35 +11,16 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class StringSuite extends FunSuite with BeforeAndAfter {
 
+  val sinq = SinqStream()
 
-  test("Seq split") {
-    println(split(Seq(1).toList))
-    println(split(Seq(1, 2).toList))
-    println(split(Seq(1, 2, 3).toList))
-    println(split(Seq(1, 2, 3, 4).toList))
-    println(split(Seq(1, 2, 3, 4, 5).toList))
+  test("SQL Build.") {
+    val condition = Eq(STUDENT.id, 1).or(Le(STUDENT.id, 12).and(Ge(STUDENT.age, 11L).and(In(STUDENT.id, Seq(1, 2, 3))).or(Ge(STUDENT.age, 15L))))
+    println("sql:" + condition.translate())
+    println("params:" + condition.params())
 
-    val a = A("123",111)
-    val b = B(a)
-    println(b.a.name +":"+b.a.id)
-    a.id=222
-    a.name="444"
-    println(b.a.name +":"+b.a.id)
-  }
+    val query = sinq.select().from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
 
-  private def split(list: List[Any]): String = {
-    list match {
-      case Nil => ""
-      case last :: Nil => "?"
-      case head :: tails =>
-        val buffer = new StringBuffer("?")
-        (0 until tails.size).foreach(t => buffer.append(",?"))
-        buffer.toString
-    }
+    println("sql:" + query.sql())
+    println("params:" + query.params())
   }
 }
-
-
-case class A(var name: String, var id: Int)
-
-case class B(val a: A)

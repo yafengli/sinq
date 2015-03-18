@@ -20,7 +20,7 @@ case class SqlBuilder(val info: QueryInfo) extends Builder {
     //join
     if (info.getJoin != null) {
       info.getJoin match {
-        case JoinInner(_, _) => buffer.append(s"join ")
+        case JoinInner(_, _) => buffer.append(s"inner join ")
         case JoinLeft(_, _) => buffer.append(s"left join ")
         case JoinRight(_, _) => buffer.append(s"right join ")
         case JoinFull(_, _) => buffer.append(s"full join ")

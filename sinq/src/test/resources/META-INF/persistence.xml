@@ -8,7 +8,6 @@
         <class>models.Teacher</class>
         <class>models.Husband</class>
         <class>models.Student</class>
-        <class>models.Book</class>
         <properties>
             <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
             <property name="driverClassName" value="org.h2.Driver"/>

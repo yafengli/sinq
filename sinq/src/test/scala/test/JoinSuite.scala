@@ -3,7 +3,7 @@ package test
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
 import init.H2DB._
-import init.{BOOK, STUDENT}
+import init.{STUDENT, TEACHER}
 import io.sinq.SinqStream
 import io.sinq.expression._
 import io.sinq.rs.{ASC, Order}
@@ -32,8 +32,8 @@ class JoinSuite extends FunSuite with BeforeAndAfter {
   test("Join.") {
     val latch = new CountDownLatch(1)
     Future {
-      val query = sinq.select().from(STUDENT).join(BOOK).on(Eq(STUDENT.id, BOOK.student_id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
-      query.collect(classOf[Student]).foreach(t => println(s"#id:${t.id} name:${t.name} age:${t.age}"))
+      val query = sinq.select().from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+      query.collect(classOf[Student]).foreach(t => println(s"#id:${t.id} name:${t.name} age:${t.age} teacher:${t.teacher.name}"))
       latch.countDown()
     } onComplete {
       case Success(s) =>

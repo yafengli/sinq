@@ -1,6 +1,5 @@
 package models
 
-import java.util.{HashSet, Set}
 import javax.persistence._
 
 import scala.beans.BeanProperty
@@ -15,15 +14,10 @@ case class Student(@BeanProperty var name: String, @BeanProperty var age: Int, @
   @BeanProperty
   var id: Long = _
 
-  @ManyToOne()
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "teacher_id")
   @BeanProperty
   var teacher: Teacher = _
-
-
-  @OneToMany(cascade = Array(CascadeType.REMOVE), mappedBy = "student")
-  @BeanProperty
-  var books: Set[Book] = new HashSet[Book]()
 
   def this() = this(null, -1, null)
 

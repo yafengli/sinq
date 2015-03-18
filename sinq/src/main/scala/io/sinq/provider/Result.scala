@@ -15,6 +15,8 @@ trait Result {
 
   def sql(): String
 
+  def params(): List[Any]
+
   def single(): Option[Any]
 
   def single[T](ct: Class[T]): Option[T]

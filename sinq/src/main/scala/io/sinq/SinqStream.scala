@@ -11,7 +11,7 @@ class SinqStream extends JPA {
     SelectImpl(info)
   }
 
-  def find[T](id: AnyRef, t: Class[T]): Option[T] = {
+  def find[T, K](id: K, t: Class[T]): Option[T] = {
     withEntityManager(_.find(t, id))
   }
 

@@ -2,7 +2,6 @@ package test
 
 import init.H2DB
 import io.sinq.SinqStream
-import models.Book
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.collection.JavaConversions._
@@ -27,7 +26,7 @@ class DBFacadeSuite extends FunSuite with BeforeAndAfter {
         query.setParameter(4, "YaFengLi:2")
         query.setParameter(5, "YaFengLi:3")
         query.setParameter(6, "YaFengLi:4")
-        query.getResultList.toList.asInstanceOf[List[Book]]
+        query.getResultList.toList
     }
     println("#list:" + list)
   }

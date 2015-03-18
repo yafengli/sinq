@@ -17,7 +17,7 @@ trait Tuple1Condition[T <: Any] extends Condition {
         seq.toList match {
           case Nil =>
           case last :: Nil => buffer.append("?")
-          case head :: tails => tails.foreach(_ => buffer.append(",?"))
+          case head :: tails => buffer.append("?"); tails.foreach(_ => buffer.append(",?"))
         }
         buffer.append(")")
       case _ => buffer.append("?")

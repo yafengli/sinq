@@ -1,9 +1,9 @@
 package test
 
 import init.H2DB._
-import init.{H2DB, STUDENT}
+import init.STUDENT
 import io.sinq.SinqStream
-import models.Student
+import models.{Husband, Student, Teacher}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -23,14 +23,18 @@ class DBInitSuite extends FunSuite with BeforeAndAfter {
 
   test("DB Init.") {
     import init.ImplicitsSinq.sinq2Count
-    
+
     val count = sinq.count(classOf[Student])
     if (count <= 10) {
-      (0 to 10).foreach(i => sinq.insert(Student(s"YaFengli:${i}", i, s"NanJing:${i}")))
+      val teacher = Teacher("习大大", 999, "BeiJing")
+      sinq.insert(teacher)
+      val husband = Husband("中国梦", 999)
+      husband.setTeacher(teacher)
+      sinq.insert(husband)
+      (0 to 10).foreach(i => sinq.insert(new Student(s"YaFengli:${i}", i, s"NanJing:${i}", teacher)))
     }
-
     println(s"count:${count}")
-    sinq.select().from(STUDENT).collect(classOf[Student]).foreach(s => println(s"id:${s.id}"))
+    sinq.select().from(STUDENT).where().collect(classOf[Student]).foreach(s => println(s"id:${s.id}"))
   }
 }
 
