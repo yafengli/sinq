@@ -22,6 +22,9 @@ case class QueryInfo(val stream: SinqStream) {
   var condition: Condition = _
 
   @BeanProperty
+  var having: Condition = _
+
+  @BeanProperty
   var limit: (Int, Int) = _
   @BeanProperty
   var order: Order = _

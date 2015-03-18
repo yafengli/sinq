@@ -46,8 +46,13 @@ class CollectSuite extends FunSuite with BeforeAndAfter {
       val query = sinq.select(STUDENT.* : _*).from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
       query.collect().foreach {
         case Array(id, name, age) => println(s">id:${id} name:${name} age:${age}")
-        case _ =>
       }
+
+      println("#########################")
+      sinq.select(STUDENT.id, STUDENT.name).from(STUDENT).where(Ge(STUDENT.id, 1)).collect().foreach { case Array(id, name) => println(s"id:${id} name:${name}") }
+      println("#########################")
+      sinq.select(STUDENT.id).from(STUDENT).where(Ge(STUDENT.id, 1)).collect().foreach { id => println(s"id:${id}") }
+
       latch.countDown()
     } onComplete {
       case Success(s) =>

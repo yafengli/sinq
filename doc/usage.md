@@ -1,172 +1,65 @@
-#### 初始化
+## SinqStream
++ 创建JPA Entity:
++ User.scala:
 
-+ 调用:`JPA.initPersistenceName("persistence.name")`。
-+ 初始化JPA的配置`PersistenceName`名称，在多线程多数据库的需求中可以在调用Sporm前，绑定当前线程使用的`PersistenceName`。
+    import javax.persistence._
+    import scala.beans.BeanProperty
 
-#### JPA Entity扩展
+    @Entity
+    @Table(name = "t_user")
+    case class User(@BeanProperty var name: String, @BeanProperty var age: Int, @BeanProperty var address: String) {
+      @Id
+      @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_user")
+      @TableGenerator(name = "seq_t_user", table = "seq_t_user", allocationSize = 1)
+      @BeanProperty
+      var id: Long = _
 
-+ 对于每一个`JPA Entity`需要定义其伴生对象并继承`CQModel`类，例如：
-+ `Book.scala`
+      override def toString = id + ":" + name + ":" + age + ":" + address
+    }
++ 创建`Table`对象：
 
-        @Entity
-        @Table(name="t_book)
-        class Book(var name:String,var address:String,var age:Int){
-            @Id
-            @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_book")
-            @TableGenerator(name = "seq_t_book", table = "seq_t_book", allocationSize = 1)
-            var id: Long = _
-            @ManyToOne(optional = false)
-            @JoinColumn(name = "author_id")
-            var author:Author = _
-        }
+    object USER extends Table("t_user","u") {
+      def id = Column(this,"id")
+      def name = Column(this,"name")
+      def age = Column(this,"age")
+      def address = Column(this,"address")
 
-        object Book extends CQModel[Book]
-+ `Author.scala`
+      def * = Column(this,"id","name","address")
+    }
 
-        @Entity
-        @Table(name="t_author)
-        class Author(var name:String){
-            @Id
-            @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_author")
-            @TableGenerator(name = "seq_t_author", table = "seq_t_author", allocationSize = 1)
-            var id: Long = _
-            @OneToMany(cascade = Array(CascadeType.REMOVE), mappedBy = "author")
-            var books: Set[Book] = new HashSet[Book]()
-        }
++ `val sinq = SinqStream()`
 
-        object Author extends CQModel[Author]
+## Single
++ JPA Entity结果集：
 
-#### 基本调用
-+ 查询：`Book.get(1L)`
-+ 增加：`book.insert`
-+ 修改：`book.update`
-+ 删除：`book.delete`
+    sinq.select().from(USER).where(Eq(User.id,1)).single(classOf[User]) match {
+      case Some(u) => println(s"id:${u.id} name:${u.name}")
+      case None => println("No Entity found.")
+    }
 
-#### 扩展调用
-+ 单`Entity`查询：`single`
++ 非JPA Entity结果集：
 
-        Book.single(_.==("name","test1"))
-+ 多`Entity`查询：`fetch`
+    sinq.select(USER.id,USER.name).from(USER).where(Eq(User.id,1)).single() match {
+      case Some(Array(id,name)) => println(s"id:${id} name:${name}")
+      case None => println("No Entity found.")
+    }
 
-        val limit = 10
-        val offset = 20
-        Book.fetch(limit,offset) {
-            f => {
-                val cb=f.builder
-                val root=f.root
-                f.!=("name","test").asc("name")
-        } match {
-            case Some(list) => list.foreach(println _)
-            case None =>
-        }
-+ 特殊查询：`count`
+    sinq.select(USER.id).from(USER).where(Eq(User.id,1)).single() match {
+      case Some(id) => println(s"id:${id}")
+      case None => println("No Entity found.")
+    }
 
-        Book.count {
-            f => {
-                val cb=f.builder
-                val root=f.root
-                f.!=("name","test").asc("name")
-        } match {
-            case Some(count) => println count
-            case None =>
-        }
+## Collect
++ JPA Entity结果集：
 
-#### QL讲解
-+ 在`single`,`fetch`与`count`方法中有`call: (CriteriaQL[T]) => CriteriaQL[T]`高阶函数.
-+ 函数的参数与返回结果均为`Criteria Query`封装`CriteriaQL`.
+    sinq.select().from(USER).where(Ge(User.id,1)).collect(classOf[User]).foreach { u => println(s"id:${u.id} name:${u.name}") }
 
-+ 简单QL：`Book.fetch(10,20)(_.!=("age",12).asc("id"))`则其生成的最终SQL类似：
++ 非JPA Entity结果集：
 
-        select b.* from t_book b from t.age != 12 order by id asc
-+ `where in`
+    sinq.select(USER.id,USER.name).from(USER).where(Ge(User.id,1)).collect().foreach { case Array(id,name) => println(s"id:${id} name:${name}") }
 
-        import scala.collection.JavaConversions._
-        import scala.collection.mutable.ArrayBuffer
-        val params: java.util.List[Long] = ArrayBuffer(1L, 2L, 3L)
-        val list = facade.withEntityManager[List[Book]] {
-            em =>
-                val query = em.createQuery("select b from Book b where b.id in :ids")
-                query.setParameter("ids", params)
-                query.getResultList.toList.asInstanceOf[List[Book]]
-        }
-+ `where in`最终`SQL`
+    sinq.select(USER.id).from(USER).where(Ge(User.id,1)).collect().foreach { id => println(s"id:${id}") }
 
-        select
-            book0_.id as id1_2_,
-            book0_.name as name2_2_,
-            book0_.price as price3_2_,
-            book0_.student_id as student4_2_
-        from
-            t_book book0_
-        where
-            book0_.id in (? , ? , ? , ?)
-        TRACE org.hibernate.type.descriptor.sql.BasicBinder - binding parameter [1] as [BIGINT] - 1
-        TRACE org.hibernate.type.descriptor.sql.BasicBinder - binding parameter [2] as [BIGINT] - 2
-        TRACE org.hibernate.type.descriptor.sql.BasicBinder - binding parameter [3] as [BIGINT] - 3        
-+ 连接(Join)：
-
-        Book.fetch(10,20) {
-            f =>
-                val builder = f.builder
-                val root = f.root
-
-                val join = root.join("company")
-                val p1 = builder.equal(join.get("name"), "test")
-                val p2 = builder.equal(join.get("age"), 15)
-                f::=(p1,p2).asc("id")
-        } match {
-            case Some(list) => list.foreach(println _)
-            case None =>
-        }
-+ 则最终生成SQL类似：
-
-        select b.* from t_book b left join t_author a on b.author_id = a.id where a.name = 'test' and a.age = 15 order by b.id asc
-
-#### 拼接QL
-+ 使用`or(call:(CriteriaBuilder,Root[T]) => Array[Predicate])`与`and(call:(CriteriaBuilder,Root[T]) => Array[Predicate])`连接条件
-+ 使用`Array[Predicate]`生成查询条件单项`Expression:Boolean`例如：
-
-        Teacher.single(            
-            _.or((b, r) => Array(b.ge(r.get("age"), 8), b.le(r.get("age"), 9)))
-                .or((b, r) => Array(b.isNotNull(r.get("address")), b.isNotNull(r.get("name"))))
-                .or((b, r) => {
-                    val predicate = b.and(Array(b.ge(r.get("age"), 11), b.or(Array(b.le(r.get("age"), 12), b.le(r.get("age"), 13)): _*)): _*)
-                    Array(b.ge(r.get("age"), 10), predicate)
-                })
-        ) match {
-            case Some(t) => println("t:" + t)
-            case None =>
-        }
-+ 生成的SQL类似：
-
-        select
-            teacher0_.id as id1_3_,
-            teacher0_.address as address2_3_,
-            teacher0_.age as age3_3_,
-            teacher0_.name as name4_3_
-        from
-            t_teacher teacher0_
-        where
-            (
-                teacher0_.age>=8
-                or teacher0_.age<=9
-            )
-            and (
-                teacher0_.address is not null
-                or teacher0_.name is not null
-            )
-            and (
-                teacher0_.age>=10
-                or teacher0_.age>=11
-                and (
-                    teacher0_.age<=12
-                    or teacher0_.age<=13
-                )
-            )
-## CriteriaQuery结构
-![封装了传统查询的子句](http://www.ibm.com/developerworks/cn/java/j-typesafejpa/UML-expressions.gif)
-![查询表达式中的接口层次结构](http://www.ibm.com/developerworks/cn/java/j-typesafejpa/UML-query.gif)
-#### 查询表达式被赋予泛型。一些典型的表达式是：
-+ `Root<T>`，相当于一个`FROM`子句。
-+ `Predicate`，其计算为布尔值 `true` 或 `false`（事实上，它被声明为 `interface Predicate extends Expression<Boolean>`）。
-+ `Path<T>`，表示从 `Root<?>`表达式导航到的持久化属性。`Root<T>`是一个没有父类的特殊 `Path<T>`
+## 当作SqlBuilder使用
++ `val query = sinq.select(USER.id,Sum(USER.age)).from(USER).join(ADDRESS).on(Eq(USER.a_id,ADDRESS.id)).where(Ge(USER.id,1)).groupBy(Le(USER.id,10),USER.id).orderBy(Order(ASC, USER.id)).limit(10,0)`
++ 获取SQL字符串：`query.sql()`:`select u.id,sum(u.age) from t_user t inner join t_address a on t.a_id = a.id where u.id >= 1 group by u.id having u.id <= 10 order by u.id asc limit 10 offset 0`

@@ -1,19 +1,20 @@
 ## Build from the source
 
-        >sbt publish-local
+        sbt
+        >project sinq
+        >package
+        >publish-local
 
 ## Install
 
-+ SBT:`libraryDependencies += "org.koala" %% "sporm" % "X.Y.Z"`
++ SBT:`libraryDependencies += "io.sinq" %% "sinq" % "X.Y.Z"`
 
 + Maven:
 
         <dependency>
-            <groupId>org.koala</groupId>
-            <artifactId>sporm_2.10</artifactId>
+            <groupId>io.sinq</groupId>
+            <artifactId>sinq_2.11</artifactId>
             <version>X.Y.Z</version>
         </dependency>
 
-+ Gradle:`org.koala:sporm_2.10:X.Y.Z`
-
-
++ Gradle:`io.sinq:sinq_2.11:X.Y.Z`
