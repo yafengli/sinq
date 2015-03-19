@@ -4,8 +4,8 @@ import Build._
 lazy val root = project.in(file(".")).aggregate(sinq, sinq_example)
 
 lazy val sinq = project.in(file("sinq")).settings(
-  name := "sinq",
-  organization := "org.koala",
+  name := "sinq-jpa",
+  organization := "io.sinq",
   version := $("prod"),
   scalaVersion := $("scala"),
   libraryDependencies ++= Seq(
@@ -23,7 +23,7 @@ lazy val sinq = project.in(file("sinq")).settings(
 
 lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq).settings(
   name := "sinq-exmple",
-  organization := "org.koala",
+  organization := "io.sinq",
   version := $("prod"),
   scalaVersion := $("scala"),
   libraryDependencies ++= Seq(
