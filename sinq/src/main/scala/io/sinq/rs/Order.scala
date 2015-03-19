@@ -1,6 +1,11 @@
 package io.sinq.rs
 
-trait OrderDesc extends Alias
+trait OrderDesc extends Alias {
+  /**
+   * @return 别名
+   */
+  override def as(): String = identifier()
+}
 
 object ASC extends OrderDesc {
   override def identifier(): String = "ASC"

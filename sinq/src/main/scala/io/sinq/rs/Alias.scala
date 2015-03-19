@@ -9,5 +9,5 @@ trait Alias {
   /**
    * @return 别名
    */
-  def as(): String = null
+  def as(): String
 }

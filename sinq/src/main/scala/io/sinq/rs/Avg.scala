@@ -1,6 +1,6 @@
 package io.sinq.rs
 
-case class Avg(val col: String) extends Column {
+case class Avg(val col: Column) extends Column {
 
-  override def identifier(): String = s"avg(${col})"
+  override def identifier(): String = s"avg(${col.identifier()}) as ${col.identifier()}"
 }

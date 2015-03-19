@@ -1,7 +1,11 @@
 package io.sinq.rs
 
-
-trait Column extends Alias
+trait Column extends Alias {
+  /**
+   * @return 别名
+   */
+  override def as(): String = this.identifier().replace(".", "_")
+}
 
 object Column {
   def apply(t: Table, columns: String*): Seq[Column] = {
