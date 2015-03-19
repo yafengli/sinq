@@ -3,7 +3,7 @@ import Build._
 
 lazy val root = project.in(file(".")).aggregate(sinq, sinq_example)
 
-lazy val sinq = project.in(file("sinq")).settings(
+lazy val sinq = project.in(file("sinq-jpa")).settings(
   name := "sinq-jpa",
   organization := "io.sinq",
   version := $("prod"),
