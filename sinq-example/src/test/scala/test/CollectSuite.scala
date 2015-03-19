@@ -5,8 +5,8 @@ import java.util.concurrent.{CountDownLatch, TimeUnit}
 import init.STUDENT
 import io.sinq.SinqStream
 import io.sinq.expression._
-import io.sinq.provider.JPA
 import io.sinq.rs.{ASC, Order}
+import io.sinq.util.JPA
 import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

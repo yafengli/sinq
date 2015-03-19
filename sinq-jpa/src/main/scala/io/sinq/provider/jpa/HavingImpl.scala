@@ -1,4 +1,4 @@
-package io.sinq.provider.impl
+package io.sinq.provider.jpa
 
 import io.sinq.expression.Condition
 import io.sinq.provider.{Having, QueryInfo, Result}

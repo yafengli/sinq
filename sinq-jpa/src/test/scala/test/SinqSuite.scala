@@ -3,8 +3,8 @@ package test
 import init.{ADDRESS, USER}
 import io.sinq.SinqStream
 import io.sinq.expression.{Eq, Ge, In, Le}
-import io.sinq.provider.JPA
 import io.sinq.rs.{ASC, Order}
+import io.sinq.util.JPA
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}

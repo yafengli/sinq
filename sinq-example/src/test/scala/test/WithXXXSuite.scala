@@ -1,7 +1,7 @@
 package test
 
 import io.sinq.SinqStream
-import io.sinq.provider.JPA
+import io.sinq.util.JPA
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.collection.JavaConversions._

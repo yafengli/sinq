@@ -1,10 +1,10 @@
 package io.sinq
 
 import io.sinq.provider._
-import io.sinq.provider.impl.FromImpl
+import io.sinq.provider.jpa.FromImpl
 import io.sinq.rs._
 
-case class SinqStream(val persistenceName: String = "default") extends JPA {
+case class SinqStream(val persistenceName: String = "default") extends JPAProvider {
 
   def select(cols: Column*): From = {
     val info = QueryInfo(this)

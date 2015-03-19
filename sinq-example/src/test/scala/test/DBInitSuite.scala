@@ -5,7 +5,7 @@ import java.util.concurrent.{CountDownLatch, TimeUnit}
 import init.ImplicitsSinq.sinq2Count
 import init.STUDENT
 import io.sinq.SinqStream
-import io.sinq.provider.JPA
+import io.sinq.util.JPA
 import models.{Husband, Student, Teacher}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

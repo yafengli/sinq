@@ -5,8 +5,8 @@ import java.util.concurrent.{CountDownLatch, TimeUnit}
 import init.STUDENT
 import io.sinq.SinqStream
 import io.sinq.expression._
-import io.sinq.provider.JPA
 import io.sinq.rs.Count
+import io.sinq.util.JPA
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}

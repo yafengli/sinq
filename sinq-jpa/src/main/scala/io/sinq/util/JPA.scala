@@ -1,4 +1,4 @@
-package io.sinq.provider
+package io.sinq.util
 
 import javax.persistence.{EntityManager, EntityManagerFactory, Persistence}
 
@@ -6,46 +6,9 @@ import org.slf4j.LoggerFactory
 
 import scala.collection.concurrent.TrieMap
 
-trait JPA {
-
-  def persistenceName: String
-
-  def withTransaction[T](call: EntityManager => T): Option[T] = {
-    val em = JPA.createEntityManager(persistenceName)
-    try {
-      em.getTransaction.begin()
-      val t = call(em)
-      em.getTransaction.commit()
-      if (t == null || t == Nil) None else Some(t)
-    } catch {
-      case e: Exception =>
-        em.getTransaction.rollback()
-        e.printStackTrace()
-        None
-    }
-    finally {
-      em.close()
-    }
-  }
-
-  def withEntityManager[T](call: EntityManager => T): Option[T] = {
-    val em = JPA.createEntityManager(persistenceName)
-    try {
-      val t = call(em)
-      if (t == null || t == Nil) None else Some(t)
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-        None
-    }
-    finally {
-      em.close()
-    }
-  }
-}
 
 object JPA {
-  val logger = LoggerFactory.getLogger(classOf[JPA])
+  val logger = LoggerFactory.getLogger(this.getClass)
 
   private val EMF_MAP = TrieMap[String, EntityManagerFactory]()
 
@@ -88,4 +51,3 @@ object JPA {
     EMF_MAP.clear()
   }
 }
-

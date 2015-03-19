@@ -1,4 +1,4 @@
-package io.sinq.provider.impl
+package io.sinq.provider.jpa
 
 import io.sinq.provider._
 import io.sinq.rs.Column
