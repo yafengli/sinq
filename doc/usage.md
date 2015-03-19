@@ -1,65 +1,71 @@
-## SinqStream
-+ 创建JPA Entity:
-+ User.scala:
+## 使用指南
++ JPA Entity(User.scala):
 
-    import javax.persistence._
-    import scala.beans.BeanProperty
+        import javax.persistence._
+        import scala.beans.BeanProperty
 
-    @Entity
-    @Table(name = "t_user")
-    case class User(@BeanProperty var name: String, @BeanProperty var age: Int, @BeanProperty var address: String) {
-      @Id
-      @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_user")
-      @TableGenerator(name = "seq_t_user", table = "seq_t_user", allocationSize = 1)
-      @BeanProperty
-      var id: Long = _
+        @Entity
+        @Table(name = "t_user")
+        case class User(@BeanProperty var name: String, @BeanProperty var age: Int, @BeanProperty var address: String) {
+            @Id
+            @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_user")
+            @TableGenerator(name = "seq_t_user", table = "seq_t_user", allocationSize = 1)
+            @BeanProperty
+            var id: Long = _
 
-      override def toString = id + ":" + name + ":" + age + ":" + address
-    }
+            override def toString = id + ":" + name + ":" + age + ":" + address
+        }
 + 创建`Table`对象：
 
-    object USER extends Table("t_user","u") {
-      def id = Column(this,"id")
-      def name = Column(this,"name")
-      def age = Column(this,"age")
-      def address = Column(this,"address")
+        object USER extends Table("t_user","u") {
+          def id = Column(this,"id")
+          def name = Column(this,"name")
+          def age = Column(this,"age")
+          def address = Column(this,"address")
 
-      def * = Column(this,"id","name","address")
-    }
+          def * = Column(this,"id","name","address")
+        }
++ 初始化数据源：`JPA.initPersistenceName(pns:String)`
++ 创建stream：`val sinq = SinqStream("h2")`
 
-+ `val sinq = SinqStream()`
-
-## Single
+## Single(单对象查询)
 + JPA Entity结果集：
 
-    sinq.select().from(USER).where(Eq(User.id,1)).single(classOf[User]) match {
-      case Some(u) => println(s"id:${u.id} name:${u.name}")
-      case None => println("No Entity found.")
-    }
+        sinq.select().from(USER).where(Eq(User.id,1)).single(classOf[User]) match {
+          case Some(u) => println(s"id:${u.id} name:${u.name}")
+          case None => println("No Entity found.")
+        }
 
 + 非JPA Entity结果集：
 
-    sinq.select(USER.id,USER.name).from(USER).where(Eq(User.id,1)).single() match {
-      case Some(Array(id,name)) => println(s"id:${id} name:${name}")
-      case None => println("No Entity found.")
-    }
+        sinq.select(USER.id,USER.name).from(USER).where(Eq(User.id,1)).single() match {
+          case Some(Array(id,name)) => println(s"id:${id} name:${name}")
+          case None => println("No Entity found.")
+        }
+        sinq.select(USER.id).from(USER).where(Eq(User.id,1)).single() match {
+          case Some(id) => println(s"id:${id}")
+          case None => println("No Entity found.")
+        }
 
-    sinq.select(USER.id).from(USER).where(Eq(User.id,1)).single() match {
-      case Some(id) => println(s"id:${id}")
-      case None => println("No Entity found.")
-    }
-
-## Collect
+## Collect(多对象查询)
 + JPA Entity结果集：
 
-    sinq.select().from(USER).where(Ge(User.id,1)).collect(classOf[User]).foreach { u => println(s"id:${u.id} name:${u.name}") }
+        sinq.select().from(USER).where(Ge(User.id,1)).collect(classOf[User]).foreach { u => println(s"id:${u.id} name:${u.name}") }
 
 + 非JPA Entity结果集：
 
-    sinq.select(USER.id,USER.name).from(USER).where(Ge(User.id,1)).collect().foreach { case Array(id,name) => println(s"id:${id} name:${name}") }
+        sinq.select(USER.id,USER.name).from(USER).where(Ge(User.id,1)).collect().foreach { case Array(id,name) => println(s"id:${id} name:${name}") }
+        sinq.select(USER.id).from(USER).where(Ge(User.id,1)).collect().foreach { id => println(s"id:${id}") }
 
-    sinq.select(USER.id).from(USER).where(Ge(User.id,1)).collect().foreach { id => println(s"id:${id}") }
+## SqlBuilder(拼接SQL)
 
-## 当作SqlBuilder使用
-+ `val query = sinq.select(USER.id,Sum(USER.age)).from(USER).join(ADDRESS).on(Eq(USER.a_id,ADDRESS.id)).where(Ge(USER.id,1)).groupBy(Le(USER.id,10),USER.id).orderBy(Order(ASC, USER.id)).limit(10,0)`
-+ 获取SQL字符串：`query.sql()`:`select u.id,sum(u.age) from t_user t inner join t_address a on t.a_id = a.id where u.id >= 1 group by u.id having u.id <= 10 order by u.id asc limit 10 offset 0`
+        sinq.select(USER.id,Sum(USER.age))
+            .from(USER)
+            .join(ADDRESS)
+            .on(Eq(USER.a_id,ADDRESS.id))
+            .where(Ge(USER.id,1))
+            .groupBy(Le(USER.id,10),USER.id).having
+            .orderBy(Order(ASC, USER.id)).limit(10,0)
+            .sql()
+
++ SQL: __select u.id,sum(u.age) from t_user t inner join t_address a on t.a_id = a.id where u.id >= ? group by u.id having u.id <= ? order by u.id asc limit 10 offset 0__

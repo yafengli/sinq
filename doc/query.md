@@ -13,6 +13,9 @@
 ## On
 + `on(condition: Condition)`
 
+## Condition
++ `Eq`/`Ge`/`Le`/`Gt`/`Lt`/`Between`/`NotEq`/`NotBetween`/`In`
+
 ## Group By
 + `groupBy(cols:Column*)`
 
@@ -26,5 +29,6 @@
 + `limit(limit: Int, offset: Int)`
 
 ## 完整的例子：
-+ `select(USER.id,Sum(USER.age)).from(USER).join(ADDRESS).on(Eq(USER.a_id,ADDRESS.id)).where(Ge(USER.id,1)).groupBy(Le(USER.id,10),USER.id).orderBy(Order(ASC, USER.id)).limit(10,0)`
-+ 得到的SQL语句：`select u.id,sum(u.age) from t_user t inner join t_address a on t.a_id = a.id where u.id >= 1 group by u.id having u.id <= 10 order by u.id asc limit 10 offset 0`
++ `select(USER.id,Sum(USER.age)).from(USER).join(ADDRESS).on(Eq(USER.a_id,ADDRESS.id)).where(Ge(USER.id,1).and(Le(USER.age,10).or(Gt(USER.age,2))).groupBy(Le(USER.id,10),USER.id).orderBy(Order(ASC, USER.id)).limit(10,0)`
++ SQL: __select u.id,sum(u.age) from t_user t inner join t_address a on t.a_id = a.id where u.id >= ? and (u.age <= ? or u.age > ?) group by u.id having u.id <= ? order by u.id asc limit 10 offset 0__
++ 参数: __List(1, 10, 20)__

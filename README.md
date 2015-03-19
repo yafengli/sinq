@@ -9,6 +9,11 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 * 支持__Scala__；
 * 提供直观的__Functional Chain__操作；
 
+## 使用指南
++ 初始化：`JPA.initPersistenceName(pns:String*)`
++ 创建：`val sinq = SinqStream("persistenceName")`
++ 使用：`sinq.insert(entityObj)`
+
 #### 增删改(CRUD)
 + `insert(Entity)`
 + `find[T](Any,Class[T])`
@@ -16,6 +21,9 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 + `update(Entity)`
 
 #### 查询(Query)
++ `select(cols:Column)...`
+
+#### 结果集
 + 单结果`single()`与`single[T](Class[T])`
 + 多结果`collect()`与`collect[T](Class[T])`
 
@@ -23,7 +31,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 + JPA Entity:`select(classOf[T])`
 + Tuple:`select(Column(USER.ID,USER.NAME))`
 
-#### Select语句
+#### select语句
 * `select[T](ct:Class[T])`
 * `select(columns:Column*)`
 
@@ -31,22 +39,17 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 + `and`与`or`连接`condition`
 + `gt`/`ge`/`lt`/`le`/`in`/`eq`/`between`等
 
-#### 举例
-+ `ge("age",1).and(eq("name","John"))`表达式:`age >= 1 and name = 'John'`
-+ `ge("age",1).and(eq("name","John").or(eq("id",5L)))`表达式:`age >= 1 and (name = 'John' or id = 5)`
-+ `gt("age",1).and(eq("name","John").or(ge("id",5L).and(le("id",10L))))`表达式:`age > 1 and (name = 'John' or (id > 5 and id < 10)`
-
-
 #### 函数
 + `count`,`avg`,`sum`,`min`,`max`,`first`,`last`:使用SQL函数
-+ `select(column(USER.ID,USER.NAME).single()`:单对象(NoEntity)查询single：
++ `select(Column(USER.ID,USER.NAME).from(USER).where().single()`:单对象(NoEntity)查询single：
 + `collect`:多对象(Entity/Array[Object])查询
 + `limit、groupBy、orderBy、join、having on`
 + `query(sql:String):Seq[Array[AnyRef]]`:执行sql查询
 + `execute(sql:String):Int`:执行sql
 
 ##### 获取SQL字符串
-+ 获取SQL字符串`.sql()`
++ 获取SQL字符串`sql()`
++ 获取参数集合：`params()`
 
 #### 例子
 + Entity:`User.scala`
@@ -124,7 +127,6 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
                           .from(USER).leftJoin(BOOK)
                           .on(Eq(USER.ID,BOOK.UID))
                           .where(Eq(USER.NAME,"123").and(Ge(USER.AGE,12).or(Eq(USER.ADDRESS,"NJ"))))
-
-        query.single()    //Option[AnyRef]
-        query.collect()   //Iterator[AnyRef]
-        query.sql()       //SQL string
+        query.sql()
+        query.single()
+        query.collect()
