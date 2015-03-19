@@ -41,7 +41,7 @@ class SingleSuite extends FunSuite with BeforeAndAfter {
 
       latch.countDown()
     } onComplete {
-      case Success(r) => println(s"Success-1:${r}")
+      case Success(r) =>
       case Failure(t) => println(s"Failure-1:${t}")
     }
     latch.await(10, TimeUnit.SECONDS)

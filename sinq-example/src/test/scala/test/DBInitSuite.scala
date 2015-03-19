@@ -40,7 +40,7 @@ class DBInitSuite extends FunSuite with BeforeAndAfter {
             sinq.insert(husband)
             (0 to 10).foreach(i => sinq.insert(new Student(s"YaFengli:${i}", i, s"NanJing:${i}", teacher)))
           }
-          sinq.select().from(STUDENT).where().collect(classOf[Student]).foreach(s => println(s"id:${s.id}"))
+          sinq.select().from(STUDENT).where().collect(classOf[Student]).foreach(s => println(s"id:${s.id} teacher:${s.teacher.name}"))
           latch.countDown()
       }
     }
@@ -60,7 +60,7 @@ class DBInitSuite extends FunSuite with BeforeAndAfter {
             sinq.insert(husband)
             (0 to 10).foreach(i => sinq.insert(new Student(s"YaFengli:${i}", i, s"NanJing:${i}", teacher)))
           }
-          sinq.select().from(STUDENT).where().collect(classOf[Student]).foreach(s => println(s"id:${s.id}"))
+          sinq.select().from(STUDENT).where().collect(classOf[Student]).foreach(s => println(s"id:${s.id} teacher:${s.teacher.name}"))
           latch.countDown()
       }
     }

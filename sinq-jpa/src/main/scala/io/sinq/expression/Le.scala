@@ -2,6 +2,6 @@ package io.sinq.expression
 
 import io.sinq.rs.Column
 
-case class Le[T](val column: Column, val paramValue: T) extends Tuple1Condition[T] {
+case class Le[T](override val column: Column, override val paramValue: T) extends Tuple1Condition[T] {
   override def link: String = "<="
 }

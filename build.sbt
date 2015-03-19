@@ -1,9 +1,9 @@
 import org.koala.sbt.SbtAppPlugin._
 import Build._
 
-lazy val root = project.in(file(".")).aggregate(sinq, sinq_example)
+lazy val root = project.in(file(".")).aggregate(sinq_jpa, sinq_example)
 
-lazy val sinq = project.in(file("sinq-jpa")).settings(
+lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
   name := "sinq-jpa",
   organization := "io.sinq",
   version := $("prod"),
@@ -21,7 +21,7 @@ lazy val sinq = project.in(file("sinq-jpa")).settings(
   )
 )
 
-lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq).settings(
+lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq_jpa).settings(
   name := "sinq-exmple",
   organization := "io.sinq",
   version := $("prod"),

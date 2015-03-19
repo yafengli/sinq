@@ -8,22 +8,22 @@ import scala.beans.BeanProperty
 import scala.collection.mutable
 
 case class QueryInfo(val stream: SinqStream) {
-  lazy val select = mutable.ArrayBuffer[Column]()
-  lazy val from = mutable.ArrayBuffer[Table]()
-  lazy val groupBy = mutable.ArrayBuffer[Column]()
+  lazy val selectFields = mutable.ArrayBuffer[Column]()
+  lazy val fromTables = mutable.ArrayBuffer[Table]()
+  lazy val groupByFields = mutable.ArrayBuffer[Column]()
 
   @BeanProperty
   var join: Join = _
-
   @BeanProperty
-  var where: String = _
-
+  var on: Condition = _
   @BeanProperty
-  var condition: Condition = _
-
+  var whereCondition: Condition = _
+  @BeanProperty
+  var from: From = _
+  @BeanProperty
+  var result: Result = _
   @BeanProperty
   var having: Condition = _
-
   @BeanProperty
   var limit: (Int, Int) = _
   @BeanProperty

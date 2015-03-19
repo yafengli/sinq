@@ -1,14 +1,19 @@
 package io.sinq.provider
 
 import io.sinq.expression.Condition
+import io.sinq.rs._
 
-trait Where {
-  def where(condition: Condition = null): Result = {
-    if (condition != null) info.setCondition(condition)
-    ResultImpl(info)
-  }
+trait Where extends Result {
 
-  def info: QueryInfo
+  def where(condition: Condition = null): GroupBy
+
+  def join(table: Table): JoinInner
+
+  def joinLeft(table: Table): JoinLeft
+
+  def joinRight(table: Table): JoinRight
+
+  def joinFull(table: Table): JoinFull
 }
 
-case class WhereImpl(val info: QueryInfo) extends Where
+

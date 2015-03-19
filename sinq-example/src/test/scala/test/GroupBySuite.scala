@@ -39,7 +39,7 @@ class GroupBySuite extends FunSuite with BeforeAndAfter {
           latch.countDown()
       }
     } onComplete {
-      case Success(r) => println(s"Success-1:${r}")
+      case Success(r) =>
       case Failure(t) => println(s"Failure-1:${t}")
     }
 
@@ -54,7 +54,7 @@ class GroupBySuite extends FunSuite with BeforeAndAfter {
           latch.countDown()
       }
     } onComplete {
-      case Success(r) => println(s"Success-2:${r}")
+      case Success(r) =>
       case Failure(t) => println(s"Failure-2:${t}")
     }
     latch.await(10, TimeUnit.SECONDS)

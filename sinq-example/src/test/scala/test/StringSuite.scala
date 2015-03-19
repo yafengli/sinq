@@ -23,4 +23,24 @@ class StringSuite extends FunSuite with BeforeAndAfter {
     println("sql:" + query.sql())
     println("params:" + query.params())
   }
+
+
+  test("Trait") {
+
+  }
+}
+
+
+trait A
+
+trait B
+
+trait C {
+
+}
+
+trait D {
+  def d1()
+  def d2()
+  def d3()
 }
