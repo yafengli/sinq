@@ -2,31 +2,6 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-    <persistence-unit name="h2" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>models.Teacher</class>
-        <class>models.Husband</class>
-        <class>models.Student</class>
-        <class>models.Address</class>
-        <class>models.User</class>
-        <properties>
-            <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
-            <property name="driverClassName" value="org.h2.Driver"/>
-            <property name="url" value="jdbc:h2:~/test"/>
-            <property name="username" value="sa"/>
-            <property name="password" value=""/>
-            <!-- optional -->
-            <property name="validationQuery" value="SELECT 'x'"/>
-            <property name="initialSize" value="1"/>
-            <property name="maxActive" value="20"/>
-            <property name="minIdle" value="5"/>
-            <property name="maxWait" value="6000"/>
-            <!-- hibernate -->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
-        </properties>
-    </persistence-unit>
-    <!--
     <persistence-unit name="postgres" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>models.Teacher</class>
@@ -36,13 +11,13 @@
         <class>models.User</class>
         <properties>
             <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
-            <property name="driverClassName" value="org.postgres.Driver"/>
-            <property name="url" value="jdbc:postgres://localhost:5432/test"/>
+            <property name="driverClassName" value="org.postgresql.Driver"/>
+            <property name="url" value="jdbc:postgresql://192.168.0.97:5432/test"/>
             <property name="username" value="postgres"/>
             <property name="password" value=""/>
 
             <property name="validationQuery" value="SELECT 'x'"/>
-            <property name="initialSize" value="1"/>
+            <property name="initialSize" value="5"/>
             <property name="maxActive" value="20"/>
             <property name="minIdle" value="5"/>
             <property name="maxWait" value="6000"/>
@@ -51,5 +26,4 @@
             <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
     </persistence-unit>
-    -->
 </persistence>

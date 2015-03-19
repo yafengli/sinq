@@ -4,7 +4,6 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
     <persistence-unit name="h2" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <mapping-file>META-INF/query-models.xml</mapping-file>
         <class>models.Address</class>
         <class>models.User</class>
         <properties>
@@ -26,13 +25,12 @@
     </persistence-unit>
     <persistence-unit name="postgres" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <mapping-file>META-INF/query-models.xml</mapping-file>
         <class>models.Address</class>
         <class>models.User</class>
         <properties>
             <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
-            <property name="driverClassName" value="org.postgres.Driver"/>
-            <property name="url" value="jdbc:postgres://localhost:5432/test"/>
+            <property name="driverClassName" value="org.postgresql.Driver"/>
+            <property name="url" value="jdbc:postgresql://192.168.0.97:5432/test"/>
             <property name="username" value="postgres"/>
             <property name="password" value=""/>
             <!-- optional -->

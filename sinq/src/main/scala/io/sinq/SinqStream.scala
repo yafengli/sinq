@@ -3,7 +3,7 @@ package io.sinq
 import io.sinq.provider._
 import io.sinq.rs._
 
-class SinqStream extends JPA {
+case class SinqStream(val persistenceName: String = "default") extends JPA {
 
   def select(cols: Column*): Select = {
     val info = QueryInfo(this)
@@ -28,13 +28,3 @@ class SinqStream extends JPA {
   }
 }
 
-object SinqStream {
-  def apply(pn: String): SinqStream = {
-    JPA.bind(pn)
-    new SinqStream()
-  }
-
-  def apply(): SinqStream = {
-    new SinqStream()
-  }
-}

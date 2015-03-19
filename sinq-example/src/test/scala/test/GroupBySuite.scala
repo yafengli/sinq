@@ -5,11 +5,11 @@ import java.util.concurrent.{CountDownLatch, TimeUnit}
 import init.STUDENT
 import io.sinq.SinqStream
 import io.sinq.expression._
+import io.sinq.provider.JPA
 import io.sinq.rs.Count
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.H2DB._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -17,19 +17,16 @@ import scala.util.{Failure, Success}
 
 @RunWith(classOf[JUnitRunner])
 class GroupBySuite extends FunSuite with BeforeAndAfter {
-
-  val sinq = SinqStream("h2")
   val condition = Between(STUDENT.id, 1, 12).or(Ge(STUDENT.age, 15L))
-
   before {
-    open
+    JPA.initPersistenceName("postgres")
   }
-
   after {
-    close
+    JPA.release()
   }
 
   test("Group By.") {
+    val sinq = SinqStream("postgres")
     val latch = new CountDownLatch(12)
     Future {
       (0 to 5).foreach {

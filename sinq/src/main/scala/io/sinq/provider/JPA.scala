@@ -8,10 +8,10 @@ import scala.collection.concurrent.TrieMap
 
 trait JPA {
 
-  import io.sinq.provider.JPA._
+  def persistenceName: String
 
   def withTransaction[T](call: EntityManager => T): Option[T] = {
-    val em = createEntityManager()
+    val em = JPA.createEntityManager(persistenceName)
     try {
       em.getTransaction.begin()
       val t = call(em)
@@ -29,7 +29,7 @@ trait JPA {
   }
 
   def withEntityManager[T](call: EntityManager => T): Option[T] = {
-    val em = createEntityManager()
+    val em = JPA.createEntityManager(persistenceName)
     try {
       val t = call(em)
       if (t == null || t == Nil) None else Some(t)
@@ -48,43 +48,13 @@ object JPA {
   val logger = LoggerFactory.getLogger(classOf[JPA])
 
   private val EMF_MAP = TrieMap[String, EntityManagerFactory]()
-  private val PN_T = new ThreadLocal[String]
-
-  val JPA_PERSISTENCE_DEFAULT_NAME = "sinq.jpa.persistence.name"
-
-  /**
-   * bind persistence name to current thread
-   * @param pn persistence name
-   */
-  def bind(pn: String) {
-    if (pn != null) {
-      PN_T.set(pn)
-      if (!EMF_MAP.contains(pn)) EMF_MAP += (pn -> Persistence.createEntityManagerFactory(pn))
-    }
-    else throw new Exception("#JPA PersistenceUnitName is NULL.")
-  }
 
   /**
    * multi persistence name init.
-   * @param pn persistence name
+   * @param pns persistence names
    */
-  def initPersistenceName(pn: String*) {
-    pn.foreach(n => EMF_MAP += (n -> Persistence.createEntityManagerFactory(n)))
-    bind(pn(0))
-    System.setProperty(JPA_PERSISTENCE_DEFAULT_NAME, pn(0))
-  }
-
-  /**
-   * loop the current thread persistence name refer to EntityManagerFactory.
-   * @return Option EntityManagerFactory
-   */
-  def entityManagerFactory(): Option[EntityManagerFactory] = {
-    val pn = if (PN_T.get() != null) PN_T.get() else System.getProperty(JPA_PERSISTENCE_DEFAULT_NAME)
-    if (EMF_MAP.contains(pn)) Some(EMF_MAP(pn))
-    else {
-      logger.error(s"##Not found persistence name:[${pn}].")
-      None
-    }
+  def initPersistenceName(pns: String*) {
+    pns.takeWhile(!EMF_MAP.contains(_)).foreach(pn => EMF_MAP.put(pn, Persistence.createEntityManagerFactory(pn)))
   }
 
   /**
@@ -93,18 +63,10 @@ object JPA {
    * @return Option EntityManagerFactory
    */
   def entityManagerFactory(pn: String): Option[EntityManagerFactory] = {
-    if (EMF_MAP.contains(pn)) Some(EMF_MAP(pn)) else None
-  }
-
-  /**
-   * create EntityManager.
-   * @return Option EntityManager
-   */
-  def createEntityManager(): EntityManager = {
-    entityManagerFactory() match {
-      case Some(emf) => emf.createEntityManager()
-      case None => throw new Exception("#Not found persistence name INIT.")
+    if (logger.isErrorEnabled) {
+      if (!EMF_MAP.contains(pn)) logger.error(s"#Not found persistence name:[${pn}] INIT.")
     }
+    if (EMF_MAP.contains(pn)) Some(EMF_MAP(pn)) else None
   }
 
   /**
