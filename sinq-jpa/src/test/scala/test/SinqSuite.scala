@@ -21,7 +21,7 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
 
   test("SQL Build.") {
     val sinq = SinqStream("h2")
-    val condition = Eq(USER.id, 1).or(Le(USER.id, 12).and(Ge(USER.age, 11L).and(In(USER.id, Seq(1, 2, 3))).or(Ge(USER.age, 15L))))
+    val condition = Eq(USER.id, 1).or(Le(USER.id, 12).and(Ge(USER.age, 11L).or(In(USER.id, Seq(1, 2, 3))).or(Ge(USER.age, 15L))))
     println("sql:" + condition.translate())
     println("params:" + condition.params())
 
