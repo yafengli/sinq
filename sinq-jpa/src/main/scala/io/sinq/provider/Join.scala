@@ -6,7 +6,7 @@ import io.sinq.rs.Table
 trait Join extends InfoProvider {
   def table: Table
 
-  def on(condition: Condition): From
+  def on(condition: Condition): Where
 }
 
 trait JoinInner extends Join

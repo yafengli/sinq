@@ -5,10 +5,10 @@ import io.sinq.provider._
 import io.sinq.rs.Table
 
 abstract class JoinImpl extends Join {
-  override def on(condition: Condition): From = {
+  override def on(condition: Condition): Where = {
     info.setOn(condition)
     info.setJoin(this)
-    FromImpl(info)
+    WhereImpl(info)
   }
 }
 
