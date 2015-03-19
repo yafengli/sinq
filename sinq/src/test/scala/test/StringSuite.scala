@@ -1,6 +1,6 @@
 package test
 
-import init.{STUDENT, TEACHER}
+import init.{ADDRESS, USER}
 import io.sinq.SinqStream
 import io.sinq.expression.{Eq, Ge, In, Le}
 import io.sinq.rs.{ASC, Order}
@@ -14,11 +14,11 @@ class StringSuite extends FunSuite with BeforeAndAfter {
   val sinq = SinqStream()
 
   test("SQL Build.") {
-    val condition = Eq(STUDENT.id, 1).or(Le(STUDENT.id, 12).and(Ge(STUDENT.age, 11L).and(In(STUDENT.id, Seq(1, 2, 3))).or(Ge(STUDENT.age, 15L))))
+    val condition = Eq(USER.id, 1).or(Le(USER.id, 12).and(Ge(USER.age, 11L).and(In(USER.id, Seq(1, 2, 3))).or(Ge(USER.age, 15L))))
     println("sql:" + condition.translate())
     println("params:" + condition.params())
 
-    val query = sinq.select().from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+    val query = sinq.select().from(USER).join(ADDRESS).on(Eq(USER.id, ADDRESS.u_id)).where(condition).orderBy(Order(ASC, USER.id)).limit(10, 0)
 
     println("sql:" + query.sql())
     println("params:" + query.params())

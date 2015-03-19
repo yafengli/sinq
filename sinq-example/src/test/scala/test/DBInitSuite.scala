@@ -6,6 +6,7 @@ import models.{Husband, Student, Teacher}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 @RunWith(classOf[JUnitRunner])
 class DBInitSuite extends FunSuite with BeforeAndAfter {
@@ -13,11 +14,11 @@ class DBInitSuite extends FunSuite with BeforeAndAfter {
   val sinq = SinqStream("h2")
 
   before {
-    H2DB.open
+    open
   }
 
   after {
-    H2DB.close
+    close
   }
 
   test("DB Init.") {

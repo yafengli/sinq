@@ -4,7 +4,7 @@
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd ">
     <package>models</package>
-    <entity class="models.Student">
+    <entity class="models.User">
         <named-query name="find_ok">
             <query>
                 select t from Student as t where t.age = :age

@@ -9,6 +9,7 @@ import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -18,11 +19,11 @@ import scala.util.{Failure, Success}
 class SingleSuite extends FunSuite with BeforeAndAfter {
   val sinq = SinqStream("h2")
   before {
-    H2DB.open
+    open
   }
 
   after {
-    H2DB.close
+    close
   }
   test("Single.") {
     val latch = new CountDownLatch(1)

@@ -2,17 +2,17 @@ package test
 
 import io.sinq.SinqStream
 import org.scalatest.{BeforeAndAfter, FunSuite}
-
+import test.H2DB._
 import scala.collection.JavaConversions._
 
 class DBFacadeSuite extends FunSuite with BeforeAndAfter {
   val sinq = SinqStream("h2")
   before {
-    H2DB.open
+    open
   }
 
   after {
-    H2DB.close
+    close
   }
 
   test("withEntityManager") {

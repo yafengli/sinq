@@ -10,6 +10,7 @@ import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -22,11 +23,11 @@ class JoinSuite extends FunSuite with BeforeAndAfter {
   val condition = Between(STUDENT.id, 1, 12).or(In(STUDENT.name, Seq("YaFengli:0", "YaFengli:1", "YaFengli:2", "YaFengli:3")))
 
   before {
-    H2DB.open
+    open
   }
 
   after {
-    H2DB.close
+    close
   }
   test("Join.") {
     val latch = new CountDownLatch(1)

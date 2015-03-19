@@ -9,6 +9,7 @@ import io.sinq.rs.Count
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -21,11 +22,11 @@ class GroupBySuite extends FunSuite with BeforeAndAfter {
   val condition = Between(STUDENT.id, 1, 12).or(Ge(STUDENT.age, 15L))
 
   before {
-    H2DB.open
+    open
   }
 
   after {
-    H2DB.close
+    close
   }
 
   test("Group By.") {
