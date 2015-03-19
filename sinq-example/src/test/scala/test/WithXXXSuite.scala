@@ -6,7 +6,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.collection.JavaConversions._
 
-class DBFacadeSuite extends FunSuite with BeforeAndAfter {
+class WithXXXSuite extends FunSuite with BeforeAndAfter {
   before {
     JPA.initPersistenceName("postgres")
   }
