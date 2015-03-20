@@ -7,38 +7,38 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 >1. 遵循__JPA__规范
 2. 使用[__SQL__](http://www.w3school.com.cn/sql/)
 3. 支持[__Scala__](http://www.scala-lang.ort)
-4. 提供直观的__Linq(Language Integrated Query)__式__Functional Chain__操作  
+4. 提供良好直观的__Functional Chain__编程调用
+5. __Linq(Language Integrated Query)__查询
 
-## Linq(Language Integrated Query)目标
-+ 目标SQL:
++ SQL字串:
 
-        select u.id from t_user u
-                    left join t_address a on u.id = a.u_id
-                    where u.id = ?1
-                    group by u.id having u.id = ?2
-                    order by u.id asc limit 10 offset 0
+      select u.id from t_user u
+                  left join t_address a on u.id = a.u_id
+                  where u.id = ?1
+                  group by u.id having u.id = ?2
+                  order by u.id asc limit 10 offset 0
 
 + 函数调用:
 
-        select(USER.id).from(USER)
-                       .leftJoin(ADDRESS).on(Eq(USER.id,ADDRESS.u_id))
-                       .where(Eq(USER.id,1)
-                       .groupBy(USER.id).having(Eq(USER.id,1))
-                       .orderBy(Order(ASC, USER.id)).limit(10, 0)
+      select(USER.id).from(USER)
+                     .leftJoin(ADDRESS).on(Eq(USER.id,ADDRESS.u_id))
+                     .where(Eq(USER.id,1)
+                     .groupBy(USER.id).having(Eq(USER.id,1))
+                     .orderBy(Order(ASC, USER.id)).limit(10, 0)
 
-## 使用指南
-+ 初始化：`JPA.initPersistenceName(pns:String*)`
-+ 创建：`val sinq = SinqStream("persistenceName")`
-+ 使用：`sinq.select(...)...`
+## 指南
++ 调用
 
-#### 增删改(CRUD)
+      JPA.initPersistenceName(pns:String*)          //初始化数据源
+      val sinq = SinqStream("persistenceName")      //全局Stream Factory
+      sinq.select(USER.id).from(USER)               //调用
+
+#### 增删改(CRUD)与查询(Query)
 + `insert(Entity)`
 + `find[T](Any,Class[T])`
 + `delete(Entity)`
 + `update(Entity)`
-
-#### 查询(Query)
-+ `select(cols:Column)...`
++ `select(Column*)...`
 
 #### 结果集
 + 单结果`single()`与`single[T](Class[T])`
@@ -58,9 +58,9 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 #### 例子
 + `User.scala`
 
-        @Entity
-        @Table(name = "t_user")
-        case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
+      @Entity
+      @Table(name = "t_user")
+      case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
           @Id
           @GeneratedValue(strategy = GenerationType.AUTO)
           @BeanProperty
@@ -76,13 +76,13 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
             this(name, age)
             this.address = address
           }
-        }
+      }
 
 + `Address.scala`:
 
-        @Entity
-        @Table(name = "t_address")
-        case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
+      @Entity
+      @Table(name = "t_address")
+      case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
           @Id
           @GeneratedValue(strategy = GenerationType.AUTO)
           @BeanProperty
@@ -99,44 +99,44 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
             this(name, age)
             this.user = user
           }
-        }
+      }
 
 + 创建封装类：
 
-        object USER extends Table("t_user","u") {
+      object USER extends Table("t_user","u") {
           val id = Column(this,"id")
           val name = Column(this,"name")
           val address = Column(this,"address")
           val age = Column(this,"age")
 
           def * = Column(this,"id","name","address","age") //or Seq(id,name,address,age)
-        }
+      }
 
-        object ADDRESS extends Table("t_address", "a") {
+      object ADDRESS extends Table("t_address", "a") {
           def id = Column(this, "id")
           def name = Column(this, "name")
           def num = Column(this, "num")
           def u_id = Column(this, "u_id")
 
           def * = Seq(id, name, num)
-        }
+      }
 
 + 初始化数据源:`JPA.initPersistenceName("h2")`
 
 + 创建全局对象
 
-        implict val sinq = SinqStream("h2")
+      implict val sinq = SinqStream("h2")
 
 + 基本应用:
 
-        val user = new User("name",10)
-        sinq.insert(user)
-        sinq.delete(user)
-        sinq.update(user)
+      val user = new User("name",10)
+      sinq.insert(user)
+      sinq.delete(user)
+      sinq.update(user)
 
 + 条件查询:
 
-        sinq.select(classOf[User])
+      sinq.select(classOf[User])
             .from(USER)
             .where()
             .groupBy()
@@ -145,7 +145,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
             .offset(50)
             .single()
 
-        sinq.select(Count(USER.id),Column(USER.id,USER.name),Sum(USER.id)
+      sinq.select(Count(USER.id),Column(USER.id,USER.name),Sum(USER.id)
             .from(USER)
             .where()
             .groupBy()
@@ -156,10 +156,10 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
 + 结果集:
 
-        val query = sinq.select(USER.id,USER.name)
+      val query = sinq.select(USER.id,USER.name)
                         .from(USER).leftJoin(ADDRESS)
                         .on(Eq(USER.id,ADDRESS.u_id))
                         .where(Eq(USER.id,1)
                         .orderBy(Order(ASC, USER.id)).limit(10, 0)
 
-        query.single()
+      query.single()
