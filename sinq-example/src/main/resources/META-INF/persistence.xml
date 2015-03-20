@@ -10,20 +10,25 @@
         <class>models.Address</class>
         <class>models.User</class>
         <properties>
-            <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
-            <property name="driverClassName" value="org.h2.Driver"/>
-            <property name="url" value="jdbc:h2:mem:test"/>
-            <property name="username" value="sa"/>
-            <property name="password" value=""/>
-            <!-- optional -->
-            <property name="validationQuery" value="SELECT 'x'"/>
-            <property name="initialSize" value="1"/>
-            <property name="maxActive" value="20"/>
-            <property name="minIdle" value="5"/>
-            <property name="maxWait" value="6000"/>
-            <!-- hibernate -->
+            <!-- provider -->
+            <property name="hibernate.service.jdbc.connections.spi.provider_class" value="com.jolbox.bonecp.provider.BoneCPConnectionProvider"/>
+
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.connection.driver_class" value="org.h2.Driver"/>
+            <property name="hibernate.connection.url" value="jdbc:h2:mem:test"/>
+            <property name="hibernate.connection.username" value="sa"/>
+            <property name="hibernate.connection.password" value=""/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <!-- BoneCP settings -->
+            <property name="bonecp.partitionCount" value="3"/>
+            <property name="bonecp.maxConnectionsPerPartition" value="20"/>
+            <property name="bonecp.minConnectionsPerPartition" value="10"/>
+            <property name="bonecp.acquireIncrement" value="5"/>
+            <property name="bonecp.poolAvailabilityThreshold" value="20"/>
+            <property name="bonecp.releaseHelperThreads" value="3"/>
+            <property name="bonecp.idleMaxAge" value="240"/>
+            <property name="bonecp.idleConnectionTestPeriod" value="60"/>
+            <property name="bonecp.statementsCacheSize" value="20"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="postgres" transaction-type="RESOURCE_LOCAL">

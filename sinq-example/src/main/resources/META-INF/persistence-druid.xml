@@ -11,12 +11,19 @@
         <class>models.Student</class>
         <properties>
             <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
-            <property name="driverClassName" value="org.postgresql.Driver"/>
-            <property name="url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
-            <property name="username" value="postgres"/>
+            <property name="driverClassName" value="org.h2.Driver"/>
+            <property name="url" value="jdbc:h2:mem:test"/>
+            <property name="username" value="sa"/>
             <property name="password" value=""/>
+            <!-- optional -->
+            <property name="validationQuery" value="SELECT 'x'"/>
+            <property name="initialSize" value="1"/>
+            <property name="maxActive" value="20"/>
+            <property name="minIdle" value="5"/>
+            <property name="maxWait" value="6000"/>
+            <!-- hibernate -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
-
     </persistence-unit>
 </persistence>
