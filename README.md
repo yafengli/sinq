@@ -4,10 +4,10 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
 目标
 ====
-* 使用__JPA__；
-* 使用__SQL__；
-* 支持__Scala__；
-* 提供直观的__Functional Chain__操作；
+>1. 遵循__JPA__规范
+2. 使用[__SQL__](http://www.w3school.com.cn/sql/)
+3. 支持[__Scala__](http://www.scala-lang.ort)
+4. 提供直观的__Linq(Language Integrated Query)__式__Functional Chain__操作  
 
 ## 使用指南
 + 初始化：`JPA.initPersistenceName(pns:String*)`
@@ -27,106 +27,125 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 + 单结果`single()`与`single[T](Class[T])`
 + 多结果`collect()`与`collect[T](Class[T])`
 
-#### 结果集(Entity/Tuple)
-+ JPA Entity:`select(classOf[T])`
-+ Tuple:`select(Column(USER.ID,USER.NAME))`
-
-#### select语句
-* `select[T](ct:Class[T])`
-* `select(columns:Column*)`
-
 #### where语句
 + `and`与`or`连接`condition`
 + `gt`/`ge`/`lt`/`le`/`in`/`eq`/`between`等
 
-#### 函数
-+ `count`,`avg`,`sum`,`min`,`max`,`first`,`last`:使用SQL函数
-+ `select(Column(USER.ID,USER.NAME).from(USER).where().single()`:单对象(NoEntity)查询single：
-+ `collect`:多对象(Entity/Array[Object])查询
-+ `limit、groupBy、orderBy、join、having on`
-+ `query(sql:String):Seq[Array[AnyRef]]`:执行sql查询
-+ `execute(sql:String):Int`:执行sql
-
-##### 获取SQL字符串
+#### 基本接口
++ 实现了`count`,`avg`,`sum`,`min`,`max`,`first`,`last`等基本SQL函数
++ 实现了`limit`、`groupBy`、`orderBy`、`join`、`having on`
++ 提供助手接口`withEntity`与`withTransaction`
 + 获取SQL字符串`sql()`
 + 获取参数集合：`params()`
 
 #### 例子
-+ Entity:`User.scala`
++ `User.scala`
 
-        @Entity
-        @Table(name = "t_user")
-        class User {
-            @Id
-            @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_book")
-            @TableGenerator(name = "seq_t_book", table = "seq_t_book", allocationSize = 1)
-            @BeanProperty
-            var id: Long = _
+    @Entity
+    @Table(name = "t_user")
+    case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
+      @Id
+      @GeneratedValue(strategy = GenerationType.AUTO)
+      @BeanProperty
+      var id: Long = _
 
-            @BeanProperty
-            @Column
-            var name:String = _
-            @BeanProperty
-            @Column
-            var address:String = _
-            @BeanProperty
-            @Column
-            var age:Int = _
+      @OneToOne(cascade = Array(CascadeType.REMOVE), mappedBy = "user")
+      @BeanProperty
+      var address: Address = _
 
-            def this(id:Long,name:String,age:Int) = {
-                this.name = name
-                this.age = age
-            }
-        }
+      def this() = this(null, -1)
 
-        object USER extends Table {
-            val ID = "id"
-            val NAME = "name"
-            val ADDRESS="address"
-            val AGE = "age"
+      def this(name: String, age: Int, address: Address) = {
+        this(name, age)
+        this.address = address
+      }
+    }
 
-            override def tableName():String = "t_user"
-        }
++ `Address.scala`:
 
-+ Import Library:
+    @Entity
+    @Table(name = "t_address")
+    case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
+      @Id
+      @GeneratedValue(strategy = GenerationType.AUTO)
+      @BeanProperty
+      var id: Long = _
 
-        import io.SinqStream._
+      @OneToOne(fetch = FetchType.EAGER, optional = false)
+      @JoinColumn(name = "u_id")
+      @BeanProperty
+      var user: User = _
 
-        implict val stream = new SinqStream()
+      def this() = this(null, -1)
 
-+ Simple Usage:
+      def this(name: String, age: Int, user: User) = {
+        this(name, age)
+        this.user = user
+      }
+    }
 
-        val user = new User("name",10)
-        stream.insert(user)
-        stream.delete(user)
-        stream.update(user)
++ 创建封装类：
 
-+ Custom Usage:
+    object USER extends Table("t_user","u") {
+      val id = Column(this,"id")
+      val name = Column(this,"name")
+      val address = Column(this,"address")
+      val age = Column(this,"age")
 
-        stream.select(classOf[User])
-              .from(USER)
-              .where()
-              .groupBy()
-              .orderBy(ASC)
-              .limit(10)
-              .offset(50)
-              .single()
+      def * = Column(this,"id","name","address","age") //or Seq(id,name,address,age)
+    }
 
-        stream.select(Count(USER.ID),Column(USER.ID,USER.NAME),Sum(USER.ID)
-              .from(USER)
-              .where()
-              .groupBy()
-              .orderBy(ASC)
-              .limit(10)
-              .offset(50)
-              .single()
+    object ADDRESS extends Table("t_address", "a") {
+      def id = Column(this, "id")
 
-+ Complete Usage:
+      def name = Column(this, "name")
 
-        val query = stream.select(Column(USER.ID,USER.NAME))
-                          .from(USER).leftJoin(BOOK)
-                          .on(Eq(USER.ID,BOOK.UID))
-                          .where(Eq(USER.NAME,"123").and(Ge(USER.AGE,12).or(Eq(USER.ADDRESS,"NJ"))))
-        query.sql()
-        query.single()
-        query.collect()
+      def num = Column(this, "num")
+
+      def u_id = Column(this, "u_id")
+
+      def * = Seq(id, name, num)
+    }
+
++ 初始化数据源:`JPA.initPersistenceName("h2")`
+
++ 创建全局对象
+
+    implict val sinq = SinqStream("h2")
+
++ 基本应用:
+
+    val user = new User("name",10)
+    sinq.insert(user)
+    sinq.delete(user)
+    sinq.update(user)
+
++ 条件查询:
+
+    sinq.select(classOf[User])
+        .from(USER)
+        .where()
+        .groupBy()
+        .orderBy(ASC)
+        .limit(10)
+        .offset(50)
+        .single()
+
+    sinq.select(Count(USER.id),Column(USER.id,USER.name),Sum(USER.id)
+        .from(USER)
+        .where()
+        .groupBy()
+        .orderBy(ASC)
+        .limit(10)
+        .offset(50)
+        .single()
+
++ 结果集:
+
+    val query = sinq.select(USER.id,USER.name)
+                    .from(USER).leftJoin(ADDRESS)
+                    .on(Eq(USER.id,ADDRESS.u_id))
+                    .where(Eq(USER.id,1)
+                    .orderBy(Order(ASC, USER.id)).limit(10, 0)
+
+    query.single()
