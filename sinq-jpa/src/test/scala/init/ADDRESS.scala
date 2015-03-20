@@ -2,9 +2,6 @@ package init
 
 import io.sinq.rs.{Column, Table}
 
-/**
- * Created by Administrator on 2015/3/19.
- */
 object ADDRESS extends Table("t_address", "a") {
   def id = Column(this, "id")
 

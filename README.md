@@ -17,7 +17,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
                     where u.id = ?1
                     group by u.id having u.id = ?2
                     order by u.id asc limit 10 offset 0
-                    
+
 + 函数调用:
 
         select(USER.id).from(USER)
@@ -114,11 +114,8 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
         object ADDRESS extends Table("t_address", "a") {
           def id = Column(this, "id")
-
           def name = Column(this, "name")
-
           def num = Column(this, "num")
-
           def u_id = Column(this, "u_id")
 
           def * = Seq(id, name, num)
