@@ -13,10 +13,12 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 class SinqSuite extends FunSuite with BeforeAndAfter {
 
   before {
+    H2DB.open
     JPA.initPersistenceName("h2", "postgres")
   }
   after {
     JPA.release()
+    H2DB.close
   }
 
   test("SQL Build.") {
