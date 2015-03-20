@@ -1,6 +1,6 @@
 package io.sinq.expression
 
-import io.sinq.rs.Column
+import io.sinq.Column
 
 import scala.beans.BeanProperty
 import scala.collection.mutable

@@ -1,6 +1,6 @@
 package io.sinq.expression
 
-import io.sinq.rs.Column
+import io.sinq.Column
 
 trait Tuple1Condition[T <: Any] extends Condition {
 

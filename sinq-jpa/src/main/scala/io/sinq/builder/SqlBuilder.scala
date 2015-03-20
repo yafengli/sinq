@@ -1,5 +1,6 @@
 package io.sinq.builder
 
+import io.sinq.Alias
 import io.sinq.provider._
 import io.sinq.rs._
 

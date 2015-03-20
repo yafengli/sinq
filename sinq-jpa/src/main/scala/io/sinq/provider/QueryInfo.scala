@@ -1,8 +1,8 @@
 package io.sinq.provider
 
-import io.sinq.SinqStream
+import io.sinq.{Column, Table, SinqStream}
 import io.sinq.expression.Condition
-import io.sinq.rs.{Column, Order, Table}
+import io.sinq.rs.Order
 
 import scala.beans.BeanProperty
 import scala.collection.mutable

@@ -1,7 +1,7 @@
 package io.sinq.provider.jpa
 
+import io.sinq.Table
 import io.sinq.provider._
-import io.sinq.rs.Table
 
 case class FromImpl(override val info: QueryInfo) extends ResultImpl with From {
   override def from(tables: Table*): Where = {

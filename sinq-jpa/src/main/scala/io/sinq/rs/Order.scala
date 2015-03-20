@@ -1,5 +1,7 @@
 package io.sinq.rs
 
+import io.sinq.{Alias, Column}
+
 trait OrderDesc extends Alias {
   /**
    * @return 别名

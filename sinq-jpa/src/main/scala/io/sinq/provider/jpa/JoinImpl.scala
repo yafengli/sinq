@@ -1,8 +1,8 @@
 package io.sinq.provider.jpa
 
+import io.sinq.Table
 import io.sinq.expression.Condition
 import io.sinq.provider._
-import io.sinq.rs.Table
 
 abstract class JoinImpl extends Join {
   override def on(condition: Condition): Where = {
