@@ -10,7 +10,7 @@ import scala.concurrent.Future
 
 object H2DB {
   // Test Method Number
-  val count = 1
+  val count = 6
   val latch = new CountDownLatch(count)
   val server = Server.createTcpServer()
 

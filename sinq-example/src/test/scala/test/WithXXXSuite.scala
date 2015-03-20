@@ -1,21 +1,19 @@
 package test
 
 import io.sinq.SinqStream
-import io.sinq.util.JPA
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.collection.JavaConversions._
 
 class WithXXXSuite extends FunSuite with BeforeAndAfter {
   before {
-    JPA.initPersistenceName("postgres")
+    H2DB.init
   }
   after {
-    JPA.release()
+    H2DB.latch.countDown()
   }
-
   test("withEntityManager") {
-    val sinq = SinqStream("postgres")
+    val sinq = SinqStream("h2")
     val list = sinq.withEntityManager {
       em =>
         val query = em.createNativeQuery("select t.id,t.name,t.age from t_student t where t.id between ? and ? or t.name in (?,?,?,?)")
@@ -27,6 +25,5 @@ class WithXXXSuite extends FunSuite with BeforeAndAfter {
         query.setParameter(6, "YaFengLi:4")
         query.getResultList.toList
     }
-    println("#list:" + list)
   }
 }
