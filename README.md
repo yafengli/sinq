@@ -41,111 +41,111 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 #### 例子
 + `User.scala`
 
-    @Entity
-    @Table(name = "t_user")
-    case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
-      @Id
-      @GeneratedValue(strategy = GenerationType.AUTO)
-      @BeanProperty
-      var id: Long = _
+        @Entity
+        @Table(name = "t_user")
+        case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
+          @Id
+          @GeneratedValue(strategy = GenerationType.AUTO)
+          @BeanProperty
+          var id: Long = _
 
-      @OneToOne(cascade = Array(CascadeType.REMOVE), mappedBy = "user")
-      @BeanProperty
-      var address: Address = _
+          @OneToOne(cascade = Array(CascadeType.REMOVE), mappedBy = "user")
+          @BeanProperty
+          var address: Address = _
 
-      def this() = this(null, -1)
+          def this() = this(null, -1)
 
-      def this(name: String, age: Int, address: Address) = {
-        this(name, age)
-        this.address = address
-      }
-    }
+          def this(name: String, age: Int, address: Address) = {
+            this(name, age)
+            this.address = address
+          }
+        }
 
 + `Address.scala`:
 
-    @Entity
-    @Table(name = "t_address")
-    case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
-      @Id
-      @GeneratedValue(strategy = GenerationType.AUTO)
-      @BeanProperty
-      var id: Long = _
+        @Entity
+        @Table(name = "t_address")
+        case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
+          @Id
+          @GeneratedValue(strategy = GenerationType.AUTO)
+          @BeanProperty
+          var id: Long = _
 
-      @OneToOne(fetch = FetchType.EAGER, optional = false)
-      @JoinColumn(name = "u_id")
-      @BeanProperty
-      var user: User = _
+          @OneToOne(fetch = FetchType.EAGER, optional = false)
+          @JoinColumn(name = "u_id")
+          @BeanProperty
+          var user: User = _
 
-      def this() = this(null, -1)
+          def this() = this(null, -1)
 
-      def this(name: String, age: Int, user: User) = {
-        this(name, age)
-        this.user = user
-      }
-    }
+          def this(name: String, age: Int, user: User) = {
+            this(name, age)
+            this.user = user
+          }
+        }
 
 + 创建封装类：
 
-    object USER extends Table("t_user","u") {
-      val id = Column(this,"id")
-      val name = Column(this,"name")
-      val address = Column(this,"address")
-      val age = Column(this,"age")
+        object USER extends Table("t_user","u") {
+          val id = Column(this,"id")
+          val name = Column(this,"name")
+          val address = Column(this,"address")
+          val age = Column(this,"age")
 
-      def * = Column(this,"id","name","address","age") //or Seq(id,name,address,age)
-    }
+          def * = Column(this,"id","name","address","age") //or Seq(id,name,address,age)
+        }
 
-    object ADDRESS extends Table("t_address", "a") {
-      def id = Column(this, "id")
+        object ADDRESS extends Table("t_address", "a") {
+          def id = Column(this, "id")
 
-      def name = Column(this, "name")
+          def name = Column(this, "name")
 
-      def num = Column(this, "num")
+          def num = Column(this, "num")
 
-      def u_id = Column(this, "u_id")
+          def u_id = Column(this, "u_id")
 
-      def * = Seq(id, name, num)
-    }
+          def * = Seq(id, name, num)
+        }
 
 + 初始化数据源:`JPA.initPersistenceName("h2")`
 
 + 创建全局对象
 
-    implict val sinq = SinqStream("h2")
+        implict val sinq = SinqStream("h2")
 
 + 基本应用:
 
-    val user = new User("name",10)
-    sinq.insert(user)
-    sinq.delete(user)
-    sinq.update(user)
+        val user = new User("name",10)
+        sinq.insert(user)
+        sinq.delete(user)
+        sinq.update(user)
 
 + 条件查询:
 
-    sinq.select(classOf[User])
-        .from(USER)
-        .where()
-        .groupBy()
-        .orderBy(ASC)
-        .limit(10)
-        .offset(50)
-        .single()
+        sinq.select(classOf[User])
+            .from(USER)
+            .where()
+            .groupBy()
+            .orderBy(ASC)
+            .limit(10)
+            .offset(50)
+            .single()
 
-    sinq.select(Count(USER.id),Column(USER.id,USER.name),Sum(USER.id)
-        .from(USER)
-        .where()
-        .groupBy()
-        .orderBy(ASC)
-        .limit(10)
-        .offset(50)
-        .single()
+        sinq.select(Count(USER.id),Column(USER.id,USER.name),Sum(USER.id)
+            .from(USER)
+            .where()
+            .groupBy()
+            .orderBy(ASC)
+            .limit(10)
+            .offset(50)
+            .single()
 
 + 结果集:
 
-    val query = sinq.select(USER.id,USER.name)
-                    .from(USER).leftJoin(ADDRESS)
-                    .on(Eq(USER.id,ADDRESS.u_id))
-                    .where(Eq(USER.id,1)
-                    .orderBy(Order(ASC, USER.id)).limit(10, 0)
+        val query = sinq.select(USER.id,USER.name)
+                        .from(USER).leftJoin(ADDRESS)
+                        .on(Eq(USER.id,ADDRESS.u_id))
+                        .where(Eq(USER.id,1)
+                        .orderBy(Order(ASC, USER.id)).limit(10, 0)
 
-    query.single()
+        query.single()
