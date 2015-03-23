@@ -1,6 +1,7 @@
 package io.sinq
 
-trait Column extends Alias {
+trait Column[+T] extends Alias {
+
   /**
    * @return 别名
    */
@@ -8,26 +9,9 @@ trait Column extends Alias {
 }
 
 object Column {
-  def apply(t: Table, columns: String*): Seq[Column] = {
-    for (cl <- columns) yield new Column {
-      override def identifier(): String = s"${t.as}.${cl}"
-    }
-  }
 
-  def apply(columns: String*): Seq[Column] = {
-    for (cl <- columns) yield new Column {
-      override def identifier(): String = s"${cl}"
-    }
-  }
-
-  def apply(col: String): Column = {
-    new Column {
-      override def identifier(): String = s"${col}"
-    }
-  }
-
-  def apply(t: Table, col: String): Column = {
-    new Column {
+  def apply[T, K](t: Table[K], ct: Class[T], col: String): Column[T] = {
+    new Column[T] {
       override def identifier(): String = s"${t.as}.${col}"
     }
   }

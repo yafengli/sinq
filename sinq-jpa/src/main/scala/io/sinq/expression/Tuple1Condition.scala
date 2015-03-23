@@ -11,7 +11,7 @@ trait Tuple1Condition[T <: Any] extends Condition {
   def suffix: String = {
     val buffer = new StringBuffer()
     paramValue match {
-      case c: Column => buffer.append(c.identifier()) //Column <-> Column
+      case c: Column[_] => buffer.append(c.identifier()) //Column <-> Column
       case seq: Seq[Any] =>
         buffer.append("(")
         seq.toList match {
@@ -28,7 +28,7 @@ trait Tuple1Condition[T <: Any] extends Condition {
   override def expression(): String = s"${column.identifier()} ${link} ${suffix}"
 
   override def values: List[Any] = paramValue match {
-    case col: Column => Nil
+    case col: Column[_] => Nil
     case cols: Seq[Any] => cols.toList
     case _ => List(paramValue)
   }

@@ -20,9 +20,9 @@ class SingleSuite extends FunSuite with BeforeAndAfter {
   test("Single.") {
     val sinq = SinqStream("h2")
 
-    val query = sinq.select(STUDENT.* : _*).from(STUDENT).where(Eq(STUDENT.id, 1))
+    val query = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(Eq(STUDENT.id, 1))
     query.single() match {
-      case Some(Array(id, name, age)) => println(s"#id:${id} name:${name} age:${age}")
+      case Some((id, name, age)) => println(s"#id:${id} name:${name} age:${age}")
       case None => println("None")
     }
     sinq.find(1L, classOf[Student]) match {

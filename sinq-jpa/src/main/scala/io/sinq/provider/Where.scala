@@ -4,17 +4,17 @@ import io.sinq.Table
 import io.sinq.expression.Condition
 import io.sinq.rs._
 
-trait Where extends Result {
+trait Where[T] extends Result[T] {
 
-  def where(condition: Condition = null): GroupBy
+  def where(condition: Condition = null): GroupBy[T]
 
-  def join(table: Table): JoinInner
+  def join[K](table: Table[K]): JoinInner[T,K]
 
-  def joinLeft(table: Table): JoinLeft
+  def joinLeft[K](table: Table[K]): JoinLeft[T,K]
 
-  def joinRight(table: Table): JoinRight
+  def joinRight[K](table: Table[K]): JoinRight[T,K]
 
-  def joinFull(table: Table): JoinFull
+  def joinFull[K](table: Table[K]): JoinFull[T,K]
 }
 
 

@@ -1,5 +1,6 @@
 package models
 
+import java.math.BigInteger
 import javax.persistence._
 
 import scala.beans.BeanProperty

@@ -40,6 +40,22 @@ trait JPAProvider {
       em.close()
     }
   }
+
+  def find[T, K](id: K, t: Class[T]): Option[T] = {
+    withEntityManager(_.find(t, id))
+  }
+
+  def insert[T](t: T): Unit = {
+    withTransaction(_.persist(t))
+  }
+
+  def delete[T](t: T): Unit = {
+    withTransaction(_.remove(t))
+  }
+
+  def update[T](t: T): Unit = {
+    withTransaction(_.merge(t))
+  }
 }
 
 

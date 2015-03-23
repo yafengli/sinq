@@ -9,6 +9,7 @@
         <properties>
             <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
             <property name="driverClassName" value="org.h2.Driver"/>
+            <!--<property name="url" value="jdbc:h2:~/test"/>-->
             <property name="url" value="jdbc:h2:mem:test"/>
             <property name="username" value="sa"/>
             <property name="password" value=""/>

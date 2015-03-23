@@ -4,7 +4,6 @@ import init.{STUDENT, TEACHER}
 import io.sinq.SinqStream
 import io.sinq.expression._
 import io.sinq.rs.{ASC, Order}
-import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -20,9 +19,8 @@ class JoinSuite extends FunSuite with BeforeAndAfter {
   }
   test("Join.") {
     val sinq = SinqStream("h2")
-    val query = sinq.select().from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
-    query.collect(classOf[Student]).foreach(t => println(s"#id:${t.id} name:${t.name} age:${t.age} teacher:${t.teacher.name}"))
-
+    val query = sinq.select(STUDENT).from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+    query.collect().foreach(t => println(s"T:${t}"))
   }
 }
 

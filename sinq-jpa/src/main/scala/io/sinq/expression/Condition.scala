@@ -30,7 +30,7 @@ trait Condition {
   /**
    * @return 条件表达式字段
    */
-  def column: Column
+  def column: Column[_]
 
   /**
    * @return 条件表达式参数集合

@@ -1,5 +1,7 @@
 package models
 
+import java.math.BigInteger
+import java.util.Date
 import javax.persistence._
 
 import scala.beans.BeanProperty
@@ -21,6 +23,9 @@ case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
   @JoinColumn(name = "u_id")
   @BeanProperty
   var user: User = _
+
+  @BeanProperty
+  var createDate = new Date()
 
   def this() = this(null, -1)
 

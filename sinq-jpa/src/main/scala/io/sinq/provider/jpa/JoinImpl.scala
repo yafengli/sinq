@@ -4,18 +4,18 @@ import io.sinq.Table
 import io.sinq.expression.Condition
 import io.sinq.provider._
 
-abstract class JoinImpl extends Join {
-  override def on(condition: Condition): Where = {
+abstract class JoinImpl[T, K] extends Join[T, K] {
+  override def on(condition: Condition): Where[T] = {
     info.setOn(condition)
     info.setJoin(this)
-    WhereImpl(info)
+    WhereImpl[T](info)
   }
 }
 
-case class JoinInnerImpl(override val table: Table, override val info: QueryInfo) extends JoinImpl with JoinInner
+case class JoinInnerImpl[T, K](override val table: Table[K], override val info: QueryInfo) extends JoinImpl[T, K] with JoinInner[T, K]
 
-case class JoinLeftImpl(override val table: Table, override val info: QueryInfo) extends JoinImpl with JoinLeft
+case class JoinLeftImpl[T, K](override val table: Table[K], override val info: QueryInfo) extends JoinImpl[T, K] with JoinLeft[T, K]
 
-case class JoinRightImpl(override val table: Table, override val info: QueryInfo) extends JoinImpl with JoinRight
+case class JoinRightImpl[T, K](override val table: Table[K], override val info: QueryInfo) extends JoinImpl[T, K] with JoinRight[T, K]
 
-case class JoinFullImpl(override val table: Table, override val info: QueryInfo) extends JoinImpl with JoinFull
+case class JoinFullImpl[T, K](override val table: Table[K], override val info: QueryInfo) extends JoinImpl[T, K] with JoinFull[T, K]

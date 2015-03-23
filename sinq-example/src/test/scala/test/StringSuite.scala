@@ -18,7 +18,7 @@ class StringSuite extends FunSuite with BeforeAndAfter {
     println("sql:" + condition.translate())
     println("params:" + condition.params())
 
-    val query = sinq.select().from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+    val query = sinq.select(STUDENT).from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
 
     println("sql:" + query.sql())
     println("params:" + query.params())

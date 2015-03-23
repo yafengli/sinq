@@ -17,4 +17,4 @@ object DESC extends OrderDesc {
   override def identifier(): String = "DESC"
 }
 
-case class Order(val orderDesc: OrderDesc, val cols: Column*)
+case class Order(val orderDesc: OrderDesc, val cols: Column[_]*)

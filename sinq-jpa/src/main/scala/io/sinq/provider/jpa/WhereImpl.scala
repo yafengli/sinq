@@ -4,17 +4,17 @@ import io.sinq.Table
 import io.sinq.expression.Condition
 import io.sinq.provider._
 
-case class WhereImpl(override val info: QueryInfo) extends ResultImpl with Where {
-  override def where(condition: Condition): GroupBy = {
+case class WhereImpl[T](override val info: QueryInfo) extends ResultImpl[T] with Where[T] {
+  override def where(condition: Condition): GroupBy[T] = {
     info.setWhereCondition(condition)
-    GroupByImpl(info)
+    GroupByImpl[T](info)
   }
 
-  override def joinLeft(table: Table): JoinLeft = JoinLeftImpl(table, info)
+  override def joinLeft[K](table: Table[K]): JoinLeft[T, K] = JoinLeftImpl[T, K](table, info)
 
-  override def joinFull(table: Table): JoinFull = JoinFullImpl(table, info)
+  override def joinFull[K](table: Table[K]): JoinFull[T, K] = JoinFullImpl[T, K](table, info)
 
-  override def join(table: Table): JoinInner = JoinInnerImpl(table, info)
+  override def join[K](table: Table[K]): JoinInner[T, K] = JoinInnerImpl[T, K](table, info)
 
-  override def joinRight(table: Table): JoinRight = JoinRightImpl(table, info)
+  override def joinRight[K](table: Table[K]): JoinRight[T, K] = JoinRightImpl[T, K](table, info)
 }

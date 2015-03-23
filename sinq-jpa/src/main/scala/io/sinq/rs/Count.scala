@@ -1,7 +1,9 @@
 package io.sinq.rs
 
+import java.math.BigInteger
+
 import io.sinq.Column
 
-case class Count(val col: Column) extends Column {
-  override def identifier(): String = s"count(${col.identifier()}) as ${col.as()}"
+case class Count[T](val col: Column[T]) extends MethodColumn[BigInteger] {
+  override def identifier(): String = s"count(${col.identifier()})"
 }

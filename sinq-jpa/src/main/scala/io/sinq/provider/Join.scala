@@ -3,17 +3,17 @@ package io.sinq.provider
 import io.sinq.Table
 import io.sinq.expression.Condition
 
-trait Join extends InfoProvider {
-  def table: Table
+trait Join[T, K] extends InfoProvider[T] {
+  def table: Table[K]
 
-  def on(condition: Condition): Where
+  def on(condition: Condition): Where[T]
 }
 
-trait JoinInner extends Join
+trait JoinInner[T, K] extends Join[T, K]
 
-trait JoinLeft extends Join
+trait JoinLeft[T, K] extends Join[T, K]
 
-trait JoinRight extends Join
+trait JoinRight[T, K] extends Join[T, K]
 
-trait JoinFull extends Join
+trait JoinFull[T, K] extends Join[T, K]
 

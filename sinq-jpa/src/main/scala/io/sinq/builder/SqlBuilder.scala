@@ -2,7 +2,6 @@ package io.sinq.builder
 
 import io.sinq.Alias
 import io.sinq.provider._
-import io.sinq.rs._
 
 trait Builder {
   def build(): String
@@ -12,7 +11,7 @@ case class SqlBuilder(val info: QueryInfo) extends Builder {
   override def build(): String = {
     //select
     val buffer = new StringBuffer("select ")
-    if (info.selectFields.length == 0) buffer.append("*").append(" ") else contact(info.selectFields.toList, buffer)
+    if (info.selectFields.length == 0) buffer.append(info.getSelectTable.as).append(".*").append(" ") else contactAs(info.selectFields.toList, buffer)
 
     //from
     buffer.append("from ")
@@ -21,10 +20,10 @@ case class SqlBuilder(val info: QueryInfo) extends Builder {
     //join
     if (info.getJoin != null) {
       info.getJoin match {
-        case _: JoinInner => buffer.append(s"inner join ")
-        case _: JoinLeft => buffer.append(s"left join ")
-        case _: JoinRight => buffer.append(s"right join ")
-        case _: JoinFull => buffer.append(s"full join ")
+        case _: JoinInner[_, _] => buffer.append(s"inner join ")
+        case _: JoinLeft[_, _] => buffer.append(s"left join ")
+        case _: JoinRight[_, _] => buffer.append(s"right join ")
+        case _: JoinFull[_, _] => buffer.append(s"full join ")
       }
       buffer.append(s"${info.getJoin.table.identifier()} on ").append(info.on.translate()).append(" ")
     }
@@ -56,7 +55,7 @@ case class SqlBuilder(val info: QueryInfo) extends Builder {
     buffer.toString
   }
 
-  private def contact(list: List[Alias], buffer: StringBuffer): Unit = {
+  private def contact(list: List[Alias], buffer: StringBuffer, showAlias: Boolean = false): Unit = {
     list match {
       case Nil =>
       case last :: Nil => buffer.append(last.identifier()).append(" ")
@@ -65,6 +64,22 @@ case class SqlBuilder(val info: QueryInfo) extends Builder {
       case head :: second :: tails =>
         buffer.append(head.identifier()).append(",").append(second.identifier()).append(",")
         contact(tails, buffer)
+    }
+  }
+
+  private def link(alias: Alias): String = {
+    s"${alias.identifier()} as ${alias.as()}"
+  }
+
+  private def contactAs(list: List[Alias], buffer: StringBuffer): Unit = {
+    list match {
+      case Nil =>
+      case last :: Nil => buffer.append(link(last)).append(" ")
+      case head :: second :: Nil =>
+        buffer.append(link(head)).append(",").append(link(second)).append(" ")
+      case head :: second :: tails =>
+        buffer.append(link(head)).append(",").append(link(second)).append(",")
+        contactAs(tails, buffer)
     }
   }
 }

@@ -2,23 +2,19 @@ package io.sinq.provider
 
 import io.sinq.rs._
 
-trait Result extends InfoProvider {
+trait Result[T] extends InfoProvider[T] {
 
-  def orderBy(order: Order): Result
+  def orderBy(order: Order): Result[T]
 
-  def limit(limit: Int, offset: Int): Result
+  def limit(limit: Int, offset: Int): Result[T]
 
   def sql(): String
 
-  def params(): List[Any]
+  def params(): List[_]
 
-  def single(): Option[Any]
+  def single(): Option[T]
 
-  def single[T](ct: Class[T]): Option[T]
-
-  def collect(): List[Any]
-
-  def collect[T](t: Class[T]): List[T]
+  def collect(): List[T]
 }
 
 
