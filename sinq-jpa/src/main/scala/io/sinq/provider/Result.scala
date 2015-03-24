@@ -1,6 +1,6 @@
 package io.sinq.provider
 
-import io.sinq.rs._
+import io.sinq.func._
 
 trait Result[T] extends InfoProvider[T] {
 

@@ -1,7 +1,7 @@
 package io.sinq.provider
 
 import io.sinq.expression.Condition
-import io.sinq.rs.Order
+import io.sinq.func.Order
 import io.sinq.{Column, SinqStream, Table}
 
 import scala.beans.BeanProperty

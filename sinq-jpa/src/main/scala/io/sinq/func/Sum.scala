@@ -1,4 +1,4 @@
-package io.sinq.rs
+package io.sinq.func
 
 import java.math.BigInteger
 

@@ -5,7 +5,7 @@ import java.math.BigInteger
 import init.{ADDRESS, USER}
 import io.sinq.SinqStream
 import io.sinq.expression.{Eq, Ge, In, Le}
-import io.sinq.rs.{ASC, Count, Order}
+import io.sinq.func.{ASC, Count, Order}
 import models.{Address, User}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

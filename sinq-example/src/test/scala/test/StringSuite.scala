@@ -3,7 +3,7 @@ package test
 import init.{STUDENT, TEACHER}
 import io.sinq.SinqStream
 import io.sinq.expression.{Eq, Ge, In, Le}
-import io.sinq.rs.{ASC, Order}
+import io.sinq.func.{ASC, Order}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}

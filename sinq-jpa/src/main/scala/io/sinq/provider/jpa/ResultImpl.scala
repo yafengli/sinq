@@ -2,7 +2,7 @@ package io.sinq.provider.jpa
 
 import io.sinq.builder.SqlBuilder
 import io.sinq.provider.Result
-import io.sinq.rs.Order
+import io.sinq.func.Order
 
 import scala.collection.JavaConversions._
 
