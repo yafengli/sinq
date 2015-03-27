@@ -20,12 +20,16 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
   )
 )
 
-lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq_jpa).settings(
+
+
+lazy val sinq_example = project.in(file("sinq-example")).enablePlugins(JavaAppPackaging).dependsOn(sinq_jpa).settings(
   name := "sinq-exmple",
   organization := "io.sinq",
   version := $("prod"),
   scalaVersion := $("scala"),
-  libraryDependencies ++= Seq(
+  packageOptions in(Compile, packageBin) += Package.ManifestAttributes("Build" -> "HAHAHAAH"),
+  packageOptions in(Compile, packageBin) += Package.ManifestAttributes("MainClass" -> "test.FUckyou"),
+    libraryDependencies ++= Seq(
     "org.jinq" % "jinq-jpa-scala" % $("jinq"), //jinq
     "com.google.guava" % "guava" % $("guava"),
     "com.alibaba" % "druid" % $("druid") % "test",
@@ -33,5 +37,4 @@ lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq_jpa).set
     "org.postgresql" % "postgresql" % $("postgresql") % "test",
     "junit" % "junit" % $("junit") % "test",
     "org.scalatest" %% "scalatest" % $("scalatest") % "test"
-  )
-)
+  ))

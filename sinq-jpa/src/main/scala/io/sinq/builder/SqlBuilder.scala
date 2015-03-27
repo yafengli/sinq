@@ -16,7 +16,6 @@ case class SqlBuilder(val info: QueryInfo) extends Builder {
     //from
     buffer.append("from ")
     contact(info.fromTables.toList, buffer)
-
     //join
     if (info.getJoin != null) {
       info.getJoin match {
