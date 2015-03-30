@@ -1,4 +1,4 @@
-package io.sinq.util
+package io.sinq.codegen
 
 import java.io.{BufferedWriter, File, FileWriter}
 

@@ -12,6 +12,7 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
     "org.hibernate" % "hibernate-jpamodelgen" % $("hibernate"),
     "ch.qos.logback" % "logback-classic" % $("logback"),
     "com.alibaba" % "druid" % $("druid"),
+    "org.freemarker" % "freemarker" % "2.3.22",
     "org.hibernate" % "hibernate-c3p0" % $("hibernate") % "test",
     "com.h2database" % "h2" % $("h2") % "test",
     "org.postgresql" % "postgresql" % $("postgresql") % "test",
