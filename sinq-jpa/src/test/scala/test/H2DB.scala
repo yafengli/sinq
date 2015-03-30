@@ -17,14 +17,12 @@ object H2DB {
   def init(): Unit = {
     if (latch.getCount == count) {
       if (!server.isRunning(false)) {
-//        server.start()
         println(s"##########DB Server start.###############")
       }
       JPA.initPersistenceName("h2", "postgres")
       Future {
         latch.await(30, TimeUnit.SECONDS)
         JPA.release()
-//        server.stop()
         println(s"##########DB Server closed.###############")
       }
     }

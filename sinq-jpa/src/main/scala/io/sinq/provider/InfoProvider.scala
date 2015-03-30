@@ -1,5 +1,5 @@
 package io.sinq.provider
 
-trait InfoProvider[T] {
+trait InfoProvider {
   def info: QueryInfo
 }

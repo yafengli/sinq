@@ -50,10 +50,16 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
       case Some(u) => println(s"id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}")
       case None => println("None")
     }
+
+    sinq.from(USER).join(ADDRESS).on(Eq(USER.id, ADDRESS.u_id)).where(condition).orderBy(Order(ASC, USER.id)).limit(10, 0).single() match {
+      case Some(u) => println(s"id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}")
+      case None => println("None")
+    }
     println("##############Collect#################")
     sinq.select(USER.id).from(USER).collect().foreach(t => println(s"id:${t}"))
     sinq.select(USER.id, USER.name, USER.age).from(USER).collect().foreach(t => println(s"id:${t._1} name:${t._2} age:${t._3}"))
     sinq.select(USER).from(USER).collect().foreach(u => println(s"id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}"))
+    sinq.from(USER).collect().foreach(u => println(s"id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}"))
   }
 }
 

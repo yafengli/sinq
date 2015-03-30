@@ -1,9 +1,20 @@
 package io.sinq
 
 import io.sinq.provider._
-import io.sinq.provider.jpa.FromImpl
+import io.sinq.provider.jpa.{WhereImpl, FromImpl}
 
+/**
+ * NOT EDIT,The code generate
+ * @param persistenceName
+ */
 case class SinqStream(val persistenceName: String = "default") extends JPAProvider {
+
+  def from[T](t: Table[T]): Where[T] = {
+    val info = QueryInfo(this)
+    info.setSelectTable(t)
+    info.fromTables += t
+    WhereImpl(info)
+  }
 
   def select[T](t: Table[T]): From[T] = {
     val info = QueryInfo(this)

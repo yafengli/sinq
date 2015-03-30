@@ -3,7 +3,7 @@ package io.sinq.provider
 import io.sinq.Table
 import io.sinq.expression.Condition
 
-trait Join[T, K] extends InfoProvider[T] {
+trait Join[T, K] extends InfoProvider {
   def table: Table[K]
 
   def on(condition: Condition): Where[T]
