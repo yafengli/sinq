@@ -9,6 +9,7 @@ trait Builder {
 
 case class SqlBuilder(val info: QueryInfo) extends Builder {
   override def build(): String = {
+    (0 until info.fromTables.size).foreach {i => info.fromTables(i).as() = s"t${i}"}
     //select
     val buffer = new StringBuffer("select ")
     if (info.selectFields.length == 0) buffer.append(info.getSelectTable.as).append(".*").append(" ") else contactAs(info.selectFields.toList, buffer)
