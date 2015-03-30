@@ -18,17 +18,13 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
         FromImpl[T](info)
     }
 
-    <#list data.selects as s>
-    def select[${s.tpes}](<#list s.cs as c>${c.name}:Column[${c.tpe}],</#list>): From[${s.tpes}] = {
+    <#list data.teps as s>
+    def select[${s.tpe}](<#list s.cs as c>${c.name}:Column[${c.tpe}],</#list>): From[${s.tpe}] = {
         val info = QueryInfo(this)
         <#list s.cs as c>
         info.selectFields += ${c.name}
         </#list>
-        FromImpl[${s.tpes}](info)
+        FromImpl[${s.tpe}](info)
     }
     </#list>
 }
-
-<#list ["1","2","3","5"] as x>
-    ${x}
-</#list>

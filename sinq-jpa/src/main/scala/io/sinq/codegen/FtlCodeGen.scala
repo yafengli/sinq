@@ -4,7 +4,9 @@ import java.io.{BufferedWriter, File, FileWriter, StringWriter}
 
 import freemarker.template.Configuration
 
+import scala.beans.BeanProperty
 import scala.collection.mutable
+import java.util
 
 object FtlCodeGen extends App {
 
@@ -14,8 +16,8 @@ object FtlCodeGen extends App {
 
   val select = cfg.getTemplate("select.ftl")
   val writer = new StringWriter()
-  val map = mutable.HashMap[String, Any]()
-  map += ("package" -> "com.greatbit.ok")
+  val map = store(22)
+  println("map:" + map)
   select.process(map, writer)
   println("###############")
   println(writer.toString)
@@ -31,11 +33,49 @@ object FtlCodeGen extends App {
       writer.close()
     }
   }
+
+  def store(count: Int): util.HashMap[String, Any] = {
+    val map = new util.HashMap[String, Any]()
+    val dm = new util.HashMap[String, Any]()
+    val list = new util.ArrayList[Any]()
+    dm.put("pkg", "io.sinq")
+
+    (1 to count).foreach {
+      i =>
+        val cmap = new util.HashMap[String, Any]()
+        val tpes = for (j <- 1 to i) yield s"T${j}"
+
+        cmap.put("tpe", tpes.mkString(","))
+
+        val clist = new util.ArrayList[Any]()
+        (1 to tpes.size).foreach {
+          k =>
+            val ccmap = new util.HashMap[String, Any]()
+            ccmap.put("name", s"c${k}")
+            ccmap.put("tpe", s"Column[T${k}]")
+            clist.add(ccmap)
+        }
+        cmap.put("cs", clist)
+        list.add(cmap)
+    }
+    dm.put("teps", list)
+    map.put("data", dm)
+    map
+  }
 }
 
 
-case class FtlData(val pkg: String, val selects: Seq[])
+class FtlData {
+  @BeanProperty var pkg: String = _
+  @BeanProperty var teps = mutable.ArrayBuffer[S]()
+}
 
-case class S(val tpe: String, val cs: Seq[C])
+class S {
+  @BeanProperty var tpe: String = _
+  @BeanProperty val cs = mutable.ArrayBuffer[C]()
+}
 
-case class C(var name: String, var tpe: String)
+class C {
+  @BeanProperty var name: String = _
+  @BeanProperty var tpe: String = _
+}
