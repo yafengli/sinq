@@ -7,7 +7,6 @@ public class TableData {
     private String pkg;
     private String name;
     private String classname;
-    private String classpath;
     private String tablename;
 
     private List<TableField> fields = new ArrayList<>();
@@ -34,14 +33,6 @@ public class TableData {
 
     public void setClassname(String classname) {
         this.classname = classname;
-    }
-
-    public String getClasspath() {
-        return classpath;
-    }
-
-    public void setClasspath(String classpath) {
-        this.classpath = classpath;
     }
 
     public String getTablename() {
