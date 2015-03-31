@@ -19,7 +19,7 @@ object H2DB {
       if (!server.isRunning(false)) {
         println(s"##########DB Server start.###############")
       }
-      JPA.initPersistenceName("h2", "postgres")
+      JPA.initPersistenceName("h2") //JPA.initPersistenceName("h2", "postgres")
       Future {
         latch.await(20, TimeUnit.SECONDS)
         JPA.release()

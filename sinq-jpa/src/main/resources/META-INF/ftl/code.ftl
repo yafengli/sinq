@@ -1,0 +1,13 @@
+package ${data.pkg}
+
+import io.sinq._
+import ${data.classpath}
+
+object ${data.name} extends Table[${data.classname}]("${data.tablename}"){
+    <#list data.fields as f>
+    def ${f.name} = Column(this,classOf[${f.typename}],"${f.columnId}")
+    </#list>
+
+    <#assign flag=false/>
+    def * = Seq(<#list data.fields as f><#if flag>,<#else><#assign flag=true/></#if>${f.name}</#list>)
+}
