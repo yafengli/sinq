@@ -11,15 +11,8 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
 
   def from[T](t: Table[T]): Where[T] = {
     val info = QueryInfo(this)
-    info.setSelectTable(t)
     info.fromTables += t
     WhereImpl(info)
-  }
-
-  def select[T](t: Table[T]): From[T] = {
-    val info = QueryInfo(this)
-    info.setSelectTable(t)
-    FromImpl[T](info)
   }
 
   def select[T1](c1: Column[T1]): From[T1] = {

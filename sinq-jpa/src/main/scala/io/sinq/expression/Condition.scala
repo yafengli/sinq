@@ -1,6 +1,6 @@
 package io.sinq.expression
 
-import io.sinq.Column
+import io.sinq.{Table, Column}
 
 import scala.beans.BeanProperty
 import scala.collection.mutable
@@ -40,7 +40,7 @@ trait Condition {
   /**
    * @return 表达式字符串表达
    */
-  def expression(): String
+  def expression(tablesMap: Map[Table[_], String]): String
 
   /**
    * @param c 条件表达式
@@ -65,29 +65,6 @@ trait Condition {
     c.setClose(true)
     init(c, this.getRoot)
     this.getRoot
-  }
-
-  def translate(): String = {
-    val buffer = new StringBuffer()
-    val params = mutable.ArrayBuffer[Any]()
-    loopCondition(this, buffer, params)
-    buffer.toString
-  }
-
-  def params(): Seq[Any] = {
-    val buffer = new StringBuffer()
-    val params = mutable.ArrayBuffer[Any]()
-    loopCondition(this, buffer, params)
-    params.toSeq
-  }
-
-  private def loopCondition(c: Condition, buffer: StringBuffer, params: mutable.ArrayBuffer[Any]): Unit = {
-    if (c.getFrom != null) buffer.append(c.getFlag)
-    if (c.getClose && c.to.size > 0) buffer.append(START_BRACKET)
-    c.values.foreach(params += _)
-    buffer.append(c.expression())
-    c.to.foreach(loopCondition(_, buffer, params))
-    if (c.getClose && c.to.size > 0) buffer.append(END_BRACKET)
   }
 
   protected def init(c: Condition, root: Condition): Unit = {

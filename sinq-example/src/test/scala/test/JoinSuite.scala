@@ -19,7 +19,7 @@ class JoinSuite extends FunSuite with BeforeAndAfter {
   }
   test("Join.") {
     val sinq = SinqStream("h2")
-    val query = sinq.select(STUDENT).from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+    val query = sinq.from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
     query.collect().foreach(t => println(s"T:${t}"))
   }
 }

@@ -22,7 +22,7 @@ class CollectSuite extends FunSuite with BeforeAndAfter {
     val condition = Between(STUDENT.id, -1, 12).and(Ge(STUDENT.age, 5L).or(In(STUDENT.name, Seq("YaFengli:0", "YaFengli:1", "YaFengli:2", "YaFengli:3"))))
     (0 to 1).foreach {
       i =>
-        val query = sinq.select(STUDENT).from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+        val query = sinq.from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
         query.collect().foreach(t => println(s"#id:${t.id} name:${t.name} age:${t.age}"))
     }
     (0 to 1).foreach {

@@ -2,12 +2,7 @@ package io.sinq.func
 
 import io.sinq.{Alias, Column}
 
-trait OrderDesc extends Alias {
-  /**
-   * @return 别名
-   */
-  override def as(): String = identifier()
-}
+trait OrderDesc extends Alias
 
 object ASC extends OrderDesc {
   override def identifier(): String = "ASC"

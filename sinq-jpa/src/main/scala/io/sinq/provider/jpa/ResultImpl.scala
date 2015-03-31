@@ -1,6 +1,6 @@
 package io.sinq.provider.jpa
 
-import io.sinq.builder.SqlBuilder
+import io.sinq.builder.{ConditionBuilder, SqlBuilder}
 import io.sinq.provider.Result
 import io.sinq.func.Order
 
@@ -19,16 +19,19 @@ abstract class ResultImpl[T] extends Result[T] {
 
   override def sql(): String = SqlBuilder(info).build()
 
-  override def params(): List[_] = if (info != null && info.whereCondition != null && info.whereCondition.params() != null) info.whereCondition.params.toList else Nil
+  override def params(): List[_] = {
+    val cb = ConditionBuilder()
+    cb.params(info.whereCondition).toList
+  }
 
   override def single(): Option[T] = info.stream.withEntityManager[T] {
     em =>
-      val query = if (info.getSelectTable == null) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), info.getSelectTable.getType)
+      val query = if (info.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), info.fromTables.head.getType)
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       val r = result(query.getResultList.toList).headOption
-      (if(r.isEmpty) null else r.get).asInstanceOf[T]
-   }
+      (if (r.isEmpty) null else r.get).asInstanceOf[T]
+  }
 
   private def result[K](list: List[K]): List[T] = {
     list.map {
@@ -65,7 +68,7 @@ abstract class ResultImpl[T] extends Result[T] {
 
   override def collect(): List[T] = info.stream.withEntityManager[List[T]] {
     em =>
-      val query = if (info.getSelectTable == null) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), info.getSelectTable.getType)
+      val query = if (info.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), info.fromTables.head.getType)
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       result(query.getResultList.toList)

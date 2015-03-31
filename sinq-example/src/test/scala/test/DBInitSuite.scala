@@ -28,7 +28,7 @@ class DBInitSuite extends FunSuite with BeforeAndAfter {
       sinq.insert(husband)
       (0 to 10).foreach(i => sinq.insert(new Student(s"YaFengli:${i}", i, s"NanJing:${i}", teacher)))
     }
-    sinq.select(STUDENT).from(STUDENT).collect().foreach(s => println(s"id:${s.id}"))
+    sinq.from(STUDENT).collect().foreach(s => println(s"id:${s.id}"))
   }
 }
 

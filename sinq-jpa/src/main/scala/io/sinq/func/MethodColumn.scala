@@ -1,9 +1,12 @@
 package io.sinq.func
 
-import io.sinq.Column
+import io.sinq.{Table, Column}
 
 abstract class MethodColumn[T] extends Column[T] {
-  def col: Column[_]
 
-  override def as(): String = col.as()
+  override def table: Table[_] = col.table
+
+  override def fullName(tablesMap: Map[Table[_], String]): String = s"${this.identifier()}(${col.fullName(tablesMap)})"
+
+  def col: Column[_]
 }

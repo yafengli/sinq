@@ -6,7 +6,7 @@ import java.util.Date
 import io.sinq.{Column, Table}
 import models.Address
 
-object ADDRESS extends Table[Address]("t_address", "a") {
+object ADDRESS extends Table[Address]("t_address") {
   def id = Column(this, classOf[BigInteger], "id")
 
   def name = Column(this, classOf[String], "name")

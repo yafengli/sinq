@@ -1,7 +1,8 @@
 package io.sinq.builder
 
-import io.sinq.Alias
 import io.sinq.provider._
+import io.sinq.{Column, Table}
+import scala.collection.mutable
 
 trait Builder {
   def build(): String
@@ -9,14 +10,16 @@ trait Builder {
 
 case class SqlBuilder(val info: QueryInfo) extends Builder {
   override def build(): String = {
-    (0 until info.fromTables.size).foreach {i => info.fromTables(i).as() = s"t${i}"}
+    val t_map = aliasMap()
+    val cb = ConditionBuilder(t_map)
     //select
     val buffer = new StringBuffer("select ")
-    if (info.selectFields.length == 0) buffer.append(info.getSelectTable.as).append(".*").append(" ") else contactAs(info.selectFields.toList, buffer)
+    if (info.selectFields.length > 0) buffer.append(linkColumns(t_map, true, info.selectFields: _*))
+    else buffer.append(t_map(info.fromTables.head) + ".*")
+    buffer.append(" ")
 
     //from
-    buffer.append("from ")
-    contact(info.fromTables.toList, buffer)
+    buffer.append("from ").append(linkTables(t_map, info.fromTables: _*)).append(" ")
     //join
     if (info.getJoin != null) {
       info.getJoin match {
@@ -25,26 +28,25 @@ case class SqlBuilder(val info: QueryInfo) extends Builder {
         case _: JoinRight[_, _] => buffer.append(s"right join ")
         case _: JoinFull[_, _] => buffer.append(s"full join ")
       }
-      buffer.append(s"${info.getJoin.table.identifier()} on ").append(info.on.translate()).append(" ")
+      buffer.append(linkTables(t_map, info.getJoin.table)).append(s" on ").append(cb.translate(info.on)).append(" ")
     }
 
     //where
     if (info.whereCondition != null && info.whereCondition != null) {
       buffer.append("where ")
-      buffer.append(info.whereCondition.translate())
+      buffer.append(cb.translate(info.whereCondition))
       buffer.append(" ")
     }
 
     //group by
     if (info.groupByFields.length > 0) {
-      buffer.append("group by ")
-      contact(info.groupByFields.toList, buffer)
-      if (info.getHaving != null) buffer.append("having ").append(info.getHaving.translate()).append(" ")
+      buffer.append("group by ").append(linkColumns(t_map, false, info.groupByFields: _*))
+      if (info.getHaving != null) buffer.append("having ").append(cb.translate(info.getHaving)).append(" ")
     }
     //order by
     if (info.getOrder != null) {
       buffer.append("order by ")
-      contact(info.getOrder.cols.toList, buffer)
+      buffer.append(linkColumns(t_map, false, info.getOrder.cols: _*)).append(" ")
       buffer.append(info.getOrder.orderDesc.identifier()).append(" ")
     }
     //limit offset
@@ -55,31 +57,21 @@ case class SqlBuilder(val info: QueryInfo) extends Builder {
     buffer.toString
   }
 
-  private def contact(list: List[Alias], buffer: StringBuffer, showAlias: Boolean = false): Unit = {
-    list match {
-      case Nil =>
-      case last :: Nil => buffer.append(last.identifier()).append(" ")
-      case head :: second :: Nil =>
-        buffer.append(head.identifier()).append(",").append(second.identifier()).append(" ")
-      case head :: second :: tails =>
-        buffer.append(head.identifier()).append(",").append(second.identifier()).append(",")
-        contact(tails, buffer)
-    }
+  private def aliasMap(): Map[Table[_], String] = {
+    val map = mutable.HashMap[Table[_], String]()
+    (1 to info.fromTables.length).foreach(i => map += (info.fromTables(i - 1) -> s"t${i}"))
+    if (info.getJoin != null) map += (info.getJoin.table -> s"t${info.fromTables.length + 1}")
+    map.toMap
   }
 
-  private def link(alias: Alias): String = {
-    s"${alias.identifier()} as ${alias.as()}"
+  private def linkColumns(t_map: Map[Table[_], String], as: Boolean, cols: Column[_]*): String = {
+    if (as) cols.map(_.as(t_map)).mkString(",") else cols.map(_.fullName(t_map)).mkString(",")
   }
 
-  private def contactAs(list: List[Alias], buffer: StringBuffer): Unit = {
-    list match {
-      case Nil =>
-      case last :: Nil => buffer.append(link(last)).append(" ")
-      case head :: second :: Nil =>
-        buffer.append(link(head)).append(",").append(link(second)).append(" ")
-      case head :: second :: tails =>
-        buffer.append(link(head)).append(",").append(link(second)).append(",")
-        contactAs(tails, buffer)
-    }
+  private def linkTables(t_map: Map[Table[_], String], tls: Table[_]*): String = {
+    tls.map {
+      t =>
+        if (!t_map.contains(t)) t.identifier() else s"${t.identifier()} ${t_map(t)}"
+    } mkString (",")
   }
 }

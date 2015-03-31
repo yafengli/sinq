@@ -13,9 +13,7 @@ case class QueryInfo(val stream: SinqStream) {
   lazy val groupByFields = mutable.ArrayBuffer[Column[_]]()
 
   @BeanProperty
-  var selectTable: Table[_] = _
-  @BeanProperty
-  var join: Join[_,_] = _
+  var join: Join[_, _] = _
   @BeanProperty
   var on: Condition = _
   @BeanProperty

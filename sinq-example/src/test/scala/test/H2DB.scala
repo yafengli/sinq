@@ -21,7 +21,7 @@ object H2DB {
       }
       JPA.initPersistenceName("h2")
       Future {
-        latch.await(30, TimeUnit.SECONDS)
+        latch.await(20, TimeUnit.SECONDS)
         JPA.release()
         println(s"##########DB Server closed.###############")
       }
