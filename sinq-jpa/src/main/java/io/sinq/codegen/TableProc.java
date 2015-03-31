@@ -110,6 +110,7 @@ public class TableProc {
             data.setName(tableName.toUpperCase());
             data.setClassname(c.getName());
             data.setPkg(pkg);
+            data.setTablename(joinTable.name());
             Arrays.asList(joinTable.joinColumns()).stream().forEach(jc -> {
                 TableField fd = new TableField();
                 fd.setColumnId(jc.name());
