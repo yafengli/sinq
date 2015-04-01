@@ -3,6 +3,7 @@ package models
 import javax.persistence._
 
 import scala.beans.BeanProperty
+import java.util
 
 @Entity
 @Table(name = "t_teacher")
@@ -18,5 +19,5 @@ case class Teacher(@BeanProperty var name: String, @BeanProperty var age: Int) {
   ), inverseJoinColumns = Array(
     new JoinColumn(name = "u_id")
   ))
-  var users: Set[User] = _
+  var users: util.Set[User] = new util.HashSet[User]()
 }

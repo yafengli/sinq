@@ -1,8 +1,8 @@
 package models
 
 import javax.persistence._
-
 import scala.beans.BeanProperty
+import java.util
 
 @Entity
 @Table(name = "t_user")
@@ -18,7 +18,7 @@ case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
 
 
   @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
-  var teachers: Set[Teacher] = _
+  var teachers: util.Set[Teacher] = new util.HashSet[Teacher]()
 
   def this() = this(null, -1)
 
