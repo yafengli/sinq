@@ -9,32 +9,18 @@ import javax.persistence.*;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TableProc {
-    public static void main(String[] args) {
-        if (args.length != 1) {
-            System.err.println("Usage:run [scan.entity.package] [/out/dir]");
-
-        } else {
-            Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
-            cfg.setClassForTemplateLoading(FtlProc.class, "/META-INF/ftl");
-            cfg.setDefaultEncoding("UTF-8");
-
-            try {
-                Template select = cfg.getTemplate("code.ftl");
-                loop(select, args[0]);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    public static void loop(Template select, String pkg) {
+    public static void loop(String pkg) {
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
+        cfg.setClassForTemplateLoading(FtlProc.class, "/META-INF/ftl");
+        cfg.setDefaultEncoding("UTF-8");
         try {
+            Template select = cfg.getTemplate("code.ftl");
             URL url = Thread.currentThread().getContextClassLoader().getResource(pkg.replace(".", "/"));
             File file = new File(new URI(url.toString()));
             String[] names = file.list((f, name) -> name.endsWith(".class"));
@@ -46,7 +32,7 @@ public class TableProc {
                     e.printStackTrace();
                 }
             }
-        } catch (URISyntaxException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }

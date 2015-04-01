@@ -3,8 +3,8 @@ package init
 import java.math.BigInteger
 import java.util.Date
 
-import io.sinq.{Column, Table}
 import models.Address
+import io.sinq.{Column, Table}
 
 object ADDRESS extends Table[Address]("t_address") {
   def id = Column(this, classOf[BigInteger], "id")

@@ -4,11 +4,6 @@ import javax.persistence._
 
 import scala.beans.BeanProperty
 
-/**
- * User: YaFengLi
- * Date: 12-12-3
- * Time: 下午1:28
- */
 @Entity
 @Table(name = "t_user")
 case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
@@ -20,6 +15,10 @@ case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
   @OneToOne(cascade = Array(CascadeType.REMOVE), mappedBy = "user")
   @BeanProperty
   var address: Address = _
+
+
+  @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
+  var teachers: Set[Teacher] = _
 
   def this() = this(null, -1)
 

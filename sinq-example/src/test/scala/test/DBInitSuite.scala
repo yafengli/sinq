@@ -3,7 +3,7 @@ package test
 import init.ImplicitsSinq.sinq2Count
 import init.STUDENT
 import io.sinq.SinqStream
-import models.{Husband, Student, Teacher}
+import models.{Teacher, Husband, Student}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}

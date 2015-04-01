@@ -2,8 +2,8 @@ package init
 
 import java.math.BigInteger
 
-import io.sinq.{Column, Table}
 import models.Teacher
+import io.sinq.{Column, Table}
 
 object TEACHER extends Table[Teacher]("t_teacher") {
   def id = Column(this, classOf[BigInteger], "id")

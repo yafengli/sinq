@@ -2,11 +2,12 @@ package test
 
 import java.math.BigInteger
 
+
 import init.{ADDRESS, USER}
 import io.sinq.SinqStream
 import io.sinq.expression.{Eq, Ge, In, Le}
 import io.sinq.func.{ASC, Count, Order}
-import models.{Address, User}
+import models.{User, Address}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -26,7 +27,7 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
     if (count.longValue() <= 0) {
       val user = User("user-1", 11)
       sinq.insert(user)
-      val address = Address("NanJing", 603)
+      val address = models.Address("NanJing", 603)
       address.setUser(user)
       sinq.insert(address)
     }

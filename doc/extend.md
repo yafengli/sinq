@@ -21,8 +21,8 @@ __A君：二货，Sinq搞不定这个SQL，哈哈哈！！__
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
         <persistence-unit name="h2" transaction-type="RESOURCE_LOCAL">
             <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-            <class>models.User</class>
-            <class>models.Address</class>
+            <class>demo.models.User</class>
+            <class>demo.models.Address</class>
             <properties>
                 <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
                 <property name="driverClassName" value="org.h2.Driver"/>
@@ -37,7 +37,7 @@ __A君：二货，Sinq搞不定这个SQL，哈哈哈！！__
         <persistence-unit name="postgres" transaction-type="RESOURCE_LOCAL">
             <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
             <mapping-file>META-INF/query-models.xml</mapping-file>
-            <class>models.Teacher</class>
+            <class>demo.models.Teacher</class>
             <class>models.Husband</class>
             <class>models.Student</class>
             <properties>

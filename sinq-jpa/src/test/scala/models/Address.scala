@@ -1,6 +1,5 @@
 package models
 
-import java.math.BigInteger
 import java.util.Date
 import javax.persistence._
 
