@@ -6,28 +6,30 @@ import io.sinq.codegen.table.TableData;
 import io.sinq.codegen.table.TableField;
 
 import javax.persistence.*;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.StringWriter;
+import java.io.FileWriter;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class TableProc {
-    public static void loop(String pkg) {
+    public static void loop(String scanPkg, String outPkg) {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
         cfg.setClassForTemplateLoading(FtlProc.class, "/META-INF/ftl");
         cfg.setDefaultEncoding("UTF-8");
         try {
             Template select = cfg.getTemplate("code.ftl");
-            URL url = Thread.currentThread().getContextClassLoader().getResource(pkg.replace(".", "/"));
+            URL url = Thread.currentThread().getContextClassLoader().getResource(scanPkg.replace(".", "/"));
             File file = new File(new URI(url.toString()));
             String[] names = file.list((f, name) -> name.endsWith(".class"));
             for (int i = 0; i < names.length; i++) {
                 try {
-                    Class c = Class.forName(pkg + "." + names[i].replace(".class", ""));
-                    proc(select, c, pkg);
+                    Class c = Class.forName(scanPkg + "." + names[i].replace(".class", ""));
+                    proc(select, c, outPkg);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -37,13 +39,12 @@ public class TableProc {
         }
     }
 
-    private static void proc(Template select, Class<?> c, String pkg) {
+    private static void proc(Template select, Class<?> c, String outPkg) {
         try {
             if (c.isAnnotationPresent(Table.class)) {
-                StringWriter writer = new StringWriter();
                 Table annotation = c.getAnnotation(Table.class);
                 TableData data = new TableData();
-                data.setPkg(pkg);
+                data.setPkg(outPkg);
                 data.setName(c.getSimpleName().toUpperCase());
                 data.setClassname(c.getName());
                 data.setTablename(annotation.name());
@@ -61,7 +62,7 @@ public class TableProc {
                     } else if (field.isAnnotationPresent(ManyToMany.class)) {
                         if (field.isAnnotationPresent(JoinTable.class)) {
                             JoinTable joinTable = field.getAnnotation(JoinTable.class);
-                            procJoinTable(select, c, joinTable, pkg);
+                            procJoinTable(select, c, joinTable, outPkg);
                         }
                     } else if (field.isAnnotationPresent(Column.class)) {
                         Column column = field.getAnnotation(Column.class);
@@ -78,24 +79,27 @@ public class TableProc {
                 });
                 Map<String, TableData> map = new HashMap<>();
                 map.put("data", data);
-                select.process(map, writer);
-                System.out.println(writer.toString());
-                System.out.println("----------------------------------------------");
+                withWriter(new File(outPkg.replace(".", "/") + "/" + data.getName() + ".scala"), w -> {
+                    try {
+                        select.process(map, w);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void procJoinTable(Template select, Class<?> c, JoinTable joinTable, String pkg) {
+    private static void procJoinTable(Template select, Class<?> c, JoinTable joinTable, String outPkg) {
         try {
             String tableName = joinTable.name();
-            StringWriter writer = new StringWriter();
             Map<String, TableData> map = new HashMap<>();
             TableData data = new TableData();
             data.setName(tableName.toUpperCase());
-            data.setClassname(c.getName());
-            data.setPkg(pkg);
+            data.setClassname(c.getSimpleName().toUpperCase());
+            data.setPkg(outPkg);
             data.setTablename(joinTable.name());
             Arrays.asList(joinTable.joinColumns()).stream().forEach(jc -> {
                 TableField fd = new TableField();
@@ -115,9 +119,16 @@ public class TableProc {
                 data.getFields().add(fd);
             });
             map.put("data", data);
-            select.process(map, writer);
-            System.out.println(writer.toString());
-            System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+            File f = new File(outPkg.replace(".", "/") + "/" + data.getClassname() + ".scala");
+            System.out.println(f.getAbsolutePath());
+            withWriter(f, w -> {
+                try {
+                    select.process(map, w);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -125,5 +136,21 @@ public class TableProc {
 
     private static String findPkType(Class<?> c) {
         return Arrays.asList(c.getDeclaredFields()).stream().filter(f -> f.isAnnotationPresent(Id.class)).findFirst().get().getType().getName();
+    }
+
+    private static void withWriter(File f, Consumer<BufferedWriter> call) {
+        if (!f.getParentFile().exists()) {
+            try {
+                f.getParentFile().mkdirs();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(f, false))) {
+            call.accept(writer);
+            writer.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

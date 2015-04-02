@@ -9,7 +9,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 class CodeGenSuite extends FunSuite with BeforeAndAfter {
   test("init.") {
     val pkg = "models"
-    TableProc.loop(pkg)
+    TableProc.loop(pkg,"gen")
   }
 }
 
