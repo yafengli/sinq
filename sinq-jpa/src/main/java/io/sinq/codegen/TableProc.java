@@ -26,10 +26,12 @@ public class TableProc {
             URL url = Thread.currentThread().getContextClassLoader().getResource(scanPkg.replace(".", "/"));
             File file = new File(new URI(url.toString()));
             String[] names = file.list((f, name) -> name.endsWith(".class"));
+            File baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+
             for (int i = 0; i < names.length; i++) {
                 try {
                     Class c = Class.forName(scanPkg + "." + names[i].replace(".class", ""));
-                    proc(select, c, outPkg);
+                    proc(select, c, outPkg, baseDir);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -39,7 +41,7 @@ public class TableProc {
         }
     }
 
-    private static void proc(Template select, Class<?> c, String outPkg) {
+    private static void proc(Template select, Class<?> c, String outPkg, File baseDir) {
         try {
             if (c.isAnnotationPresent(Table.class)) {
                 Table annotation = c.getAnnotation(Table.class);
@@ -62,7 +64,7 @@ public class TableProc {
                     } else if (field.isAnnotationPresent(ManyToMany.class)) {
                         if (field.isAnnotationPresent(JoinTable.class)) {
                             JoinTable joinTable = field.getAnnotation(JoinTable.class);
-                            procJoinTable(select, c, joinTable, outPkg);
+                            procJoinTable(select, c, joinTable, outPkg, baseDir);
                         }
                     } else if (field.isAnnotationPresent(Column.class)) {
                         Column column = field.getAnnotation(Column.class);
@@ -79,7 +81,9 @@ public class TableProc {
                 });
                 Map<String, TableData> map = new HashMap<>();
                 map.put("data", data);
-                withWriter(new File(outPkg.replace(".", "/") + "/" + data.getName() + ".scala"), w -> {
+                File f = new File(baseDir, outPkg.replace(".", "/") + "/" + data.getName() + ".scala");
+                System.out.println("1:" + f.getAbsolutePath());
+                withWriter(f, w -> {
                     try {
                         select.process(map, w);
                     } catch (Exception e) {
@@ -92,7 +96,7 @@ public class TableProc {
         }
     }
 
-    private static void procJoinTable(Template select, Class<?> c, JoinTable joinTable, String outPkg) {
+    private static void procJoinTable(Template select, Class<?> c, JoinTable joinTable, String outPkg, File baseDir) {
         try {
             String tableName = joinTable.name();
             Map<String, TableData> map = new HashMap<>();
@@ -120,8 +124,8 @@ public class TableProc {
             });
             map.put("data", data);
 
-            File f = new File(outPkg.replace(".", "/") + "/" + data.getClassname() + ".scala");
-            System.out.println(f.getAbsolutePath());
+            File f = new File(baseDir, outPkg.replace(".", "/") + "/" + data.getName() + ".scala");
+            System.out.println("2:" + f.getAbsolutePath());
             withWriter(f, w -> {
                 try {
                     select.process(map, w);
