@@ -21,8 +21,6 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
   )
 )
 
-
-
 lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq_jpa).settings(
   name := "sinq-example",
   organization := "io.sinq",
