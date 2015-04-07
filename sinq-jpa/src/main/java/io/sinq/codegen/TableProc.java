@@ -17,6 +17,19 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class TableProc {
+
+    private static final Map<String, String> TYPE_MAP = new HashMap<>();
+
+    static {
+        TYPE_MAP.put("long", "Long");
+        TYPE_MAP.put("int", "Int");
+        TYPE_MAP.put("boolean", "Boolean");
+        TYPE_MAP.put("java.lang.Long", "Long");
+        TYPE_MAP.put("java.lang.Integer", "Int");
+        TYPE_MAP.put("java.lang.Boolean", "Boolean");
+        TYPE_MAP.put("java.lang.String", "String");
+    }
+
     public static void loop(String scanPkg, String outPkg) {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
         cfg.setClassForTemplateLoading(FtlProc.class, "/META-INF/ftl");
@@ -71,11 +84,11 @@ public class TableProc {
                         if (column.name() != null) {
                             fd.setColumnId(column.name());
                         } else fd.setColumnId(fd.getName());
-                        fd.setTypename(field.getType().getCanonicalName());
+                        fd.setTypename(findType(field.getType().getName()));
                         data.getFields().add(fd);
                     } else {
                         fd.setColumnId(field.getName());
-                        fd.setTypename(field.getType().getCanonicalName());
+                        fd.setTypename(findType(field.getType().getName()));
                         data.getFields().add(fd);
                     }
                 });
@@ -102,7 +115,7 @@ public class TableProc {
             Map<String, TableData> map = new HashMap<>();
             TableData data = new TableData();
             data.setName(tableName.toUpperCase());
-            data.setClassname(c.getSimpleName().toUpperCase());
+            data.setClassname(c.getName());
             data.setPkg(outPkg);
             data.setTablename(joinTable.name());
             Arrays.asList(joinTable.joinColumns()).stream().forEach(jc -> {
@@ -110,7 +123,7 @@ public class TableProc {
                 fd.setColumnId(jc.name());
                 fd.setName(jc.name());
                 //TODO
-                fd.setTypename("java.lang.Long");
+                fd.setTypename("Long");
                 data.getFields().add(fd);
             });
 
@@ -119,7 +132,7 @@ public class TableProc {
                 fd.setColumnId(jc.name());
                 fd.setName(jc.name());
                 //TODO
-                fd.setTypename("java.lang.Long");
+                fd.setTypename("Long");
                 data.getFields().add(fd);
             });
             map.put("data", data);
@@ -139,7 +152,14 @@ public class TableProc {
     }
 
     private static String findPkType(Class<?> c) {
-        return Arrays.asList(c.getDeclaredFields()).stream().filter(f -> f.isAnnotationPresent(Id.class)).findFirst().get().getType().getName();
+        String typeName = Arrays.asList(c.getDeclaredFields()).stream().filter(f -> f.isAnnotationPresent(Id.class)).findFirst().get().getType().getName();
+
+        return findType(typeName);
+    }
+
+    private static String findType(String typeName) {
+        if (TYPE_MAP.containsKey(typeName)) return TYPE_MAP.get(typeName);
+        else return typeName;
     }
 
     private static void withWriter(File f, Consumer<BufferedWriter> call) {
