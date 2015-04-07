@@ -12,7 +12,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
 + SQL字串:
 
-      select u.id from t_user u
+        select u.id from t_user u
                   left join t_address a on u.id = a.u_id
                   where u.id = ?1
                   group by u.id having u.id = ?2
@@ -20,7 +20,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
 + 函数调用:
 
-      select(USER.id).from(USER)
+        select(USER.id).from(USER)
                      .leftJoin(ADDRESS).on(Eq(USER.id,ADDRESS.u_id))
                      .where(Eq(USER.id,1)
                      .groupBy(USER.id).having(Eq(USER.id,1))
@@ -29,9 +29,9 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 ## 指南
 + 调用
 
-      JPA.initPersistenceName(pns:String*)          //初始化数据源
-      val sinq = SinqStream("persistenceName")      //全局Stream Factory
-      sinq.select(USER.id).from(USER)               //调用
+        JPA.initPersistenceName(pns:String*)          //初始化数据源
+        val sinq = SinqStream("persistenceName")      //全局Stream Factory
+        sinq.select(USER.id).from(USER)               //调用
 
 #### 增删改(CRUD)与查询(Query)
 + `insert(Entity)`
@@ -134,32 +134,29 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
       sinq.delete(user)
       sinq.update(user)
 
-+ 条件查询:
++ 非Entity查询:
 
-      sinq.select(classOf[User])
-            .from(USER)
-            .where()
-            .groupBy()
-            .orderBy(ASC)
-            .limit(10)
-            .offset(50)
-            .single()
+        val query = sinq.select(USER.id,USER.name)
+                        .from(USER)
+                        .where(Ge(USER.age,6))
+                        .orderBy(ASC)
+                        .limit(10)
+                        .offset(50)
+                        
++ Entity查询：
+        
+        val query = sinq.select(USER.id,USER.name)
+                        .from(USER)
+                        .where(Ge(USER.age,6))
+                        .orderBy(ASC)
+                        .limit(10)
+                        .offset(50)
 
-      sinq.select(Count(USER.id),Column(USER.id,USER.name),Sum(USER.id)
-            .from(USER)
-            .where()
-            .groupBy()
-            .orderBy(ASC)
-            .limit(10)
-            .offset(50)
-            .single()
-
-+ 结果集:
-
-      val query = sinq.select(USER.id,USER.name)
-                        .from(USER).leftJoin(ADDRESS)
-                        .on(Eq(USER.id,ADDRESS.u_id))
-                        .where(Eq(USER.id,1)
-                        .orderBy(Order(ASC, USER.id)).limit(10, 0)
-
-      query.single()
++ 查询结果：
+                        
+        query.single()
+        query.collect()            
+                
+                
+                
+         
