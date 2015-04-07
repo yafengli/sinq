@@ -1,6 +1,5 @@
 package io.sinq.codegen;
 
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import io.sinq.codegen.table.TableData;
 import io.sinq.codegen.table.TableField;
@@ -15,23 +14,10 @@ import java.util.Map;
 
 import static io.sinq.codegen.TypeDataMap.getTypeMap;
 import static io.sinq.codegen.util.FileWriter.withWriter;
+import static io.sinq.codegen.util.FreeMarkerUtil.baseDir;
+import static io.sinq.codegen.util.FreeMarkerUtil.template;
 
 public class TableProc {
-    private static Template select;
-    private static File baseDir;
-
-    static {
-        try {
-            Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
-            cfg.setClassForTemplateLoading(StreamProc.class, "/ftl");
-            cfg.setDefaultEncoding("UTF-8");
-            select = cfg.getTemplate("code.ftl");
-            baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void loop(String scanPkg, String outPkg) {
         try {
             URL url = Thread.currentThread().getContextClassLoader().getResource(scanPkg.replace(".", "/"));
@@ -52,6 +38,7 @@ public class TableProc {
 
     public static void proc(Class<?> c, String outPkg) {
         try {
+            Template tpl = template("code");
             if (c.isAnnotationPresent(Table.class)) {
                 Table annotation = c.getAnnotation(Table.class);
                 TableData data = new TableData();
@@ -73,7 +60,7 @@ public class TableProc {
                     } else if (field.isAnnotationPresent(ManyToMany.class)) {
                         if (field.isAnnotationPresent(JoinTable.class)) {
                             JoinTable joinTable = field.getAnnotation(JoinTable.class);
-                            procJoinTable(select, c, joinTable, outPkg, baseDir);
+                            procJoinTable(tpl, c, joinTable, outPkg, baseDir());
                         }
                     } else if (field.isAnnotationPresent(Column.class)) {
                         Column column = field.getAnnotation(Column.class);
@@ -90,11 +77,10 @@ public class TableProc {
                 });
                 Map<String, TableData> map = new HashMap<>();
                 map.put("data", data);
-                File f = new File(baseDir, outPkg.replace(".", "/") + "/" + data.getName() + ".scala");
-                System.out.println("1:" + f.getAbsolutePath());
+                File f = new File(baseDir(), outPkg.replace(".", "/") + "/" + data.getName() + ".scala");
                 withWriter(f, w -> {
                     try {
-                        select.process(map, w);
+                        tpl.process(map, w);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -134,7 +120,6 @@ public class TableProc {
             map.put("data", data);
 
             File f = new File(baseDir, outPkg.replace(".", "/") + "/" + data.getName() + ".scala");
-            System.out.println("2:" + f.getAbsolutePath());
             withWriter(f, w -> {
                 try {
                     select.process(map, w);
