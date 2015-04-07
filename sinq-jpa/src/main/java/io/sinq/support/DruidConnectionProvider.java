@@ -1,4 +1,4 @@
-package support;
+package io.sinq.support;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidDataSourceFactory;

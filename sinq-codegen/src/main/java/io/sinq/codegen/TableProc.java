@@ -6,7 +6,6 @@ import io.sinq.codegen.table.TableField;
 
 import javax.persistence.*;
 import java.io.File;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
@@ -58,18 +57,19 @@ public class TableProc {
                         if (column.name() != null) {
                             fd.setColumnId(column.name());
                         } else fd.setColumnId(fd.getName());
-                        fd.setTypename(findType(field.getType().getName()));
+                        fd.setTypename(typeMap(field.getType().getName()));
                         data.getFields().add(fd);
                     } else if (field.isAnnotationPresent(JoinColumn.class)) {
                         JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
-                        fd.setTypename(findPkType(field.getType()));
+                        fd.setTypename(findPkTypeName(field.getType()));
                         fd.setColumnId(joinColumn.name());
                         data.getFields().add(fd);
                     } else if (field.isAnnotationPresent(OneToOne.class)) {
                         mappedBy(field.getAnnotation(OneToOne.class).mappedBy(), field, fd, data);
                     } else if (field.isAnnotationPresent(ManyToOne.class)) {
-                        fd.setTypename(findPkType(field.getType()));
-                        fd.setColumnId(field.getName());
+                        fd.setName(field.getName() + "_" + findPk(field.getType()).getName());
+                        fd.setTypename(findPkTypeName(field.getType()));
+                        fd.setColumnId(fd.getName());
                         data.getFields().add(fd);
                     } else if (field.isAnnotationPresent(OneToMany.class)) {
                         //SKIP
@@ -80,7 +80,7 @@ public class TableProc {
                         }
                     } else {
                         fd.setColumnId(field.getName());
-                        fd.setTypename(findType(field.getType().getName()));
+                        fd.setTypename(typeMap(field.getType().getName()));
                         data.getFields().add(fd);
                     }
                 });
@@ -102,7 +102,7 @@ public class TableProc {
 
     private static void mappedBy(String mappedBy, Field field, TableField fd, TableData data) {
         if (mappedBy == null || mappedBy.trim().length() <= 0) {
-            fd.setTypename(findPkType(field.getType()));
+            fd.setTypename(findPkTypeName(field.getType()));
             fd.setColumnId(field.getName());
             data.getFields().add(fd);
         }
@@ -149,13 +149,15 @@ public class TableProc {
         }
     }
 
-    private static String findPkType(Class<?> c) {
-        String typeName = Arrays.asList(c.getDeclaredFields()).stream().filter(f -> f.isAnnotationPresent(Id.class)).findFirst().get().getType().getName();
-
-        return findType(typeName);
+    private static String findPkTypeName(Class<?> c) {
+        return typeMap(findPk(c).getType().getName());
     }
 
-    private static String findType(String typeName) {
+    private static Field findPk(Class<?> c) {
+        return Arrays.asList(c.getDeclaredFields()).stream().filter(f -> f.isAnnotationPresent(Id.class)).findFirst().get();
+    }
+
+    private static String typeMap(String typeName) {
         if (getTypeMap().containsKey(typeName)) return getTypeMap().get(typeName);
         else return typeName;
     }

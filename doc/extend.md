@@ -24,7 +24,7 @@ __A君：二货，Sinq搞不定这个SQL，哈哈哈！！__
             <class>demo.models.User</class>
             <class>demo.models.Address</class>
             <properties>
-                <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
+                <property name="hibernate.connection.provider_class" value="io.sinq.support.DruidConnectionProvider"/>
                 <property name="driverClassName" value="org.h2.Driver"/>
                 <property name="url" value="jdbc:h2:~/test"/>
                 <property name="username" value="sa"/>
@@ -41,7 +41,7 @@ __A君：二货，Sinq搞不定这个SQL，哈哈哈！！__
             <class>models.Husband</class>
             <class>models.Student</class>
             <properties>
-                <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
+                <property name="hibernate.connection.provider_class" value="io.sinq.support.DruidConnectionProvider"/>
                 <property name="driverClassName" value="org.postgres.Driver"/>
                 <property name="url" value="jdbc:postgres://localhost:5432/test"/>
                 <property name="username" value="postgres"/>

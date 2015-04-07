@@ -11,6 +11,7 @@ import models.{User, Address}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import io.sinq.func._
 
 @RunWith(classOf[JUnitRunner])
 class SinqSuite extends FunSuite with BeforeAndAfter {
@@ -60,6 +61,9 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
     sinq.select(USER.id).from(USER).collect().foreach(t => println(s"id:${t}"))
     sinq.select(USER.id, USER.name, USER.age).from(USER).collect().foreach(t => println(s"id:${t._1} name:${t._2} age:${t._3}"))
     sinq.from(USER).collect().foreach(u => println(s"id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}"))
+    println("##############Function#################")
+    sinq.select(Count(USER.id)).from(USER).single().foreach(c => println(s"count:${c}"))
+    sinq.select(Sum(USER.age)).from(USER).single().foreach(s => println(s"sum:${s}"))
   }
 }
 

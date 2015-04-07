@@ -10,7 +10,7 @@
         <class>models.Husband</class>
         <class>models.Student</class>
         <properties>
-            <property name="hibernate.connection.provider_class" value="support.DruidConnectionProvider"/>
+            <property name="hibernate.connection.provider_class" value="io.sinq.support.DruidConnectionProvider"/>
             <property name="driverClassName" value="org.h2.Driver"/>
             <property name="url" value="jdbc:h2:mem:test"/>
             <property name="username" value="sa"/>
