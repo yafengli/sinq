@@ -1,6 +1,7 @@
 package test
 
-import io.sinq.codegen.TableProc
+import io.sinq.codegen.{StreamProc, TableProc}
+import io.sinq.codegen.stream.StreamData
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -12,6 +13,10 @@ class CodeGenSuite extends FunSuite with BeforeAndAfter {
     println(c.getName + "|" + c.getSimpleName + "|" + c.getCanonicalName)
     val pkg = "models"
     TableProc.loop(pkg, "gen")
+  }
+
+  test("stream") {
+    StreamProc.proc()
   }
 }
 

@@ -6,45 +6,41 @@ import io.sinq.codegen.table.TableData;
 import io.sinq.codegen.table.TableField;
 
 import javax.persistence.*;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+
+import static io.sinq.codegen.TypeDataMap.getTypeMap;
+import static io.sinq.codegen.util.FileWriter.withWriter;
 
 public class TableProc {
-
-    private static final Map<String, String> TYPE_MAP = new HashMap<>();
+    private static Template select;
+    private static File baseDir;
 
     static {
-        TYPE_MAP.put("long", "Long");
-        TYPE_MAP.put("int", "Int");
-        TYPE_MAP.put("boolean", "Boolean");
-        TYPE_MAP.put("java.lang.Long", "Long");
-        TYPE_MAP.put("java.lang.Integer", "Int");
-        TYPE_MAP.put("java.lang.Boolean", "Boolean");
-        TYPE_MAP.put("java.lang.String", "String");
+        try {
+            Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
+            cfg.setClassForTemplateLoading(StreamProc.class, "/ftl");
+            cfg.setDefaultEncoding("UTF-8");
+            select = cfg.getTemplate("code.ftl");
+            baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void loop(String scanPkg, String outPkg) {
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
-        cfg.setClassForTemplateLoading(FtlProc.class, "/META-INF/ftl");
-        cfg.setDefaultEncoding("UTF-8");
         try {
-            Template select = cfg.getTemplate("code.ftl");
             URL url = Thread.currentThread().getContextClassLoader().getResource(scanPkg.replace(".", "/"));
             File file = new File(new URI(url.toString()));
             String[] names = file.list((f, name) -> name.endsWith(".class"));
-            File baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
-
             for (int i = 0; i < names.length; i++) {
                 try {
                     Class c = Class.forName(scanPkg + "." + names[i].replace(".class", ""));
-                    proc(select, c, outPkg, baseDir);
+                    proc(c, outPkg);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -54,7 +50,7 @@ public class TableProc {
         }
     }
 
-    private static void proc(Template select, Class<?> c, String outPkg, File baseDir) {
+    public static void proc(Class<?> c, String outPkg) {
         try {
             if (c.isAnnotationPresent(Table.class)) {
                 Table annotation = c.getAnnotation(Table.class);
@@ -158,23 +154,7 @@ public class TableProc {
     }
 
     private static String findType(String typeName) {
-        if (TYPE_MAP.containsKey(typeName)) return TYPE_MAP.get(typeName);
+        if (getTypeMap().containsKey(typeName)) return getTypeMap().get(typeName);
         else return typeName;
-    }
-
-    private static void withWriter(File f, Consumer<BufferedWriter> call) {
-        if (!f.getParentFile().exists()) {
-            try {
-                f.getParentFile().mkdirs();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(f, false))) {
-            call.accept(writer);
-            writer.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -12,7 +12,6 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
     "org.hibernate" % "hibernate-jpamodelgen" % $("hibernate"),
     "ch.qos.logback" % "logback-classic" % $("logback"),
     "com.alibaba" % "druid" % $("druid"),
-    "org.freemarker" % "freemarker" % "2.3.22",
     "org.hibernate" % "hibernate-c3p0" % $("hibernate") % "test",
     "com.h2database" % "h2" % $("h2") % "test",
     "org.postgresql" % "postgresql" % $("postgresql") % "test",
@@ -21,15 +20,26 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
   )
 )
 
-lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq_jpa).settings(
+lazy val sinq_codegen = project.in(file("sinq-codegen")).dependsOn(sinq_jpa).settings(
+  name := "sinq-io.sinq.codegen",
+  organization := "io.sinq",
+  version := $("prod"),
+  scalaVersion := $("scala"),
+  libraryDependencies ++= Seq(
+    "org.freemarker" % "freemarker" % "2.3.22",
+    "junit" % "junit" % $("junit") % "test",
+    "org.scalatest" %% "scalatest" % $("scalatest") % "test"
+  )
+)
+
+lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq_jpa,sinq_codegen).settings(
   name := "sinq-example",
   organization := "io.sinq",
   version := $("prod"),
   scalaVersion := $("scala"),
-  packageOptions in(Compile, packageBin) += Package.ManifestAttributes("Build" -> "HAHAHAAH"),
-  packageOptions in(Compile, packageBin) += Package.ManifestAttributes("MainClass" -> "test.FUckyou"),
+  packageOptions in(Compile, packageBin) += Package.ManifestAttributes("Build" -> "WaHaYaWaHaYaWaHaHa"),
+  packageOptions in(Compile, packageBin) += Package.ManifestAttributes("MainClass" -> "test.MainAppClass"),
     libraryDependencies ++= Seq(
-    "org.jinq" % "jinq-jpa-scala" % $("jinq"), //jinq
     "com.google.guava" % "guava" % $("guava"),
     "com.alibaba" % "druid" % $("druid") % "test",
     "com.h2database" % "h2" % $("h2") % "test",

@@ -6,25 +6,31 @@ import io.sinq.codegen.stream.MC;
 import io.sinq.codegen.stream.StreamData;
 import io.sinq.codegen.stream.TS;
 
-import java.io.StringWriter;
+import java.io.File;
 import java.util.HashMap;
 
-public class FtlProc {
-    public static void main(String[] args) {
+import static io.sinq.codegen.util.FileWriter.withWriter;
+
+public class StreamProc {
+    public static void proc() {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
-        cfg.setClassForTemplateLoading(FtlProc.class, "/META-INF/ftl");
+        cfg.setClassForTemplateLoading(StreamProc.class, "/ftl");
         cfg.setDefaultEncoding("UTF-8");
 
         try {
-            Template select = cfg.getTemplate("select.ftl");
-            StringWriter writer = new StringWriter();
+            Template select = cfg.getTemplate("stream.ftl");
             HashMap<String, StreamData> map = new HashMap<>();
             map.put("data", store(22));
-            System.out.println("map:" + map);
-            select.process(map, writer);
-            System.out.println("###############");
-            System.out.println(writer.toString());
-            System.out.println("###############");
+
+            File baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+            File f = new File(baseDir, "io/sinq/SinqStream.scala");
+            withWriter(f, w -> {
+                try {
+                    select.process(map, w);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
