@@ -16,7 +16,8 @@ public class FreeMarkerUtil {
             cfg.setClassForTemplateLoading(FreeMarkerUtil.class, "/META-INF/ftl");
             cfg.setDefaultEncoding("UTF-8");
 
-            baseDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+            File classDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+            baseDir = new File(classDir.getParentFile(), "generate");
         } catch (Exception e) {
             e.printStackTrace();
         }
