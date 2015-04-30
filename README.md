@@ -4,7 +4,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
 目标
 ====
->1. 遵循__JPA__规范
+1. 遵循__JPA__规范
 2. 使用[__SQL__](http://www.w3school.com.cn/sql/)
 3. 支持[__Scala__](http://www.scala-lang.ort)
 4. 提供良好直观的__Functional Chain__编程调用
@@ -103,7 +103,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
 
 + 创建封装类：
 
-      object USER extends Table("t_user","u") {
+      object USER extends Table("t_user") {
           val id = Column(this,"id")
           val name = Column(this,"name")
           val address = Column(this,"address")
@@ -112,7 +112,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
           def * = Column(this,"id","name","address","age") //or Seq(id,name,address,age)
       }
 
-      object ADDRESS extends Table("t_address", "a") {
+      object ADDRESS extends Table("t_address") {
           def id = Column(this, "id")
           def name = Column(this, "name")
           def num = Column(this, "num")
@@ -145,8 +145,7 @@ Sinq is a very simple scalable Object/Relation Mapping library for Java Persiste
                         
 + Entity查询：
         
-        val query = sinq.select(USER.id,USER.name)
-                        .from(USER)
+        val query = sinq.from(USER)
                         .where(Ge(USER.age,6))
                         .orderBy(ASC)
                         .limit(10)
