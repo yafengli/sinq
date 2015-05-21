@@ -31,7 +31,7 @@
 ## Single(单对象查询)
 + JPA Entity结果集：
 
-        sinq.select().from(USER).where(Eq(User.id,1)).single(classOf[User]) match {
+        sinq.from(USER).where(Eq(User.id,1)).single(classOf[User]) match {
           case Some(u) => println(s"id:${u.id} name:${u.name}")
           case None => println("No Entity found.")
         }
@@ -50,7 +50,7 @@
 ## Collect(多对象查询)
 + JPA Entity结果集：
 
-        sinq.select().from(USER).where(Ge(User.id,1)).collect(classOf[User]).foreach { u => println(s"id:${u.id} name:${u.name}") }
+        sinq.from(USER).where(Ge(User.id,1)).collect(classOf[User]).foreach { u => println(s"id:${u.id} name:${u.name}") }
 
 + 非JPA Entity结果集：
 

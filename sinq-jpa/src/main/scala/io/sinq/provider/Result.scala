@@ -2,7 +2,7 @@ package io.sinq.provider
 
 import io.sinq.func._
 
-trait Result[T] extends InfoProvider {
+trait Result[T] extends Aggregation {
 
   def orderBy(order: Order): Result[T]
 

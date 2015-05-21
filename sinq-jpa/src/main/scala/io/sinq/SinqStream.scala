@@ -1,35 +1,35 @@
 package io.sinq
 
 import io.sinq.provider._
-import io.sinq.provider.jpa.{WhereImpl, FromImpl}
+import io.sinq.provider.jpa.{JpaAdapter, WhereImpl, FromImpl}
 
 /**
  * NOT EDIT,The code generate
  * @param persistenceName
  */
-case class SinqStream(val persistenceName: String = "default") extends JPAProvider {
+case class SinqStream(val persistenceName: String = "default") extends JpaAdapter {
 
   def from[T](t: Table[T]): Where[T] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.fromTables += t
     WhereImpl(info)
   }
 
   def select[T1](c1: Column[T1]): From[T1] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     FromImpl[T1](info)
   }
 
   def select[T1, T2](c1: Column[T1], c2: Column[T2]): From[(T1, T2)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     FromImpl[(T1, T2)](info)
   }
 
   def select[T1, T2, T3](c1: Column[T1], c2: Column[T2], c3: Column[T3]): From[(T1, T2, T3)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -37,7 +37,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4]): From[(T1, T2, T3, T4)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -46,7 +46,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5]): From[(T1, T2, T3, T4, T5)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -56,7 +56,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6]): From[(T1, T2, T3, T4, T5, T6)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -67,7 +67,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7]): From[(T1, T2, T3, T4, T5, T6, T7)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -79,7 +79,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8]): From[(T1, T2, T3, T4, T5, T6, T7, T8)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -92,7 +92,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -106,7 +106,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -121,7 +121,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -137,7 +137,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -154,7 +154,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -172,7 +172,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -191,7 +191,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14], c15: Column[T15]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -211,7 +211,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14], c15: Column[T15], c16: Column[T16]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -232,7 +232,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14], c15: Column[T15], c16: Column[T16], c17: Column[T17]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -254,7 +254,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14], c15: Column[T15], c16: Column[T16], c17: Column[T17], c18: Column[T18]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -277,7 +277,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14], c15: Column[T15], c16: Column[T16], c17: Column[T17], c18: Column[T18], c19: Column[T19]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -301,7 +301,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14], c15: Column[T15], c16: Column[T16], c17: Column[T17], c18: Column[T18], c19: Column[T19], c20: Column[T20]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -326,7 +326,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14], c15: Column[T15], c16: Column[T16], c17: Column[T17], c18: Column[T18], c19: Column[T19], c20: Column[T20], c21: Column[T21]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3
@@ -352,7 +352,7 @@ case class SinqStream(val persistenceName: String = "default") extends JPAProvid
   }
 
   def select[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22](c1: Column[T1], c2: Column[T2], c3: Column[T3], c4: Column[T4], c5: Column[T5], c6: Column[T6], c7: Column[T7], c8: Column[T8], c9: Column[T9], c10: Column[T10], c11: Column[T11], c12: Column[T12], c13: Column[T13], c14: Column[T14], c15: Column[T15], c16: Column[T16], c17: Column[T17], c18: Column[T18], c19: Column[T19], c20: Column[T20], c21: Column[T21], c22: Column[T22]): From[(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22)] = {
-    val info = QueryInfo(this)
+    val info = QueryLink(this)
     info.selectFields += c1
     info.selectFields += c2
     info.selectFields += c3

@@ -8,25 +8,25 @@ import scala.collection.JavaConversions._
 
 abstract class ResultImpl[T] extends Result[T] {
   override def orderBy(order: Order): Result[T] = {
-    info.setOrder(order)
+    link.setOrder(order)
     this
   }
 
   override def limit(limit: Int, offset: Int): Result[T] = {
-    info.setLimit(limit, offset)
+    link.setLimit(limit, offset)
     this
   }
 
-  override def sql(): String = SqlBuilder(info).build()
+  override def sql(): String = SqlBuilder(link).build()
 
   override def params(): List[_] = {
     val cb = ConditionBuilder()
-    cb.params(info.whereCondition).toList
+    cb.params(link.whereCondition).toList
   }
 
-  override def single(): Option[T] = info.stream.withEntityManager[T] {
+  override def single(): Option[T] = link.stream.withEntityManager[T] {
     em =>
-      val query = if (info.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), info.fromTables.head.getType)
+      val query = if (query.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), query.fromTables.head.getType)
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       val r = result(query.getResultList.toList).headOption
@@ -66,9 +66,9 @@ abstract class ResultImpl[T] extends Result[T] {
     }
   }
 
-  override def collect(): List[T] = info.stream.withEntityManager[List[T]] {
+  override def collect(): List[T] = link.stream.withEntityManager[List[T]] {
     em =>
-      val query = if (info.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), info.fromTables.head.getType)
+      val query = if (query.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), query.fromTables.head.getType)
       (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
 
       result(query.getResultList.toList)

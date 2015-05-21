@@ -1,7 +1,5 @@
 package io.sinq.codegen;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 import io.sinq.codegen.stream.MC;
 import io.sinq.codegen.stream.StreamData;
 import io.sinq.codegen.stream.TS;
@@ -10,7 +8,8 @@ import java.io.File;
 import java.util.HashMap;
 
 import static io.sinq.codegen.util.FileWriter.withWriter;
-import static io.sinq.codegen.util.FreeMarkerUtil.*;
+import static io.sinq.codegen.util.FreeMarkerUtil.baseDir;
+import static io.sinq.codegen.util.FreeMarkerUtil.template;
 
 public class StreamProc {
 

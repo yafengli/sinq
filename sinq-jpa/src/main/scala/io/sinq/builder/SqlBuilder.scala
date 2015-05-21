@@ -8,7 +8,7 @@ trait Builder {
   def build(): String
 }
 
-case class SqlBuilder(val info: QueryInfo) extends Builder {
+case class SqlBuilder(val info: QueryLink) extends Builder {
   override def build(): String = {
     val t_map = aliasMap()
     val cb = ConditionBuilder(t_map)

@@ -1,11 +1,11 @@
 package ${data.pkg}
 
 import io.sinq.provider._
-import io.sinq.provider.jpa.{WhereImpl, FromImpl}
+import io.sinq.provider.jpa.{JpaAdapter, WhereImpl, FromImpl}
 /**
 * NOT EDIT,The code generate
 */
-case class SinqStream(val persistenceName: String = "default") extends JPAProvider {
+case class SinqStream(val persistenceName: String = "default") extends JpaAdapter {
 
     def from[T](t: Table[T]): Where[T] = {
         val info = QueryInfo(this)
