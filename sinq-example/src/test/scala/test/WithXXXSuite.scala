@@ -1,6 +1,7 @@
 package test
 
 import io.sinq.SinqStream
+import models.Teacher
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.collection.JavaConversions._
@@ -24,6 +25,18 @@ class WithXXXSuite extends FunSuite with BeforeAndAfter {
         query.setParameter(5, "YaFengLi:3")
         query.setParameter(6, "YaFengLi:4")
         query.getResultList.toList
+    }
+  }
+  test("withTransaction") {
+    val sinq = SinqStream("h2")
+    val list = sinq.withTransaction {
+      em =>
+        val teacher = Teacher("YaFengLi", 68, "NanJing")
+        println(s"id:${teacher.id}")
+        sinq.insert(teacher)
+        println(s"id:${teacher.id}")
+
+        if (teacher.id != -999) sinq.delete(teacher)
     }
   }
 }

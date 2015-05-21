@@ -1,6 +1,6 @@
 package test
 
-import init.STUDENT
+import gen.STUDENT
 import io.sinq.SinqStream
 import io.sinq.expression._
 import io.sinq.func.Count
@@ -10,8 +10,6 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class GroupBySuite extends FunSuite with BeforeAndAfter {
-  lazy val sinq = SinqStream("h2")
-
   before {
     H2DB.init()
   }
@@ -19,6 +17,7 @@ class GroupBySuite extends FunSuite with BeforeAndAfter {
     H2DB.latch.countDown()
   }
   test("Group By.") {
+    val sinq = SinqStream("h2")
     val condition = Between(STUDENT.id, 1, 12).or(Ge(STUDENT.age, 15L))
     (0 to 5).foreach {
       i =>

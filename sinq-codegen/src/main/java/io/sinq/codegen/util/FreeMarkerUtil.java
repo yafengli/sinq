@@ -17,7 +17,7 @@ public class FreeMarkerUtil {
             cfg.setDefaultEncoding("UTF-8");
 
             File classDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
-            baseDir = new File(classDir.getParentFile(), "generate");
+            baseDir = new File(classDir.getParentFile().getParentFile(), "generate-source");
         } catch (Exception e) {
             e.printStackTrace();
         }

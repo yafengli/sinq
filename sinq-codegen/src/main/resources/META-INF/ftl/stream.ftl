@@ -8,14 +8,14 @@ import io.sinq.provider.jpa.{JpaAdapter, WhereImpl, FromImpl}
 case class SinqStream(val persistenceName: String = "default") extends JpaAdapter {
 
     def from[T](t: Table[T]): Where[T] = {
-        val info = QueryInfo(this)
+        val info = QueryLink(this)
         info.fromTables += t
         WhereImpl(info)
     }
 
     <#list data.ts as s>
     def select[${s.tpe}](${s.cols}): From[(${s.tpe})] = {
-        val info = QueryInfo(this)
+        val info = QueryLink(this)
         <#list s.cs as c>
         info.selectFields += ${c.name}
         </#list>

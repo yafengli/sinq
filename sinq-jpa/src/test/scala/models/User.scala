@@ -17,8 +17,8 @@ case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
   var address: Address = _
 
 
-  @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
-  var teachers: util.Set[Teacher] = new util.HashSet[Teacher]()
+  @ManyToMany(cascade = Array(CascadeType.REMOVE), fetch = FetchType.EAGER, mappedBy = "users")
+  var families: util.Set[Family] = new util.HashSet[Family]()
 
   def this() = this(null, -1)
 

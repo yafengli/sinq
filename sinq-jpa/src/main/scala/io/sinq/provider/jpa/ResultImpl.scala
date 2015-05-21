@@ -1,8 +1,8 @@
 package io.sinq.provider.jpa
 
 import io.sinq.builder.{ConditionBuilder, SqlBuilder}
-import io.sinq.provider.Result
 import io.sinq.func.Order
+import io.sinq.provider.Result
 
 import scala.collection.JavaConversions._
 
@@ -26,10 +26,10 @@ abstract class ResultImpl[T] extends Result[T] {
 
   override def single(): Option[T] = link.stream.withEntityManager[T] {
     em =>
-      val query = if (query.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), query.fromTables.head.getType)
-      (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
+      val q = if (link.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), link.fromTables.head.getType)
+      (1 to params().length).foreach(i => q.setParameter(i, params()(i - 1)))
 
-      val r = result(query.getResultList.toList).headOption
+      val r = result(q.getResultList.toList).headOption
       (if (r.isEmpty) null else r.get).asInstanceOf[T]
   }
 
@@ -68,9 +68,9 @@ abstract class ResultImpl[T] extends Result[T] {
 
   override def collect(): List[T] = link.stream.withEntityManager[List[T]] {
     em =>
-      val query = if (query.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), query.fromTables.head.getType)
-      (1 to params().length).foreach(i => query.setParameter(i, params()(i - 1)))
+      val q = if (link.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), link.fromTables.head.getType)
+      (1 to params().length).foreach(i => q.setParameter(i, params()(i - 1)))
 
-      result(query.getResultList.toList)
+      result(q.getResultList.toList)
   } getOrElse Nil
 }

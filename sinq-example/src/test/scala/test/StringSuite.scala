@@ -1,6 +1,6 @@
 package test
 
-import init.{STUDENT, TEACHER}
+import gen.{STUDENT, TEACHER}
 import io.sinq.SinqStream
 import io.sinq.builder.ConditionBuilder
 import io.sinq.expression.{Eq, Ge, In, Le}
@@ -20,7 +20,7 @@ class StringSuite extends FunSuite with BeforeAndAfter {
     println("sql:" + cb.translate(condition))
     println("params:" + cb.params(condition))
 
-    val query = sinq.from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher_id, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+    val query = sinq.from(STUDENT).join(TEACHER).on(Eq(STUDENT.teacher, TEACHER.id)).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
 
     println("sql:" + query.sql())
     println("params:" + query.params())

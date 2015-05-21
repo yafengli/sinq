@@ -13,21 +13,32 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.sinq.codegen.TypeDataMap.getTypeMap;
 import static io.sinq.codegen.util.FileWriter.withWriter;
 import static io.sinq.codegen.util.FreeMarkerUtil.baseDir;
 import static io.sinq.codegen.util.FreeMarkerUtil.template;
 
 public class TableProc {
-    public static void loop(String scanPkg, String outPkg) {
+
+    private String outPkg;
+    private String scanPkg;
+    private Map<String, String> typeDataMap;
+
+    public TableProc(String scanPkg, String outPkg, Map<String, String> typeDataMap) {
+        this.scanPkg = scanPkg;
+        this.outPkg = outPkg;
+        this.typeDataMap = typeDataMap;
+    }
+
+    public void proc() {
         try {
             URL url = Thread.currentThread().getContextClassLoader().getResource(scanPkg.replace(".", "/"));
+            System.out.println("url:" + url);
             File file = new File(new URI(url.toString()));
             String[] names = file.list((f, name) -> name.endsWith(".class"));
             for (int i = 0; i < names.length; i++) {
                 try {
                     Class c = Class.forName(scanPkg + "." + names[i].replace(".class", ""));
-                    proc(c, outPkg);
+                    loop(c);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -37,7 +48,7 @@ public class TableProc {
         }
     }
 
-    public static void proc(Class<?> c, String outPkg) {
+    public void loop(Class<?> c) {
         try {
             Template tpl = template("code");
             if (c.isAnnotationPresent(Table.class)) {
@@ -100,7 +111,7 @@ public class TableProc {
         }
     }
 
-    private static void mappedBy(String mappedBy, Field field, TableField fd, TableData data) {
+    private void mappedBy(String mappedBy, Field field, TableField fd, TableData data) {
         if (mappedBy == null || mappedBy.trim().length() <= 0) {
             fd.setTypename(findPkTypeName(field.getType()));
             fd.setColumnId(field.getName());
@@ -108,7 +119,7 @@ public class TableProc {
         }
     }
 
-    private static void procJoinTable(Template select, Class<?> c, JoinTable joinTable, String outPkg, File baseDir) {
+    private void procJoinTable(Template select, Class<?> c, JoinTable joinTable, String outPkg, File baseDir) {
         try {
             String tableName = joinTable.name();
             Map<String, TableData> map = new HashMap<>();
@@ -149,7 +160,7 @@ public class TableProc {
         }
     }
 
-    private static String findPkTypeName(Class<?> c) {
+    private String findPkTypeName(Class<?> c) {
         return typeMap(findPk(c).getType().getName());
     }
 
@@ -157,8 +168,8 @@ public class TableProc {
         return Arrays.asList(c.getDeclaredFields()).stream().filter(f -> f.isAnnotationPresent(Id.class)).findFirst().get();
     }
 
-    private static String typeMap(String typeName) {
-        if (getTypeMap().containsKey(typeName)) return getTypeMap().get(typeName);
+    private String typeMap(String typeName) {
+        if (typeDataMap.containsKey(typeName)) return typeDataMap.get(typeName);
         else return typeName;
     }
 }

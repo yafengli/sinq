@@ -26,7 +26,7 @@ lazy val sinq_codegen = project.in(file("sinq-codegen")).dependsOn(sinq_jpa).set
   version := $("prod"),
   scalaVersion := $("scala"),
   libraryDependencies ++= Seq(
-    "org.freemarker" % "freemarker" % "2.3.22",
+    "org.freemarker" % "freemarker" % $("freemarker"),
     "junit" % "junit" % $("junit") % "test",
     "org.scalatest" %% "scalatest" % $("scalatest") % "test"
   )

@@ -1,6 +1,6 @@
 package test
 
-import init.STUDENT
+import gen.STUDENT
 import io.sinq.SinqStream
 import io.sinq.expression._
 import io.sinq.func.{ASC, Order}

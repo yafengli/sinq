@@ -1,16 +1,16 @@
 package test
 
+import gen.STUDENT
 import init.ImplicitsSinq.sinq2Count
-import init.STUDENT
 import io.sinq.SinqStream
-import models.{Teacher, Husband, Student}
+import models.{Husband, Student, Teacher}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class DBInitSuite extends FunSuite with BeforeAndAfter {
-  lazy val sinq = SinqStream("h2")
+
   before {
     H2DB.init()
   }
@@ -19,6 +19,7 @@ class DBInitSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("DB Init.") {
+    lazy val sinq = SinqStream("h2")
     val count = sinq.count(classOf[Student])
     if (count <= 10) {
       val teacher = Teacher("习大大", 999, "BeiJing")
