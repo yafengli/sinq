@@ -5,5 +5,5 @@ logs/
 *.iml
 .idea*
 project/project
-/.cache
+.cache
 projectFilesBackup*/
