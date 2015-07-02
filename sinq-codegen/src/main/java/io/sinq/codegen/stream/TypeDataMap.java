@@ -7,11 +7,11 @@ public class TypeDataMap {
     private final static Map<String, String> TypeMap = new HashMap<>();
 
     static {
-        TypeMap.put("long", "Long");
         TypeMap.put("int", "Int");
-        TypeMap.put("boolean", "Boolean");
-        TypeMap.put("java.lang.Long", "Long");
         TypeMap.put("java.lang.Integer", "Int");
+        TypeMap.put("long", "java.math.BigInteger");
+        TypeMap.put("java.lang.Long", "java.math.BigInteger");
+        TypeMap.put("boolean", "Boolean");
         TypeMap.put("java.lang.Boolean", "Boolean");
         TypeMap.put("java.lang.String", "String");
     }

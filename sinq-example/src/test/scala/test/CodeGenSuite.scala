@@ -13,7 +13,7 @@ class CodeGenSuite extends FunSuite with BeforeAndAfter {
 
   test("CodeGen.") {
     println("##Scan [models.*]##")
-    new TableProc("models", "gen", TypeDataMap.addAll(Map("long" -> "BigInt", "java.lang.Long" -> "BigInt"))).proc()
+    new TableProc("models", "gen", TypeDataMap.factory()).proc()
   }
 }
 

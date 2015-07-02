@@ -11,7 +11,8 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
     "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),
     "org.hibernate" % "hibernate-jpamodelgen" % $("hibernate"),
     "ch.qos.logback" % "logback-classic" % $("logback"),
-    "com.alibaba" % "druid" % $("druid"),
+    "com.zaxxer" % "HikariCP" % $("HikariCP") % "test",
+    "com.alibaba" % "druid" % $("druid") % "test",
     "org.hibernate" % "hibernate-c3p0" % $("hibernate") % "test",
     "com.h2database" % "h2" % $("h2") % "test",
     "org.postgresql" % "postgresql" % $("postgresql") % "test",
@@ -41,6 +42,7 @@ lazy val sinq_example = project.in(file("sinq-example")).dependsOn(sinq_jpa,sinq
   packageOptions in(Compile, packageBin) += Package.ManifestAttributes("MainClass" -> "test.MainAppClass"),
     libraryDependencies ++= Seq(
     "com.google.guava" % "guava" % $("guava"),
+    "com.zaxxer" % "HikariCP" % $("HikariCP") % "test",
     "com.alibaba" % "druid" % $("druid") % "test",
     "com.h2database" % "h2" % $("h2") % "test",
     "org.postgresql" % "postgresql" % $("postgresql") % "test",
