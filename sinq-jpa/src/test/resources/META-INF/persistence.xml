@@ -11,8 +11,8 @@
             <!-- hikaricp -->
             <property name="hibernate.hikari.maximumPoolSize" value="5"/>
             <property name="hibernate.hikari.idleTimeout" value="30000"/>
-            <property name="hibernate.hikari.driverClassName" value="org.h2.Driver"/>
-            <property name="hibernate.hikari.jdbcUrl" value="jdbc:h2:mem:test"/>
+            <property name="hibernate.hikari.dataSourceClassName" value="org.h2.jdbcx.JdbcDataSource"/>
+            <property name="hibernate.hikari.dataSource.url" value="jdbc:h2:mem:test"/>
             <property name="hibernate.hikari.dataSource.user" value="sa"/>
             <property name="hibernate.hikari.dataSource.password" value=""/>
             <!-- hibernate -->
@@ -29,8 +29,8 @@
             <!-- hikaricp -->
             <property name="hibernate.hikari.maximumPoolSize" value="5"/>
             <property name="hibernate.hikari.idleTimeout" value="30000"/>
-            <property name="hibernate.hikari.driverClassName" value="org.postgresql.Driver"/>
-            <property name="hibernate.hikari.jdbcUrl" value="jdbc:postgresql://127.0.0.1:5432/test"/>
+            <property name="hibernate.hikari.dataSourceClassName" value="org.postgresql.ds.PGSimpleDataSource"/>
+            <property name="hibernate.hikari.dataSource.url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
             <property name="hibernate.hikari.dataSource.user" value="postgres"/>
             <property name="hibernate.hikari.dataSource.password" value=""/>
             <!-- hibernate -->
