@@ -132,7 +132,11 @@ public class TableProc {
                 TableField fd = new TableField();
                 fd.setColumnId(jc.name());
                 fd.setName(jc.name());
-                //TODO
+                //TODO own id type
+                if (jc.referencedColumnName() != null) {
+
+                } else {
+                }
                 fd.setTypename("Long");
                 data.getFields().add(fd);
             });
@@ -141,7 +145,12 @@ public class TableProc {
                 TableField fd = new TableField();
                 fd.setColumnId(jc.name());
                 fd.setName(jc.name());
-                //TODO
+                //TODO map id type
+                if (jc.referencedColumnName() != null) {
+
+                } else {
+
+                }
                 fd.setTypename("Long");
                 data.getFields().add(fd);
             });

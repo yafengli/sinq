@@ -5,7 +5,6 @@ import io.sinq.expression.Condition
 
 import scala.collection.mutable
 
-
 case class ConditionBuilder(val tableMap: Map[Table[_], String] = Map()) {
 
   import Condition._

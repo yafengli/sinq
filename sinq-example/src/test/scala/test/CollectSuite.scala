@@ -32,12 +32,10 @@ class CollectSuite extends FunSuite with BeforeAndAfter {
           case (id, name, age) => println(s">id:${id} name:${name} age:${age}")
           case _ => println("Error")
         }
-        println("#########################")
         sinq.select(STUDENT.id, STUDENT.name).from(STUDENT).where(Ge(STUDENT.id, 1)).collect().foreach {
           case (id, name) => println(s"id:${id} name:${name}")
           case _ => println("Error")
         }
-        println("#########################")
         sinq.select(STUDENT.id).from(STUDENT).where(Ge(STUDENT.id, 1)).collect().foreach { id => println(s"id:${id}") }
     }
   }

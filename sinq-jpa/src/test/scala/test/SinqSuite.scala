@@ -39,7 +39,6 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
     val q1 = sinq.select(USER.id, USER.name, ADDRESS.name, ADDRESS.createDate, ADDRESS.num, ADDRESS.u_id).from(USER).join(ADDRESS).on(Eq(USER.id, ADDRESS.u_id)).where(condition).orderBy(Order(ASC, USER.id)).limit(10, 0)
     println("sql:" + q1.sql())
     println("params:" + q1.params())
-    println("##############Single#################")
     q1.single() match {
       case Some((id, uname, aname, cd, num, u_id)) => println(s"id:${id} name:${uname}:${aname} create:${cd.toString} num:${num} u_id:${u_id}")
       case None => println("None")
@@ -57,11 +56,9 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
       case Some(u) => println(s"id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}")
       case None => println("None")
     }
-    println("##############Collect#################")
     sinq.select(USER.id).from(USER).collect().foreach(t => println(s"id:${t}"))
     sinq.select(USER.id, USER.name, USER.age).from(USER).collect().foreach(t => println(s"id:${t._1} name:${t._2} age:${t._3}"))
     sinq.from(USER).collect().foreach(u => println(s"id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}"))
-    println("##############Function#################")
     sinq.select(Count(USER.id)).from(USER).single().foreach(c => println(s"count:${c}"))
     sinq.select(Sum(USER.age)).from(USER).single().foreach(s => println(s"sum:${s}"))
   }

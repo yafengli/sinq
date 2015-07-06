@@ -11,7 +11,7 @@ class CodeGenSuite extends FunSuite with BeforeAndAfter {
   test("init.") {
     val c = classOf[TableProc]
     println(c.getName + "|" + c.getSimpleName + "|" + c.getCanonicalName)
-    val tableProc = new TableProc("models", "gen",TypeDataMap.factory)
+    val tableProc = new TableProc("models", "gen", TypeDataMap.HIBERNATE)
     tableProc.proc()
   }
 
