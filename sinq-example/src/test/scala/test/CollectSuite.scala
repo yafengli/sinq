@@ -36,7 +36,7 @@ class CollectSuite extends FunSuite with BeforeAndAfter {
     }
     (0 until 1).foreach {
       i =>
-        val q1 = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+        val q1 = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(20, 0)
         println("&sql:" + q1.sql())
         q1.collect().foreach {
           case (id, name, age) => println(s"&id:${id} name:${name} age:${age}")
