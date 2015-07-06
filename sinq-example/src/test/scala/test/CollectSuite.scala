@@ -2,22 +2,21 @@ package test
 
 import gen.STUDENT
 import init.ImplicitsSinq.sinq2Count
-import io.sinq.SinqStream
 import io.sinq.expression._
 import io.sinq.func.{ASC, Order}
 import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 @RunWith(classOf[JUnitRunner])
 class CollectSuite extends FunSuite with BeforeAndAfter {
-  lazy val sinq = SinqStream("h2")
   before {
-    H2DB.init()
+    init()
   }
   after {
-    H2DB.latch.countDown()
+    latch.countDown()
   }
 
   test("Collect.") {

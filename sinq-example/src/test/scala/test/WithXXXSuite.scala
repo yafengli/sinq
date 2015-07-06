@@ -1,18 +1,17 @@
 package test
 
-import io.sinq.SinqStream
 import models.Teacher
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 import scala.collection.JavaConversions._
 
 class WithXXXSuite extends FunSuite with BeforeAndAfter {
-  lazy val sinq = SinqStream("h2")
   before {
-    H2DB.init
+    init
   }
   after {
-    H2DB.latch.countDown()
+    latch.countDown()
   }
   test("withEntityManager") {
 

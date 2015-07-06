@@ -16,6 +16,7 @@ object H2DB {
   val count = 6
   val latch = new CountDownLatch(count)
   val server = Server.createTcpServer()
+  lazy val sinq = SinqStream("h2")
 
   def init(): Unit = {
     if (latch.getCount == count) {

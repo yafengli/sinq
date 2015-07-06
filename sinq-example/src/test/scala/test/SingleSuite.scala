@@ -1,21 +1,21 @@
 package test
 
 import gen.STUDENT
-import io.sinq.SinqStream
 import io.sinq.expression._
 import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 @RunWith(classOf[JUnitRunner])
 class SingleSuite extends FunSuite with BeforeAndAfter {
-  lazy val sinq = SinqStream("h2")
+
   before {
-    H2DB.init()
+    init()
   }
   after {
-    H2DB.latch.countDown()
+    latch.countDown()
   }
   test("Single.") {
     val query = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(Eq(STUDENT.id, 1))

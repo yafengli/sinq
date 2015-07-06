@@ -1,22 +1,22 @@
 package test
 
 import init.{_ADDRESS, _USER}
-import io.sinq.SinqStream
 import io.sinq.expression.{Eq, Ge, In, Le}
 import io.sinq.func.{ASC, Count, Order, _}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import test.H2DB._
 
 @RunWith(classOf[JUnitRunner])
 class SinqSuite extends FunSuite with BeforeAndAfter {
-  lazy val sinq = SinqStream("h2")
+
   before {
-    H2DB.init()
+    init()
   }
 
   after {
-    H2DB.latch.countDown()
+    latch.countDown()
   }
 
   test("SQL Build.") {
