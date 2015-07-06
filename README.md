@@ -115,10 +115,9 @@ Sinq
             def u_id = Column(this, "u_id")
         }
 
-+ 初始化数据源:`JPA.initPersistenceName("h2")`
-
-+ 创建全局对象
-
++ 初始化数据源与工具对象：
+        
+        JPA.initPersistenceName("h2")
         lazy val sinq = SinqStream("h2")
 
 + 基本应用:
@@ -127,7 +126,16 @@ Sinq
         sinq.insert(user)
         sinq.delete(user)
         sinq.update(user)
-
+                                
++ Entity查询：
+        
+        val query = sinq.from(_USER)
+                        .where(Ge(_USER.age,6))
+                        .orderBy(Order(ASC,_USER.id))
+                        .limit(10,50)
+        println(query.sql())     
+        //select t1.* from t_user where t1.age >= 6 order by t1.id asc limit 10 offset 50
+        
 + 非Entity查询:
 
         val query = sinq.select(_USER.id,_USER.name)
@@ -139,16 +147,7 @@ Sinq
                                                 
         println(query.sql())     
         //select t1.id as t1_id,t1.name as t1_name from t_user where t1.age >= 6 order by t1.id asc limit 10 offset 50
-                                
-+ Entity查询：
-        
-        val query = sinq.from(_USER)
-                        .where(Ge(_USER.age,6))
-                        .orderBy(Order(ASC,_USER.id))
-                        .limit(10,50)
-        println(query.sql())     
-        //select t1.* from t_user where t1.age >= 6 order by t1.id asc limit 10 offset 50
-         
+                 
 + 查询结果：
                         
         query.single()      //单个对象
