@@ -1,25 +1,25 @@
 Sinq
 ====
-在[__Scala__](http://www.scala-lang.org)的项目中集成支持[__JPA__](https://jcp.org/en/jsr/detail?id=317)，提供类[__SQL__](http://www.w3school.com.cn/sql/)的函数调用。  
+在[__Scala__](http://www.scala-lang.org)的项目中支持集成[__JPA__](https://jcp.org/en/jsr/detail?id=338)，并提供类[__SQL__](http://www.w3school.com.cn/sql/)的函数调用。  
 
 目标
 ====
-+ 提供 __Linq(Language Integrated Query)__ 查询，良好直观的类`SQL`方式的 __Functional Chain__ 调用；
-+ `SQL`还没有过时，在`SQL`上的投资不应该被抛弃；
-+ 写出不容易错的`SQL`，编译器能够识别的`SQL`，`IDE`能够帮助的`SQL`，而不是一坨又一坨的字符串；
++ 提供 __Linq(Language Integrated Query)__ 方式查询，良好直观的类似 __SQL__ 方式的 __Functional Chain__ 调用；
++ __SQL__ 还没有过时，在 __SQL__ 上的投资不应该被抛弃；
++ 写出不容易错的 __SQL__ ，编译器能够识别的 __SQL__ ，开发工具能够友好玩耍的 __SQL__ ，而不是一坨又一坨的字符串；
 
 + SQL字串:
 
-        select u.id from t_user u
-                  left join t_address a on u.id = a.u_id
-                  where u.id = ?1
-                  group by u.id having u.id = ?2
-                  order by u.id asc limit 10 offset 0
+        """SELECT u.id FROM t_user u
+                  LEFT JOIN t_address a ON u.id = a.u_id
+                  WHERE u.id = ?1
+                  GROUP BY u.id HAVING u.id = ?2
+                  ORDER BY u.id ASC LIMIT 10 OFFSET 0"""
 
 + 函数调用:
 
         select(_USER.id).from(_USER)
-                     .leftJoin(ADDRESS).on(Eq(_USER.id,ADDRESS.u_id))
+                     .leftJoin(_ADDRESS).on(Eq(_USER.id,_ADDRESS.u_id))
                      .where(Eq(_USER.id,1)
                      .groupBy(_USER.id).having(Eq(_USER.id,1))
                      .orderBy(Order(ASC, _USER.id)).limit(10, 0)
