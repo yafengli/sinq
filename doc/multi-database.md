@@ -1,45 +1,5 @@
-## 总有考虑不到的情况
-__A君：二货，Sinq搞不定这个SQL，哈哈哈！！__
-----------------------
-+ `withEntityManager`:
-
-        import scala.collection.JavaConversions._
-        SinqStream().withEntityManager {
-          em =>
-            val query = em.createNativeQuery("这个SQL真的可以有")
-            query.getResultList.toList
-        }
-
-+ `withTransaction`使用方法与`withEntityManager`相同。
-__B君：二货，Sinq提供的API没有我的流弊，哈哈哈！！__
-----------------------
-+ 使用隐式导入：
-+ 创建扩展：
-
-        import io.sinq.SinqStream
-
-        object ImplicitsSinq {
-          implicit def sinq2Count(sinq: SinqStream) = new SinqStreamExtend(sinq)
-        }
-    
-        class SinqStreamExtend(val sinq: SinqStream) {
-          def count[T](t: Class[T]): Long = {
-            sinq.withEntityManager {
-              em =>
-                val query = em.createQuery(s"select count(t) from ${t.getName} t", classOf[java.lang.Long])
-                query.getSingleResult.longValue()
-              } getOrElse 0
-            }
-        }
-
-+ 则`SinqStream`拓展了`count[T](Class[T])`方法：
-
-        import init.ImplicitsSinq.sinq2Count
-        val count = SinqStream().count(classOf[User])
-
-
-## 对，还有多数据库
-+ `val sinq = SinqStream(JPA.PERSISCTENCE.NAME)`当前创建sinq的线程使用`JPA.PERSISCTENCE.NAME`配置的数据库内容。
+## �ԣ����ж����ݿ�
++ `val sinq = SinqStream(JPA.PERSISTENCE.NAME)`��ǰ����sinq���߳�ʹ��`JPA.PERSISTENCE.NAME`���õ����ݿ����ݡ�
 + `persistence.xml`:
 
         <?xml version="1.0" encoding="UTF-8"?>
@@ -80,8 +40,8 @@ __B君：二货，Sinq提供的API没有我的流弊，哈哈哈！！__
             </persistence-unit>
         </persistence>
 
-+ 多数据库：
++ �����ݿ⣺
 
-        SinqStream("h2").select().from()...         //使用h2定义的配置数据源
+        SinqStream("h2").select().from()...         //ʹ��h2�������������Դ
 
-        SinqStream("postgres").select().from()...   //使用postgres定义的配置数据源
+        SinqStream("postgres").select().from()...   //ʹ��postgres�������������Դ

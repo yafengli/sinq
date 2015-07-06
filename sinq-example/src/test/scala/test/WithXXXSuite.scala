@@ -7,6 +7,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import scala.collection.JavaConversions._
 
 class WithXXXSuite extends FunSuite with BeforeAndAfter {
+  lazy val sinq = SinqStream("h2")
   before {
     H2DB.init
   }
@@ -14,7 +15,7 @@ class WithXXXSuite extends FunSuite with BeforeAndAfter {
     H2DB.latch.countDown()
   }
   test("withEntityManager") {
-    val sinq = SinqStream("h2")
+
     val list = sinq.withEntityManager {
       em =>
         val query = em.createNativeQuery("select t.id,t.name,t.age from t_student t where t.id between ? and ? or t.name in (?,?,?,?)")
@@ -28,7 +29,6 @@ class WithXXXSuite extends FunSuite with BeforeAndAfter {
     }
   }
   test("withTransaction") {
-    val sinq = SinqStream("h2")
     val list = sinq.withTransaction {
       em =>
         val teacher = Teacher("YaFengLi", 68, "NanJing")

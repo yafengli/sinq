@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class SingleSuite extends FunSuite with BeforeAndAfter {
-
+  lazy val sinq = SinqStream("h2")
   before {
     H2DB.init()
   }
@@ -18,8 +18,6 @@ class SingleSuite extends FunSuite with BeforeAndAfter {
     H2DB.latch.countDown()
   }
   test("Single.") {
-    val sinq = SinqStream("h2")
-
     val query = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(Eq(STUDENT.id, 1))
     query.single() match {
       case Some((id, name, age)) => println(s"#id:${id} name:${name} age:${age}")

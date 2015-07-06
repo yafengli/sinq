@@ -1,9 +1,11 @@
 package test
 
 import gen.STUDENT
+import init.ImplicitsSinq.sinq2Count
 import io.sinq.SinqStream
 import io.sinq.expression._
 import io.sinq.func.{ASC, Order}
+import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -19,24 +21,34 @@ class CollectSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Collect.") {
-    val condition = Between(STUDENT.id, -1, 12).and(Ge(STUDENT.age, 5L).or(In(STUDENT.name, Seq("YaFengli:0", "YaFengli:1", "YaFengli:2", "YaFengli:3"))))
-    (0 to 1).foreach {
+    val condition = In(STUDENT.name, Seq("YaFengli:7", "YaFengli:8", "YaFengli:9")).or(Between(STUDENT.id, 2, 5).and(Ge(STUDENT.age, 6L)))
+    println("count:" + sinq.count(classOf[Student]))
+    (0 until 1).foreach {
+      i =>
+        val query = sinq.from(STUDENT)
+        println("sql:" + query.sql())
+        query.collect().foreach { t => println(s"id:${t.id} name:${t.name} age:${t.age}") }
+    }
+    (0 until 1).foreach {
       i =>
         val query = sinq.from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
-        query.collect().foreach(t => println(s"#id:${t.id} name:${t.name} age:${t.age}"))
+        println("@sql:" + query.sql() + " params:" + query.params())
+        query.collect().foreach(t => println(s"@id:${t.id} name:${t.name} age:${t.age}"))
     }
-    (0 to 1).foreach {
+    (0 until 1).foreach {
       i =>
-        val query = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
-        query.collect().foreach {
-          case (id, name, age) => println(s">id:${id} name:${name} age:${age}")
+        val q1 = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+        println("&sql:" + q1.sql())
+        q1.collect().foreach {
+          case (id, name, age) => println(s"&id:${id} name:${name} age:${age}")
           case _ => println("Error")
         }
-        sinq.select(STUDENT.id, STUDENT.name).from(STUDENT).where(Ge(STUDENT.id, 1)).collect().foreach {
-          case (id, name) => println(s"id:${id} name:${name}")
+        val q2 = sinq.select(STUDENT.id, STUDENT.name).from(STUDENT).where(Ge(STUDENT.id, 1))
+        println(">sql:" + q2.sql())
+        q2.collect().foreach {
+          case (id, name) => println(s">id:${id} name:${name}")
           case _ => println("Error")
         }
-        sinq.select(STUDENT.id).from(STUDENT).where(Ge(STUDENT.id, 1)).collect().foreach { id => println(s"id:${id}") }
     }
   }
 }

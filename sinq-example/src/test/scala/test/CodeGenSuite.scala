@@ -6,14 +6,12 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
-import scala.collection.JavaConversions._
-
 @RunWith(classOf[JUnitRunner])
 class CodeGenSuite extends FunSuite with BeforeAndAfter {
 
   test("CodeGen.") {
     println("##Scan [models.*]##")
-    new TableProc("models", "gen", TypeDataMap.factory()).proc()
+    new TableProc("models", "gen", TypeDataMap.HIBERNATE).proc()
   }
 }
 

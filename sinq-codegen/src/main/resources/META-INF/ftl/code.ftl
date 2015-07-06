@@ -2,11 +2,8 @@ package ${data.pkg}
 
 import io.sinq._
 
-object ${data.name} extends Table[${data.classname}]("${data.tablename}"){
+object ${data.name} extends Table[${data.entityClassName}]("${data.tableName}"){
     <#list data.fields as f>
     def ${f.name} = Column(this,classOf[${f.typename}],"${f.columnId}")
     </#list>
-
-    <#assign flag=false/>
-    def * = Seq(<#list data.fields as f><#if flag>,<#else><#assign flag=true/></#if>${f.name}</#list>)
 }

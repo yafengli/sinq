@@ -55,9 +55,9 @@ public class TableProc {
                 Table annotation = c.getAnnotation(Table.class);
                 TableData data = new TableData();
                 data.setPkg(outPkg);
-                data.setName(c.getSimpleName().toUpperCase());
-                data.setClassname(c.getName());
-                data.setTablename(annotation.name());
+                data.setName("_" + c.getSimpleName().toUpperCase());
+                data.setEntityClassName(c.getName());
+                data.setTableName(annotation.name());
 
                 Arrays.asList(c.getDeclaredFields()).stream().forEach(field -> {
                     TableField fd = new TableField();
@@ -124,10 +124,10 @@ public class TableProc {
             String tableName = joinTable.name();
             Map<String, TableData> map = new HashMap<>();
             TableData data = new TableData();
-            data.setName(tableName.toUpperCase());
-            data.setClassname(c.getName());
+            data.setName("_" + tableName.toUpperCase());
+            data.setEntityClassName(c.getName());
             data.setPkg(outPkg);
-            data.setTablename(joinTable.name());
+            data.setTableName(joinTable.name());
             Arrays.asList(joinTable.joinColumns()).stream().forEach(jc -> {
                 TableField fd = new TableField();
                 fd.setColumnId(jc.name());

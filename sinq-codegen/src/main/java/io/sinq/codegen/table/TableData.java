@@ -6,8 +6,8 @@ import java.util.List;
 public class TableData {
     private String pkg;
     private String name;
-    private String classname;
-    private String tablename;
+    private String entityClassName;
+    private String tableName;
 
     private List<TableField> fields = new ArrayList<>();
 
@@ -27,20 +27,20 @@ public class TableData {
         this.name = name;
     }
 
-    public String getClassname() {
-        return classname;
+    public String getEntityClassName() {
+        return entityClassName;
     }
 
-    public void setClassname(String classname) {
-        this.classname = classname;
+    public void setEntityClassName(String entityClassName) {
+        this.entityClassName = entityClassName;
     }
 
-    public String getTablename() {
-        return tablename;
+    public String getTableName() {
+        return tableName;
     }
 
-    public void setTablename(String tablename) {
-        this.tablename = tablename;
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public List<TableField> getFields() {

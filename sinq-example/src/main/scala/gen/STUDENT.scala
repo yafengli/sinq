@@ -8,6 +8,4 @@ object STUDENT extends Table[models.Student]("t_student"){
     def address = Column(this,classOf[String],"address")
     def id = Column(this,classOf[java.math.BigInteger],"id")
     def teacher = Column(this,classOf[java.math.BigInteger],"teacher_id")
-
-    def * = Seq(name,age,address,id,teacher)
 }

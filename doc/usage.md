@@ -15,34 +15,34 @@
 
             override def toString = id + ":" + name + ":" + age + ":" + address
         }
+        
 + 创建`Table`对象：
 
-        object USER extends Table("t_user","u") {
+        object _USER extends Table[User]("t_user","u") {
           def id = Column(this,"id")
           def name = Column(this,"name")
           def age = Column(this,"age")
           def address = Column(this,"address")
-
-          def * = Column(this,"id","name","address")
         }
+        
 + 初始化数据源：`JPA.initPersistenceName(pns:String)`
 + 创建stream：`val sinq = SinqStream("h2")`
 
 ## Single(单对象查询)
 + JPA Entity结果集：
 
-        sinq.from(USER).where(Eq(User.id,1)).single(classOf[User]) match {
+        sinq.from(_USER).where(Eq(User.id,1)).single(classOf[User]) match {
           case Some(u) => println(s"id:${u.id} name:${u.name}")
           case None => println("No Entity found.")
         }
 
 + 非JPA Entity结果集：
 
-        sinq.select(USER.id,USER.name).from(USER).where(Eq(User.id,1)).single() match {
+        sinq.select(_USER.id,_USER.name).from(_USER).where(Eq(User.id,1)).single() match {
           case Some(Array(id,name)) => println(s"id:${id} name:${name}")
           case None => println("No Entity found.")
         }
-        sinq.select(USER.id).from(USER).where(Eq(User.id,1)).single() match {
+        sinq.select(_USER.id).from(_USER).where(Eq(User.id,1)).single() match {
           case Some(id) => println(s"id:${id}")
           case None => println("No Entity found.")
         }
@@ -50,22 +50,27 @@
 ## Collect(多对象查询)
 + JPA Entity结果集：
 
-        sinq.from(USER).where(Ge(User.id,1)).collect(classOf[User]).foreach { u => println(s"id:${u.id} name:${u.name}") }
+        sinq.from(_USER).where(Ge(User.id,1)).collect(classOf[User]).foreach { u => println(s"id:${u.id} name:${u.name}") }
 
 + 非JPA Entity结果集：
 
-        sinq.select(USER.id,USER.name).from(USER).where(Ge(User.id,1)).collect().foreach { case Array(id,name) => println(s"id:${id} name:${name}") }
-        sinq.select(USER.id).from(USER).where(Ge(User.id,1)).collect().foreach { id => println(s"id:${id}") }
+        sinq.select(_USER.id,_USER.name).from(_USER).where(Ge(User.id,1)).collect().foreach { case Array(id,name) => println(s"id:${id} name:${name}") }
+        sinq.select(_USER.id).from(_USER).where(Ge(User.id,1)).collect().foreach { id => println(s"id:${id}") }
 
 ## SqlBuilder(拼接SQL)
 
-        sinq.select(USER.id,Sum(USER.age))
-            .from(USER)
+        sinq.select(_USER.id,Sum(_USER.age))
+            .from(_USER)
             .join(ADDRESS)
-            .on(Eq(USER.a_id,ADDRESS.id))
-            .where(Ge(USER.id,1))
-            .groupBy(Le(USER.id,10),USER.id).having
-            .orderBy(Order(ASC, USER.id)).limit(10,0)
+            .on(Eq(_USER.a_id,ADDRESS.id))
+            .where(Ge(_USER.id,1))
+            .groupBy(Le(_USER.id,10),_USER.id).having
+            .orderBy(Order(ASC, _USER.id)).limit(10,0)
             .sql()
 
 + SQL: __select u.id,sum(u.age) from t_user t inner join t_address a on t.a_id = a.id where u.id >= ? group by u.id having u.id <= ? order by u.id asc limit 10 offset 0__
+
+## 语法糖(CRUD)
++ Insert:`sinq.insert(t:Entity)`
++ Delete:`sinq.delete(t:Entity)`
++ Update:`sinq.update(t:Entity)`

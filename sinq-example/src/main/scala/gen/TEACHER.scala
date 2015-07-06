@@ -7,6 +7,4 @@ object TEACHER extends Table[models.Teacher]("t_teacher"){
     def age = Column(this,classOf[Int],"age")
     def address = Column(this,classOf[String],"address")
     def id = Column(this,classOf[java.math.BigInteger],"id")
-
-    def * = Seq(name,age,address,id)
 }

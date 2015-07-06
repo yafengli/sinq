@@ -12,7 +12,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class StringSuite extends FunSuite with BeforeAndAfter {
 
-  val sinq = SinqStream()
+  lazy val sinq = SinqStream("h2")
 
   test("SQL Build.") {
     val condition = Eq(STUDENT.id, 1).or(Le(STUDENT.id, 12).and(Ge(STUDENT.age, 11L).and(In(STUDENT.id, Seq(1, 2, 3))).or(Ge(STUDENT.age, 15L))))

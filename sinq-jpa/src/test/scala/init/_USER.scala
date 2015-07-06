@@ -3,14 +3,15 @@ package init
 import java.math.BigInteger
 
 import io.sinq.{Column, Table}
-import models.Family
+import models.User
 
-object FAMILY extends Table[Family]("t_family") {
+object _USER extends Table[User]("t_user") {
   def id = Column(this, classOf[BigInteger], "id")
 
   def name = Column(this, classOf[String], "name")
 
   def age = Column(this, classOf[Int], "age")
-
-  def * = Seq(id, name, age)
 }
+
+
+
