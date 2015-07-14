@@ -2,7 +2,7 @@ package test
 
 import gen.STUDENT
 import init.ImplicitsSinq.sinq2Count
-import io.sinq.expression._
+import io.sinq.expr._
 import io.sinq.func.{ASC, Order}
 import models.Student
 import org.junit.runner.RunWith

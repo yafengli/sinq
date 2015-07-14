@@ -1,7 +1,7 @@
 package test
 
 import init.{_ADDRESS, _USER}
-import io.sinq.expression.{Eq, Ge, In, Le}
+import io.sinq.expr.{Eq, Ge, In, Le}
 import io.sinq.func.{ASC, Count, Order, _}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

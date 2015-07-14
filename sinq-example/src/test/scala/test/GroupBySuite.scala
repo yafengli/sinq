@@ -1,7 +1,7 @@
 package test
 
 import gen.STUDENT
-import io.sinq.expression._
+import io.sinq.expr._
 import io.sinq.func.Count
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

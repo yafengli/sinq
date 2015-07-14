@@ -1,7 +1,7 @@
 package io.sinq.provider.jpa
 
 import io.sinq.Table
-import io.sinq.expression.Condition
+import io.sinq.expr.Condition
 import io.sinq.provider._
 
 abstract class JoinImpl[T, K] extends Join[T, K] {

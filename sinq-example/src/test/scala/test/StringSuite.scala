@@ -2,7 +2,7 @@ package test
 
 import gen.{STUDENT, TEACHER}
 import io.sinq.builder.ConditionBuilder
-import io.sinq.expression.{Eq, Ge, In, Le}
+import io.sinq.expr.{Eq, Ge, In, Le}
 import io.sinq.func.{ASC, Order}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

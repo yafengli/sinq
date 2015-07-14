@@ -1,4 +1,4 @@
-package io.sinq.expression
+package io.sinq.expr
 
 import io.sinq.{Table, Column}
 
@@ -10,7 +10,7 @@ import scala.collection.mutable
  */
 trait Condition {
 
-  import io.sinq.expression.Condition._
+  import io.sinq.expr.Condition._
 
   //前一个条件表达式
   @BeanProperty

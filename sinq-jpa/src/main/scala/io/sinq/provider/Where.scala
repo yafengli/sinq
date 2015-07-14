@@ -1,7 +1,7 @@
 package io.sinq.provider
 
 import io.sinq.Table
-import io.sinq.expression.Condition
+import io.sinq.expr.Condition
 
 trait Where[T] extends Result[T] {
 

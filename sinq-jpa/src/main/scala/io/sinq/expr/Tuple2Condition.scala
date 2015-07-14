@@ -1,4 +1,4 @@
-package io.sinq.expression
+package io.sinq.expr
 
 trait Tuple2Condition[T <: Any] extends Condition {
   def paramValue1: T

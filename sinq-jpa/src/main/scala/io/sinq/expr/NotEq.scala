@@ -1,4 +1,4 @@
-package io.sinq.expression
+package io.sinq.expr
 
 import io.sinq.Column
 
