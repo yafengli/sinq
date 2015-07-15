@@ -1,5 +1,7 @@
 import Build._
 
+resolvers += "jcenter" at "http://jcenter.bintray.com"
+
 lazy val root = project.in(file(".")).aggregate(sinq_jpa, sinq_example)
 
 lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
