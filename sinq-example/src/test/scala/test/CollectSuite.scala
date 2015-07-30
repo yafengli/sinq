@@ -21,7 +21,8 @@ class CollectSuite extends FunSuite with BeforeAndAfter {
 
   test("Collect.") {
     val condition = In(_STUDENT.name, Seq("YaFengli:7", "YaFengli:8", "YaFengli:9")).or(Between(_STUDENT.id, 2, 5).and(Ge(_STUDENT.age, 6L)))
-    println("count:" + sinq.count(classOf[Student]))
+    println("1-ount:" + sinq.count(classOf[Student]))
+    println("2-count:" + sinq.count(_STUDENT))
     (0 until 1).foreach {
       i =>
         val query = sinq.from(_STUDENT)
