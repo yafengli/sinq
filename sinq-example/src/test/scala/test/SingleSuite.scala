@@ -1,6 +1,6 @@
 package test
 
-import gen.STUDENT
+import gen._STUDENT
 import io.sinq.expr._
 import models.Student
 import org.junit.runner.RunWith
@@ -18,7 +18,7 @@ class SingleSuite extends FunSuite with BeforeAndAfter {
     latch.countDown()
   }
   test("Single.") {
-    val query = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(Eq(STUDENT.id, 1))
+    val query = sinq.select(_STUDENT.id, _STUDENT.name, _STUDENT.age).from(_STUDENT).where(Eq(_STUDENT.id, 1))
     query.single() match {
       case Some((id, name, age)) => println(s"#id:${id} name:${name} age:${age}")
       case None => println("None")

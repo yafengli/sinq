@@ -1,6 +1,6 @@
 package test
 
-import gen.STUDENT
+import gen._STUDENT
 import io.sinq.expr._
 import io.sinq.func.Count
 import org.junit.runner.RunWith
@@ -17,10 +17,10 @@ class GroupBySuite extends FunSuite with BeforeAndAfter {
     latch.countDown()
   }
   test("Group By.") {
-    val condition = Between(STUDENT.id, 1, 12).or(Ge(STUDENT.age, 15L))
+    val condition = Between(_STUDENT.id, 1, 12).or(Ge(_STUDENT.age, 15L))
     (0 to 5).foreach {
       i =>
-        val query = sinq.select(Count(STUDENT.id), Count(STUDENT.name)).from(STUDENT).where(condition).groupBy(STUDENT.id)
+        val query = sinq.select(Count(_STUDENT.id), Count(_STUDENT.name)).from(_STUDENT).where(condition).groupBy(_STUDENT.id)
         println("sql:" + query.sql())
         query.single() match {
           case Some((id, name)) => println(s"count(id):${id} count(name):${name}")
@@ -29,7 +29,7 @@ class GroupBySuite extends FunSuite with BeforeAndAfter {
     }
     (0 to 5).foreach {
       i =>
-        val query = sinq.select(Count(STUDENT.id)).from(STUDENT).where(condition).groupBy(STUDENT.id)
+        val query = sinq.select(Count(_STUDENT.id)).from(_STUDENT).where(condition).groupBy(_STUDENT.id)
         query.single() match {
           case Some(count) => println(s"count:${count}")
           case None => println("None")

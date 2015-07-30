@@ -1,6 +1,6 @@
 package test
 
-import gen.STUDENT
+import gen._STUDENT
 import init.ImplicitsSinq.sinq2Count
 import io.sinq.expr._
 import io.sinq.func.{ASC, Order}
@@ -20,29 +20,29 @@ class CollectSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Collect.") {
-    val condition = In(STUDENT.name, Seq("YaFengli:7", "YaFengli:8", "YaFengli:9")).or(Between(STUDENT.id, 2, 5).and(Ge(STUDENT.age, 6L)))
+    val condition = In(_STUDENT.name, Seq("YaFengli:7", "YaFengli:8", "YaFengli:9")).or(Between(_STUDENT.id, 2, 5).and(Ge(_STUDENT.age, 6L)))
     println("count:" + sinq.count(classOf[Student]))
     (0 until 1).foreach {
       i =>
-        val query = sinq.from(STUDENT)
+        val query = sinq.from(_STUDENT)
         println("sql:" + query.sql())
         query.collect().foreach { t => println(s"id:${t.id} name:${t.name} age:${t.age}") }
     }
     (0 until 1).foreach {
       i =>
-        val query = sinq.from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(10, 0)
+        val query = sinq.from(_STUDENT).where(condition).orderBy(Order(ASC, _STUDENT.id)).limit(10, 0)
         println("@sql:" + query.sql() + " params:" + query.params())
         query.collect().foreach(t => println(s"@id:${t.id} name:${t.name} age:${t.age}"))
     }
     (0 until 1).foreach {
       i =>
-        val q1 = sinq.select(STUDENT.id, STUDENT.name, STUDENT.age).from(STUDENT).where(condition).orderBy(Order(ASC, STUDENT.id)).limit(20, 0)
+        val q1 = sinq.select(_STUDENT.id, _STUDENT.name, _STUDENT.age).from(_STUDENT).where(condition).orderBy(Order(ASC, _STUDENT.id)).limit(20, 0)
         println("&sql:" + q1.sql())
         q1.collect().foreach {
           case (id, name, age) => println(s"&id:${id} name:${name} age:${age}")
           case _ => println("Error")
         }
-        val q2 = sinq.select(STUDENT.id, STUDENT.name).from(STUDENT).where(Ge(STUDENT.id, 1))
+        val q2 = sinq.select(_STUDENT.id, _STUDENT.name).from(_STUDENT).where(Ge(_STUDENT.id, 1))
         println(">sql:" + q2.sql())
         q2.collect().foreach {
           case (id, name) => println(s">id:${id} name:${name}")
