@@ -71,6 +71,7 @@
 + SQL: __select u.id,sum(u.age) from t_user t inner join t_address a on t.a_id = a.id where u.id >= ? group by u.id having u.id <= ? order by u.id asc limit 10 offset 0__
 
 ## 语法糖(CRUD)
-+ Insert:`sinq.insert(t:Entity)`
-+ Delete:`sinq.delete(t:Entity)`
-+ Update:`sinq.update(t:Entity)`
++ 新增:`sinq.insert(t:Entity)`
++ 查找:`find[T](Any,Class[T])`
++ 删除:`sinq.delete(t:Entity)`
++ 更新:`sinq.update(t:Entity)`

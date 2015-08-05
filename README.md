@@ -4,10 +4,9 @@ Sinq
 
 目标
 ====
++ 操作关系数据库应该使用 __SQL__ ，还没有过时不应该被抛弃；
++ 写出不容易错的 __SQL__ ，编译器能够理解的 __SQL__ ，开发工具能够友好玩耍的 __SQL__ ，而不是一坨又一坨的字符串；
 + 提供 __Linq(Language Integrated Query)__ 方式查询，良好直观的类似 __SQL__ 方式的 __Functional Chain__ 调用；
-+ __SQL__ 还没有过时，在 __SQL__ 上的投资不应该被抛弃；
-+ 写出不容易错的 __SQL__ ，编译器能够识别的 __SQL__ ，开发工具能够友好玩耍的 __SQL__ ，而不是一坨又一坨的字符串；
-
 + SQL字串:
 
         """SELECT u.id FROM t_user u
@@ -31,16 +30,16 @@ Sinq
         val sinq = SinqStream("persistenceName")      //全局Stream Factory
         sinq.select(_USER.id).from(_USER)             //调用
 
-#### 增删改(CRUD)与查询(Query)
-+ `insert(Entity)`
-+ `find[T](Any,Class[T])`
-+ `delete(Entity)`
-+ `update(Entity)`
-+ `select(Column*)...`
+#### 增删改查(CRUD)
++ 新增`insert(Entity)`
++ 查找`find[T](Any,Class[T])`
++ 删除`delete(Entity)`
++ 更新`update(Entity)`
 
-#### 结果集
-+ 单结果`single()`与`single[T](Class[T])`
-+ 多结果`collect()`与`collect[T](Class[T])`
+#### 查询(Query)
++ 查询`select(Column*)...`
++ 单结果`single()`
++ 多结果`collect()`
 
 #### where语句
 + `and`与`or`连接`condition`
@@ -51,7 +50,7 @@ Sinq
 + 实现了`limit`、`groupBy`、`orderBy`、`join`、`having on`
 + 提供助手接口`withEntity`与`withTransaction`
 + 获取SQL字符串`sql()`
-+ 获取参数集合：`params()`
++ 获取参数集合`params()`
 
 #### 例子
 + `User.scala`

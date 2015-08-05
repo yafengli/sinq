@@ -31,7 +31,7 @@
 ## SQL字符串与参数值
 + `sql()`、`params()`
 
-## 完整的例子：
+## 完整的例子
 
 		val sinq = SinqStream("h2")
 		val query = sinq.select(_USER.id,Sum(_USER.age))
