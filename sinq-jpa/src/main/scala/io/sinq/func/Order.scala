@@ -1,6 +1,5 @@
 package io.sinq.func
 
-import io.sinq.Column
 import io.sinq.provider.{Column, Alias}
 
 trait OrderDesc extends Alias

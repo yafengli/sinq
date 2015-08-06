@@ -3,7 +3,6 @@ package init
 import java.math.BigInteger
 import java.util.Date
 
-import io.sinq.Table
 import io.sinq.provider.{Table, Column}
 import models.Address
 

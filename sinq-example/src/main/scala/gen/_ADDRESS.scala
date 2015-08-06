@@ -1,6 +1,5 @@
 package gen
 
-import io.sinq._
 import io.sinq.provider.{Table, Column}
 
 object _ADDRESS extends Table[models.Address]("t_address"){

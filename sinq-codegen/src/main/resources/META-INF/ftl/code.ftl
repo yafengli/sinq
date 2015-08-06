@@ -1,6 +1,6 @@
 package ${data.pkg}
 
-import io.sinq._
+import io.sinq.provider._
 
 object ${data.name} extends Table[${data.entityClassName}]("${data.tableName}"){
     <#list data.fields as f>

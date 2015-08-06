@@ -1,6 +1,5 @@
 package gen
 
-import io.sinq._
 import io.sinq.provider.{Table, Column}
 
 object _TEACHER extends Table[models.Teacher]("t_teacher"){

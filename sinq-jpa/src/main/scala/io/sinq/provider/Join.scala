@@ -1,7 +1,6 @@
 package io.sinq.provider
 
 import io.sinq.expr.Condition
-import io.sinq.provider.Table
 
 trait Join[T, K] extends Aggregation {
   def table: Table[K]

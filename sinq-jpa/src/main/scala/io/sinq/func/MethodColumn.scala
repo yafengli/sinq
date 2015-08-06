@@ -1,6 +1,5 @@
 package io.sinq.func
 
-import io.sinq.Table
 import io.sinq.provider.{Table, Column}
 
 abstract class MethodColumn[T] extends Column[T] {
