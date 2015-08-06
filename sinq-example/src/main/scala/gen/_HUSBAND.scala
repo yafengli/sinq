@@ -1,6 +1,7 @@
 package gen
 
 import io.sinq._
+import io.sinq.provider.{Table, Column}
 
 object _HUSBAND extends Table[models.Husband]("t_husband"){
     def name = Column(this,classOf[String],"name")

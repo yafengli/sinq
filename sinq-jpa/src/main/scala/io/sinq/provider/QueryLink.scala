@@ -2,7 +2,7 @@ package io.sinq.provider
 
 import io.sinq.expr.Condition
 import io.sinq.func.Order
-import io.sinq.{Column, SinqStream, Table}
+import io.sinq.SinqStream
 
 import scala.beans.BeanProperty
 import scala.collection.mutable

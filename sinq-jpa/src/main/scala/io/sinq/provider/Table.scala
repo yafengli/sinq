@@ -1,4 +1,4 @@
-package io.sinq
+package io.sinq.provider
 
 abstract class Table[T: Manifest](val tableName: String) extends Alias {
   def getType = implicitly[Manifest[T]].runtimeClass

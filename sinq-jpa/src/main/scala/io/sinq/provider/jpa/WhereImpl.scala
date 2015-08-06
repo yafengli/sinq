@@ -1,6 +1,5 @@
 package io.sinq.provider.jpa
 
-import io.sinq.Table
 import io.sinq.expr.Condition
 import io.sinq.provider._
 

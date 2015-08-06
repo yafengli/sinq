@@ -2,7 +2,8 @@ package init
 
 import java.math.BigInteger
 
-import io.sinq.{Column, Table}
+import io.sinq.Table
+import io.sinq.provider.{Table, Column}
 import models.User
 
 object _USER extends Table[User]("t_user") {

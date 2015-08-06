@@ -1,6 +1,5 @@
 package io.sinq.provider.jpa
 
-import io.sinq.Column
 import io.sinq.provider._
 
 case class GroupByImpl[T](override val link: QueryLink) extends ResultImpl[T] with GroupBy[T] {

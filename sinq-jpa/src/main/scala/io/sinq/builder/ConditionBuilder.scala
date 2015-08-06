@@ -1,7 +1,7 @@
 package io.sinq.builder
 
-import io.sinq.Table
 import io.sinq.expr.Condition
+import io.sinq.provider.Table
 
 import scala.collection.mutable
 

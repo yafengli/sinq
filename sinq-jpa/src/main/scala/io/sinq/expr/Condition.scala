@@ -1,6 +1,7 @@
 package io.sinq.expr
 
-import io.sinq.{Table, Column}
+import io.sinq.Table
+import io.sinq.provider.{Table, Column}
 
 import scala.beans.BeanProperty
 import scala.collection.mutable

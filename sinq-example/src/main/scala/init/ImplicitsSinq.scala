@@ -1,6 +1,7 @@
 package init
 
-import io.sinq.{SinqStream, Table}
+import io.sinq.SinqStream
+import io.sinq.provider.Table
 
 object ImplicitsSinq {
 

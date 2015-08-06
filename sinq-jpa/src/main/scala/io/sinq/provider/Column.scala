@@ -1,4 +1,4 @@
-package io.sinq
+package io.sinq.provider
 
 trait Column[+T] extends Alias {
   def table: Table[_]

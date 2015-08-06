@@ -1,6 +1,7 @@
 package io.sinq.expr
 
-import io.sinq.{Table, Column}
+import io.sinq.Table
+import io.sinq.provider.{Table, Column}
 
 case class NotBetween[T, K](override val column: Column[K], override val paramValue1: T, override val paramValue2: T) extends Tuple2Condition[T] {
   override def expression(tablesMap: Map[Table[_], String]): String = s"${column.fullName(tablesMap)} not between ? and ?"

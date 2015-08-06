@@ -23,12 +23,16 @@ Sinq
                      .groupBy(_USER.id).having(Eq(_USER.id,1))
                      .orderBy(Order(ASC, _USER.id)).limit(10, 0)
 
-## 指南
-+ 调用
+## 应用步骤
++ 初始化：
 
-        JPA.initPersistenceName(pns:String*)          //初始化数据源
-        val sinq = SinqStream("persistenceName")      //全局Stream Factory
-        sinq.select(_USER.id).from(_USER)             //调用
+        JPA.initPersistenceName("h2","postgresql")       //persistence name 序列
+        val sinq = SinqStream("h2")                      //persistence name
+
++ 调用：
+
+        sinq.insert(new User("test",12))              //插入
+        sinq.select(_USER.id).from(_USER)             //查询
 
 #### 增删改查(CRUD)
 + 新增`insert(Entity)`

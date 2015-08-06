@@ -1,7 +1,7 @@
 package io.sinq.builder
 
 import io.sinq.provider._
-import io.sinq.{Column, Table}
+import io.sinq.Table
 
 import scala.collection.mutable
 
