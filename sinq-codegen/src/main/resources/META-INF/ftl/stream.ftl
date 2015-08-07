@@ -3,9 +3,10 @@ package ${data.pkg}
 import io.sinq.provider._
 import io.sinq.provider.jpa.{JpaAdapter, WhereImpl, FromImpl}
 /**
-* ############################
-* #NOT EDIT,The code generate
-* ############################
+* ########
+* <p>NOT EDIT,The code generate</p>
+* @author ya_feng_li@163.com
+* ########
 */
 case class SinqStream(val persistenceName: String = "default") extends JpaAdapter {
 

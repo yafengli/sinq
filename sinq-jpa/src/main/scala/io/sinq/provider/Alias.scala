@@ -2,7 +2,7 @@ package io.sinq.provider
 
 trait Alias {
   /**
-   * @return 标识
+   * @return identifier name.
    */
   def identifier(): String
 }
