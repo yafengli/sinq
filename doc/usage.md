@@ -15,18 +15,18 @@
 
             override def toString = id + ":" + name + ":" + age + ":" + address
         }
-        
+
 + 创建`Table`对象：
 
-        object _USER extends Table[User]("t_user","u") {
+        object _USER extends Table[User]("t_user") {
           def id = Column(this,"id")
           def name = Column(this,"name")
           def age = Column(this,"age")
           def address = Column(this,"address")
         }
-        
+
 + 初始化数据源：`JPA.initPersistenceName(pns:String)`
-+ 创建stream：`val sinq = SinqStream("h2")`
++ 创建stream：`implicit val sinq = SinqStream("h2")`
 
 ## Single(单对象查询)
 + JPA Entity结果集：
