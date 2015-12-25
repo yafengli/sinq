@@ -7,3 +7,5 @@ logs/
 project/project
 .cache
 projectFilesBackup*/
+.ensime
+.ensime_cache
