@@ -6,6 +6,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>models.Address</class>
         <class>models.User</class>
+        <class>jpa.entity.User</class>
         <properties>
             <property name="hibernate.connection.provider_class" value="com.zaxxer.hikari.hibernate.HikariConnectionProvider"/>
             <!-- hikaricp -->

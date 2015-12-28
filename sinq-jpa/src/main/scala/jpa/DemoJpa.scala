@@ -6,8 +6,8 @@ import jpa.impl._
 import jpa.util.JPA
 
 object DemoJpa extends App {
-  JPA.init("default")
-  lazy val ua = ActiveJPA[User]("default")
+  JPA.init("h2")
+  lazy val ua = ActiveJPA[User]("h2")
 
   println("Hello World!")
   println(s"${ua.getClass().getName}")

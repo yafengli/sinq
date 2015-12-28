@@ -6,6 +6,7 @@ logs/
 .idea*
 project/project
 .cache
+*.class
 projectFilesBackup*/
 .ensime
 .ensime_cache

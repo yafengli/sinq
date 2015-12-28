@@ -12,6 +12,7 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
   libraryDependencies ++= Seq(
     "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),
     "org.hibernate" % "hibernate-jpamodelgen" % $("hibernate"),
+    "javax.transaction" % "jta" % "1.1",
     "ch.qos.logback" % "logback-classic" % $("logback"),
     "com.zaxxer" % "HikariCP" % $("HikariCP") % "test",
     "com.h2database" % "h2" % $("h2") % "test",
