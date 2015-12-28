@@ -45,8 +45,15 @@ object JPA {
   /**
    * release all EntityManagerFactory.
    */
-  def release() {
+  def releaseAll() {
     EMF_MAP.foreach(_._2.close())
     EMF_MAP.clear()
+  }
+
+  /**
+    * release all EntityManagerFactory.
+    */
+  def release(pns:String*) {
+    EMF_MAP.filter { e => pns.contains(e._1) } foreach { e => EMF_MAP.remove(e._1);e._2.close() }
   }
 }

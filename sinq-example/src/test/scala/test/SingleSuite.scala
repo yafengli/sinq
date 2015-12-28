@@ -4,8 +4,8 @@ import gen._STUDENT
 import io.sinq.expr._
 import models.Student
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.junit.JUnitRunner
 import test.H2DB._
 
 @RunWith(classOf[JUnitRunner])

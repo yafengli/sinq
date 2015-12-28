@@ -1,7 +1,6 @@
 package models
 
-import javax.persistence._
-
+import javax.persistence.{Entity, GeneratedValue, GenerationType, CascadeType, Id, OneToOne, Table}
 import scala.beans.BeanProperty
 
 /**
