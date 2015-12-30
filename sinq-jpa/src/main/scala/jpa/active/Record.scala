@@ -2,9 +2,9 @@ package jpa.active
 
 import javax.persistence._
 import javax.persistence.criteria._
-import jpa.util.JPA
 import scala.collection.JavaConversions._
 import scala.collection.mutable.Buffer
+import io.sinq.util.JPA 
 
 trait Record[T] {
   def pn: String
@@ -13,7 +13,7 @@ trait Record[T] {
   def withEntityManager[E](call: (EntityManager) => E): E = {
     var em: EntityManager = null
     try {
-      em = JPA.entityManager(pn)
+      em = JPA.createEntityManager(pn)
       call(em)
     } finally {
       if (em != null) em.close
@@ -23,7 +23,7 @@ trait Record[T] {
   def withTransaction[E](call: (EntityManager) => E): E = {
     var em: EntityManager = null
     try {
-      em = JPA.entityManager(pn)
+      em = JPA.createEntityManager(pn)
       em.getTransaction().begin()
       val r = call(em)
       em.getTransaction().commit()

@@ -15,16 +15,15 @@ import scala.concurrent.Future
 
 object H2DB {
   // Test Method Number
-  val count = 1
+  val count = 2
   val latch = new CountDownLatch(count)
-  val server = Server.createTcpServer()
   lazy val sinq = SinqStream("h2")
 
   def init(): Unit = {
+    println(s"count:${latch.getCount()}")
+    println(s"count:${latch.getCount()}")
     if (latch.getCount == count) {
-      if (!server.isRunning(false)) {
-        println(s"##########DB Server start.###############")
-      }
+      println(s"##########DB Server start.###############")
       JPA.initPersistenceName("h2") //JPA.initPersistenceName("h2", "postgres")
       //data init
       dataStore()

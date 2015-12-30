@@ -45,7 +45,6 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Active JPA") {
-    jpa.util.JPA.init("h2")
     val ua = ActiveJPA[User]("h2")
 
     dbStore(ua)
