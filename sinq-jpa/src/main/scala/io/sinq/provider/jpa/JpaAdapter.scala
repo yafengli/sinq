@@ -1,29 +1,12 @@
 package io.sinq.provider.jpa
 
-import java.sql.Connection
 import javax.persistence.EntityManager
 
-import io.sinq.provider.Provider
 import io.sinq.util.JPA
 
-trait JpaAdapter extends Provider {
+trait JpaAdapter {
 
   def persistenceName: String
-
-  def withConnection[T](call: Connection => T): Option[T] = {
-    val em = JPA.createEntityManager(persistenceName)
-    try {
-      val t = call(em.unwrap(classOf[Connection]))
-      if (t == null || t == Nil) None else Some(t)
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-        None
-    }
-    finally {
-      em.close()
-    }
-  }
 
   def withTransaction[T](call: EntityManager => T): Option[T] = {
     val em = JPA.createEntityManager(persistenceName)
@@ -34,8 +17,8 @@ trait JpaAdapter extends Provider {
       if (t == null || t == Nil) None else Some(t)
     } catch {
       case e: Exception =>
-        em.getTransaction.rollback()
         e.printStackTrace()
+        em.getTransaction.rollback()
         None
     }
     finally {

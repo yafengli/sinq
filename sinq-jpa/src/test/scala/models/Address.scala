@@ -1,35 +1,34 @@
 package models
 
-import java.util.Date
+import java.sql.Timestamp
 import javax.persistence._
+
+import models.ext.{InetConverter, InetObject}
+import org.eclipse.persistence.annotations
 
 import scala.beans.BeanProperty
 
-/**
- * User: YaFengLi
- * Date: 12-12-3
- * Time: 下午1:28
- */
 @Entity
 @Table(name = "t_address")
-case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
+class Address {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @BeanProperty
   var id: Long = _
 
-  @OneToOne(fetch = FetchType.EAGER, optional = false)
+
+  @Column
+  @BeanProperty
+  var createdate: Timestamp = new Timestamp(System.currentTimeMillis())
+
+  @Column(columnDefinition = "inet")
+  @annotations.Converter(name = "inetConverter", converterClass = classOf[InetConverter])
+  @annotations.Convert("inetConverter")
+  //  @Convert(converter = classOf[InetConverter])
+  @BeanProperty
+  var ipAddr: InetObject = _
+
+  @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "u_id")
   @BeanProperty
   var user: User = _
-
-  @BeanProperty
-  var createDate = new Date()
-
-  def this() = this(null, -1)
-
-  def this(name: String, age: Int, user: User) = {
-    this(name, age)
-    this.user = user
-  }
 }

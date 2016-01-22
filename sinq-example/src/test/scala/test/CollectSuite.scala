@@ -9,7 +9,7 @@ import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.H2DB._
+import test.DBInit._
 
 @RunWith(classOf[JUnitRunner])
 class CollectSuite extends FunSuite with BeforeAndAfter {

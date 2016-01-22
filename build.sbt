@@ -2,7 +2,7 @@ import Build._
 
 resolvers += "jcenter" at "http://jcenter.bintray.com"
 
-lazy val root = project.in(file(".")).aggregate(sinq_jpa, sinq_example)
+lazy val sinq = project.in(file(".")).aggregate(sinq_jpa, sinq_codegen, sinq_example)
 
 lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
   name := "sinq-jpa",
@@ -10,10 +10,11 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
   version := $("prod"),
   scalaVersion := $("scala"),
   libraryDependencies ++= Seq(
-    "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),
-    "org.hibernate" % "hibernate-jpamodelgen" % $("hibernate"),
-    "javax.transaction" % "jta" % "1.1",
     "ch.qos.logback" % "logback-classic" % $("logback"),
+    "org.eclipse.persistence" % "eclipselink" % $("eclipselink") % "provided",
+    "org.hibernate" % "hibernate-entitymanager" % $("hibernate") % "provided",
+    "org.hibernate" % "hibernate-jpamodelgen" % $("hibernate") % "provided",
+    "javax.transaction" % "jta" % $("jta") % "provided",
     "com.zaxxer" % "HikariCP" % $("HikariCP") % "test",
     "com.h2database" % "h2" % $("h2") % "test",
     "org.postgresql" % "postgresql" % $("postgresql") % "test",

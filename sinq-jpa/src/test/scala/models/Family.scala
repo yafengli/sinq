@@ -8,6 +8,8 @@ import scala.beans.BeanProperty
 @Entity
 @Table(name = "t_family")
 case class Family(@BeanProperty var name: String, @BeanProperty var age: Int) {
+  def this() = this(null, -1)
+  
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @BeanProperty

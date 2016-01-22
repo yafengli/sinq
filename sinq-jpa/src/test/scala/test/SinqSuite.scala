@@ -1,14 +1,12 @@
 package test
 
-import init.{_ADDRESS, _USER}
+import init._
 import io.sinq.expr.{Eq, Ge, In, Le}
-import io.sinq.func.{ASC, Count, Order, _}
+import io.sinq.func.{ASC, Order}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.H2DB._
-import jpa.impl.ActiveJPA
-import jpa.entity.User
+import test.DBInit._
 
 @RunWith(classOf[JUnitRunner])
 class SinqSuite extends FunSuite with BeforeAndAfter {
@@ -22,63 +20,35 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("SQL Build.") {
-    val condition = Eq(_USER.id, 1).or(Le(_USER.id, 12).and(Ge(_USER.age, 11L).or(In(_USER.id, Seq(1, 2, 3))).or(Ge(_USER.age, 15L))))
-    val q1 = sinq.select(_USER.id, _USER.name, _ADDRESS.name, _ADDRESS.createDate, _ADDRESS.num, _ADDRESS.u_id).from(_USER).join(_ADDRESS).on(Eq(_USER.id, _ADDRESS.u_id)).where(condition).orderBy(Order(ASC, _USER.id)).limit(10, 0)
+    val condition = Eq(T_USER.id, 1).or(Le(T_USER.id, 12).and(Ge(T_USER.age, 11L).or(In(T_USER.id, Seq(1, 2, 3))).or(Ge(T_USER.age, 15L))))
+    val q1 = sinq.select(T_USER.id, T_USER.name, T_ADDRESS.name, T_ADDRESS.createDate, T_ADDRESS.num, T_ADDRESS.u_id).from(T_USER).join(T_ADDRESS).on(Eq(T_USER.id, T_ADDRESS.u_id)).where(condition).orderBy(Order(ASC, T_USER.id)).limit(10, 0)
     println("sql:" + q1.sql())
     println("params:" + q1.params())
     q1.single() match {
-      case Some((id, uname, aname, cd, num, u_id)) => println(s"id:${id} name:${uname}:${aname} create:${cd.toString} num:${num} u_id:${u_id}")
+      case Some((id, un, an, cd, num, u_id)) => println(s"id:${id} name:${un}:${an} create:${cd.toString} num:${num} u_id:${u_id}")
       case None => println("None")
     }
-    sinq.select(_USER.id).from(_USER).join(_ADDRESS).on(Eq(_USER.id, _ADDRESS.u_id)).where(condition).orderBy(Order(ASC, _USER.id)).limit(10, 0).single() match {
+    sinq.select(T_USER.id).from(T_USER).join(T_ADDRESS).on(Eq(T_USER.id, T_ADDRESS.u_id)).where(condition).orderBy(Order(ASC, T_USER.id)).limit(10, 0).single() match {
       case Some(id) => println(s"[id]:${id}")
       case None => println("None")
     }
-    sinq.from(_USER).join(_ADDRESS).on(Eq(_USER.id, _ADDRESS.u_id)).where(condition).orderBy(Order(ASC, _USER.id)).limit(10, 0).single() match {
-      case Some(u) => println(s"[User] id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}")
+    sinq.from(T_USER).join(T_ADDRESS).on(Eq(T_USER.id, T_ADDRESS.u_id)).where(condition).orderBy(Order(ASC, T_USER.id)).limit(10, 0).single() match {
+      case Some(u) => println(s"[User] id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress}")
       case None => println("None")
     }
-    sinq.select(_USER.id, _USER.name, _USER.age).from(_USER).collect().foreach(t => println(s"[id,name,age] id:${t._1} name:${t._2} age:${t._3}"))
-    sinq.from(_USER).collect().foreach(u => println(s"[User] id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress.getName}"))
-    sinq.select(Count(_USER.id)).from(_USER).single().foreach(c => println(s"count:${c}"))
-    sinq.select(Sum(_USER.age)).from(_USER).single().foreach(s => println(s"sum:${s}"))
-  }
 
-  test("Active JPA") {
-    val ua = ActiveJPA[User]("h2")
-
-    dbStore(ua)
-    find(ua, 36L)
-    fetch(ua)
-
-    def fetch(a: ActiveJPA[User]): Unit = {
-      a.fetch("age").foreach { u =>
-        println(s"id:${u.id} name:${u.name} age:${u.age}")
-      }
+    sinq.withEntityManager { em =>
+      val q = em.createNativeQuery("select ipaddr from t_address where id = 1")
+      val rs = q.getSingleResult
+      println(rs.getClass)
     }
 
-    def find(a: ActiveJPA[User], id: Long): User = {
-      val user = if (a.exists(id)) a.find(id) else new User()
-
-      if (user.id != id) {
-        user.setName("YaFengLi")
-        user.setAge(33)
-        a.save(user)
-      }
-      println(s"id:${user.id} name:${user.name} age:${user.age}")
-      user
-    }
-
-    def dbStore(a: ActiveJPA[User]): Unit = {
-      if (a.count() <= 10) {
-        (0 to 10).foreach { i =>
-          val user = new User()
-          user.setName("Name" + i)
-          user.setAge(i)
-          a.save(user)
-        }
-      }
-    }
+    /**
+      * sinq.select(_USER.id, _USER.name, _USER.age).from(_USER).collect().foreach(t => println(s"[id,name,age] id:${t._1} name:${t._2} age:${t._3}"))
+      * sinq.from(_USER).collect().foreach(u => println(s"[User] id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress}"))
+      * sinq.select(Count(_USER.id)).from(_USER).single().foreach(c => println(s"count:${c}"))
+      * sinq.select(Sum(_USER.age)).from(_USER).single().foreach(s => println(s"sum:${s}"))
+      **/
   }
 }
 

@@ -1,13 +1,15 @@
 package jpa.active
 
 import javax.persistence._
-import javax.persistence.criteria._
+
+import io.sinq.util.JPA
+
 import scala.collection.JavaConversions._
 import scala.collection.mutable.Buffer
-import io.sinq.util.JPA 
 
 trait Record[T] {
   def pn: String
+
   def getType: Class[_]
 
   def withEntityManager[E](call: (EntityManager) => E): E = {
@@ -39,15 +41,21 @@ trait Record[T] {
   }
 
   def save(t: T): Unit = {
-    withTransaction { _.persist(t) }
+    withTransaction {
+      _.persist(t)
+    }
   }
 
   def update(t: T): Unit = {
-    withTransaction { _.merge(t) }
+    withTransaction {
+      _.merge(t)
+    }
   }
 
   def delete(t: T): Unit = {
-    withTransaction { _.remove(t) }
+    withTransaction {
+      _.remove(t)
+    }
   }
 
   def count(): Long = {
@@ -75,9 +83,10 @@ trait Record[T] {
     }
     t
   }
+
   /**
-   * ocn:Order Column Name like "id"/"username"
-   */
+    * ocn:Order Column Name like "id"/"username"
+    */
   def fetch[K](ocn: String, limit: Int = 0): Seq[T] = {
     val t = Buffer[T]()
     withEntityManager { em =>
@@ -95,5 +104,4 @@ trait Record[T] {
     }
     t.toSeq
   }
-
 }

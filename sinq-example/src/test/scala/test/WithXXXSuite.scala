@@ -2,7 +2,7 @@ package test
 
 import models.Teacher
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.H2DB._
+import test.DBInit._
 
 import scala.collection.JavaConversions._
 

@@ -28,7 +28,7 @@ abstract class ResultImpl[T] extends Result[T] {
     em =>
       val q = if (link.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), link.fromTables.head.getType)
       (1 to params().length).foreach(i => q.setParameter(i, params()(i - 1)))
-      
+
       val r = result(q.getResultList.toList).headOption
       (if (r.isEmpty) null else r.get).asInstanceOf[T]
   }

@@ -6,7 +6,7 @@ import java.util
 
 @Entity
 @Table(name = "t_user")
-case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
+case class User(@BeanProperty var name: String, @BeanProperty var age: Int) extends Serializable{
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @BeanProperty
