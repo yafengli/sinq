@@ -11,13 +11,10 @@ import scala.beans.BeanProperty
 @Entity
 @Table(name = "t_user")
 case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @BeanProperty
+  @Id @GeneratedValue(strategy = GenerationType.AUTO) @BeanProperty
   var id: Long = _
 
-  @OneToOne(cascade = Array(CascadeType.REMOVE), mappedBy = "user")
-  @BeanProperty
+  @OneToOne(cascade = Array(CascadeType.REMOVE), mappedBy = "user") @BeanProperty
   var address: Address = _
 
   def this() = this(null, -1)

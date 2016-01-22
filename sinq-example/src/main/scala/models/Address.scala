@@ -12,14 +12,10 @@ import scala.beans.BeanProperty
 @Entity
 @Table(name = "t_address")
 case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @BeanProperty
+  @Id @GeneratedValue(strategy = GenerationType.AUTO) @BeanProperty
   var id: Long = _
 
-  @OneToOne(fetch = FetchType.EAGER, optional = false)
-  @JoinColumn(name = "u_id")
-  @BeanProperty
+  @OneToOne(fetch = FetchType.EAGER, optional = false) @JoinColumn(name = "u_id") @BeanProperty
   var user: User = _
 
   def this() = this(null, -1)
