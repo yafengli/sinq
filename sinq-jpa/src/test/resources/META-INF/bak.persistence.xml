@@ -46,7 +46,7 @@
             <property name="hibernate.hikari.maximumPoolSize" value="5"/>
             <property name="hibernate.hikari.idleTimeout" value="30000"/>
             <property name="hibernate.hikari.driverClassName" value="org.postgresql.Driver"/>
-            <property name="hibernate.hikari.jdbcUrl" value="jdbc:postgresql://127.0.0.1:5432/test"/>
+            <property name="hibernate.hikari.jdbcUrl" value="jdbc:postgresql://127.0.0.1:5432/testdb"/>
             <property name="hibernate.hikari.dataSource.user" value="postgres"/>
             <property name="hibernate.hikari.dataSource.password" value=""/>
 
