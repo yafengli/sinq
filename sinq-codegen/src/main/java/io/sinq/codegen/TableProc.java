@@ -142,7 +142,7 @@ public class TableProc {
                 fd.setTypename("Long");
                 data.getFields().add(fd);
             };
-            
+
             Arrays.asList(joinTable.joinColumns()).stream().forEach(consumer);
             Arrays.asList(joinTable.inverseJoinColumns()).stream().forEach(consumer);
 
