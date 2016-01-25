@@ -1,27 +1,12 @@
 package test
 
-import java.math.BigInteger
-
+import io.sinq.SinqStream
 import io.sinq.expr.{Eq, Ge, In, Le}
 import io.sinq.func._
 import models.h2.init._
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.H2DBInit._
 
-@RunWith(classOf[JUnitRunner])
-class SinqH2Suite extends FunSuite with BeforeAndAfter {
-
-  before {
-    init()
-  }
-
-  after {
-    latch.countDown()
-  }
-
-  test("SQL Build.") {
+object SinqH2Unit {
+  def test(implicit sinq: SinqStream): Unit = {
     val condition = Eq(T_PERSON.id, 1).or(Le(T_PERSON.id, 12).and(Ge(T_PERSON.age, 11L).or(In(T_PERSON.id, Seq(1, 2, 3))).or(Ge(T_PERSON.age, 15L))))
     val q1 = sinq.select(T_PERSON.id, T_PERSON.name, T_ZONE.name, T_ZONE.createDate, T_ZONE.p_id).from(T_PERSON).join(T_ZONE).on(Eq(T_PERSON.id, T_ZONE.p_id)).where(condition).orderBy(Order(ASC, T_PERSON.id)).limit(10, 0)
     println("sql:" + q1.sql())

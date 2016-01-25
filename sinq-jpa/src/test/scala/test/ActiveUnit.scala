@@ -2,23 +2,9 @@ package test
 
 import jpa.entity.User
 import jpa.impl.ActiveJPA
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.H2DBInit._
 
-@RunWith(classOf[JUnitRunner])
-class ActiveSuite extends FunSuite with BeforeAndAfter {
-
-  before {
-    init()
-  }
-
-  after {
-    latch.countDown()
-  }
-
-  test("Active JPA") {
+object ActiveUnit {
+  def test(implicit ua: ActiveJPA[User]): Unit = {
     dbStore
     find(36L)
     fetch
