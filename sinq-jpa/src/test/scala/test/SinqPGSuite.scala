@@ -1,15 +1,15 @@
 package test
 
-import init._
 import io.sinq.expr.{Eq, Ge, In, Le}
-import io.sinq.func.{ASC, Order}
+import io.sinq.func.{ASC, Count, Order, Sum}
+import models.postgres.init._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.DBInit._
+import test.PGDBInit._
 
 @RunWith(classOf[JUnitRunner])
-class SinqSuite extends FunSuite with BeforeAndAfter {
+class SinqPGSuite extends FunSuite with BeforeAndAfter {
 
   before {
     init()
@@ -38,17 +38,14 @@ class SinqSuite extends FunSuite with BeforeAndAfter {
     }
 
     sinq.withEntityManager { em =>
-      val q = em.createNativeQuery("select ipaddr from t_address where id = 1")
-      val rs = q.getSingleResult
-      println(rs.getClass)
+      val q = em.createNativeQuery("select ipaddr from t_address")
+      import scala.collection.JavaConversions._
+      q.getResultList.toIndexedSeq.foreach(println(_))
     }
-
-    /**
-      * sinq.select(_USER.id, _USER.name, _USER.age).from(_USER).collect().foreach(t => println(s"[id,name,age] id:${t._1} name:${t._2} age:${t._3}"))
-      * sinq.from(_USER).collect().foreach(u => println(s"[User] id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress}"))
-      * sinq.select(Count(_USER.id)).from(_USER).single().foreach(c => println(s"count:${c}"))
-      * sinq.select(Sum(_USER.age)).from(_USER).single().foreach(s => println(s"sum:${s}"))
-      **/
+    sinq.select(T_USER.id, T_USER.name, T_USER.age).from(T_USER).collect().foreach(t => println(s"[id,name,age] id:${t._1} name:${t._2} age:${t._3}"))
+    sinq.from(T_USER).collect().foreach(u => println(s"[User] id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress}"))
+    sinq.select(Count(T_USER.id)).from(T_USER).single().foreach(c => println(s"count:${c}"))
+    sinq.select(Sum(T_USER.age)).from(T_USER).single().foreach(s => println(s"sum:${s}"))
   }
 }
 

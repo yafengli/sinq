@@ -1,5 +1,5 @@
-## ¶Ô£¬»¹ÓÐ¶àÊý¾Ý¿â
-+ `val sinq = SinqStream(JPA.PERSISTENCE.NAME)`µ±Ç°´´½¨sinqµÄÏß³ÌÊ¹ÓÃ`JPA.PERSISTENCE.NAME`ÅäÖÃµÄÊý¾Ý¿âÄÚÈÝ¡£
+## ï¿½Ô£ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½Ý¿ï¿½
++ `val sinq = SinqStream(JPA.PERSISTENCE.NAME)`ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½sinqï¿½ï¿½ï¿½ß³ï¿½Ê¹ï¿½ï¿½`JPA.PERSISTENCE.NAME`ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½Ý¡ï¿½
 + `persistence.xml`:
 
         <?xml version="1.0" encoding="UTF-8"?>
@@ -8,8 +8,8 @@
                      xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
             <persistence-unit name="h2" transaction-type="RESOURCE_LOCAL">
                 <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-                <class>demo.models.User</class>
-                <class>demo.models.Address</class>
+                <class>demo.models.postgres.User</class>
+                <class>demo.models.postgres.Address</class>
                 <properties>
                     <property name="hibernate.connection.provider_class" value="io.sinq.support.DruidConnectionProvider"/>
                     <property name="driverClassName" value="org.h2.Driver"/>
@@ -40,8 +40,8 @@
             </persistence-unit>
         </persistence>
 
-+ ¶àÊý¾Ý¿â£º
++ ï¿½ï¿½ï¿½ï¿½ï¿½Ý¿â£º
 
-        SinqStream("h2").select().from()...         //Ê¹ÓÃh2¶¨ÒåµÄÅäÖÃÊý¾ÝÔ´
+        SinqStream("h2").select().from()...         //Ê¹ï¿½ï¿½h2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´
 
-        SinqStream("postgres").select().from()...   //Ê¹ÓÃpostgres¶¨ÒåµÄÅäÖÃÊý¾ÝÔ´
+        SinqStream("postgres").select().from()...   //Ê¹ï¿½ï¿½postgresï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´

@@ -1,10 +1,10 @@
-package models
+package models.postgres
 
+import java.net.InetAddress
 import java.sql.Timestamp
 import javax.persistence._
 
-import models.ext.{InetConverter, InetObject}
-import org.eclipse.persistence.annotations
+import models.postgres.ext.InetJpaConverter
 
 import scala.beans.BeanProperty
 
@@ -15,17 +15,17 @@ class Address {
   @GeneratedValue(strategy = GenerationType.AUTO)
   var id: Long = _
 
-
   @Column
   @BeanProperty
   var createdate: Timestamp = new Timestamp(System.currentTimeMillis())
 
+  @Column
+  @BeanProperty var num: Int = _
+
   @Column(columnDefinition = "inet")
-  @annotations.Converter(name = "inetConverter", converterClass = classOf[InetConverter])
-  @annotations.Convert("inetConverter")
-  //  @Convert(converter = classOf[InetConverter])
+  @Convert(converter = classOf[InetJpaConverter])
   @BeanProperty
-  var ipAddr: InetObject = _
+  var ipAddr: InetAddress = _
 
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "u_id")

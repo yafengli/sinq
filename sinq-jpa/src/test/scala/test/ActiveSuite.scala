@@ -5,11 +5,10 @@ import jpa.impl.ActiveJPA
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.DBInit._
+import test.PGDBInit._
 
 @RunWith(classOf[JUnitRunner])
 class ActiveSuite extends FunSuite with BeforeAndAfter {
-  val ua = ActiveJPA[User]("h2")
   before {
     init()
   }
@@ -19,17 +18,17 @@ class ActiveSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Active JPA") {
-    dbStore(ua)
-    find(ua, 36L)
-    fetch(ua)
+    dbStore
+    find(36L)
+    fetch
 
-    def fetch(a: ActiveJPA[User]): Unit = {
+    def fetch(implicit a: ActiveJPA[User]): Unit = {
       a.fetch("age").foreach { u =>
         println(s"id:${u.id} name:${u.name} age:${u.age}")
       }
     }
 
-    def find(a: ActiveJPA[User], id: Long): User = {
+    def find(id: Long)(implicit a: ActiveJPA[User]): User = {
       val user = if (a.exists(id)) a.find(id) else new User()
 
       if (user.id != id) {
@@ -41,7 +40,7 @@ class ActiveSuite extends FunSuite with BeforeAndAfter {
       user
     }
 
-    def dbStore(a: ActiveJPA[User]): Unit = {
+    def dbStore(implicit a: ActiveJPA[User]): Unit = {
       if (a.count() <= 10) {
         (0 to 10).foreach { i =>
           val user = new User()

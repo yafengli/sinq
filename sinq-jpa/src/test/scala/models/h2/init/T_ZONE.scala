@@ -1,18 +1,16 @@
-package init
+package models.h2.init
 
 import java.util.Date
 
 import io.sinq.provider.{Column, Table}
-import models.Address
+import models.h2.Zone
 
-object T_ADDRESS extends Table[Address]("t_address") {
+object T_ZONE extends Table[Zone]("t_zone") {
   def id = Column(this, classOf[Long], "id")
 
   def name = Column(this, classOf[String], "name")
 
   def createDate = Column(this, classOf[Date], "createdate")
 
-  def num = Column(this, classOf[Int], "num")
-
-  def u_id = Column(this, classOf[Long], "u_id")
+  def p_id = Column(this, classOf[Long], "p_id")
 }

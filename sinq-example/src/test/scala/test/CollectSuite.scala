@@ -1,7 +1,7 @@
 package test
 
 import gen._STUDENT
-import init.ImplicitsSinq.sinq2Count
+import models.postgres.init.ImplicitsSinq.sinq2Count
 import io.sinq.expr._
 import io.sinq.func.{ASC, Order}
 import io.sinq.provider.Result
@@ -9,7 +9,7 @@ import models.Student
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.DBInit._
+import test.PGDBInit._
 
 @RunWith(classOf[JUnitRunner])
 class CollectSuite extends FunSuite with BeforeAndAfter {

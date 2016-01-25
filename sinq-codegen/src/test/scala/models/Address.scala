@@ -3,6 +3,8 @@ package models
 import java.util.Date
 import javax.persistence._
 
+import models.postgres
+
 import scala.beans.BeanProperty
 
 /**
@@ -21,14 +23,14 @@ case class Address(@BeanProperty var name: String, @BeanProperty var num: Int) {
   @OneToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "u_id")
   @BeanProperty
-  var user: User = _
+  var user: postgres.User = _
 
   @BeanProperty
   var createDate = new Date()
 
   def this() = this(null, -1)
 
-  def this(name: String, age: Int, user: User) = {
+  def this(name: String, age: Int, user: postgres.User) = {
     this(name, age)
     this.user = user
   }

@@ -1,7 +1,7 @@
-package init
+package models.postgres.init
 
 import io.sinq.provider.{Column, Table}
-import models.User
+import models.postgres.User
 
 object T_USER extends Table[User]("t_user") {
   def id = Column(this, classOf[Long], "id")

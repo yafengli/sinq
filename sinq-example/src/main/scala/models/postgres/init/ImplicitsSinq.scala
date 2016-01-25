@@ -1,4 +1,4 @@
-package init
+package models.postgres.init
 
 import io.sinq.SinqStream
 import io.sinq.provider.Table

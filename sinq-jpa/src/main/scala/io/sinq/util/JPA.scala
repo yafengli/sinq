@@ -12,7 +12,7 @@ object JPA {
   private val EMF_MAP = TrieMap[String, EntityManagerFactory]()
 
   /**
-   * multi persistence name init.
+   * multi persistence name models.postgres.init.
    * @param pns persistence names
    */
   def initPersistenceName(pns: String*) {

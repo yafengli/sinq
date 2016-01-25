@@ -1,12 +1,17 @@
-package models
+package models.postgres
 
-import javax.persistence._
-import scala.beans.BeanProperty
 import java.util
+import javax.persistence._
 
+import scala.beans.BeanProperty
+
+/**
+  * Created by YaFengLi on 2016/1/25.
+  */
 @Entity
 @Table(name = "t_user")
-case class User(@BeanProperty var name: String, @BeanProperty var age: Int) extends Serializable{
+case class
+User(@BeanProperty var name: String, @BeanProperty var age: Int) extends Serializable{
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @BeanProperty

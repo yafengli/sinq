@@ -2,7 +2,7 @@ package test
 
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
-import init.ImplicitsSinq.sinq2Count
+import models.postgres.init.ImplicitsSinq.sinq2Count
 import io.sinq.SinqStream
 import io.sinq.util.JPA
 import models.{Husband, Student, Teacher}
@@ -24,7 +24,7 @@ object H2DB {
         println(s"##########DB Server start.###############")
       }
       JPA.initPersistenceName("h2")
-      //data init
+      //data models.postgres.init
       dataStore()
       Future {
         latch.await(20, TimeUnit.SECONDS)
