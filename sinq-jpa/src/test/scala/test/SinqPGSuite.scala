@@ -1,7 +1,7 @@
 package test
 
 import io.sinq.expr.{Eq, Ge, In, Le}
-import io.sinq.func.{ASC, Count, Order, Sum}
+import io.sinq.func._
 import models.postgres.init._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -44,8 +44,9 @@ class SinqPGSuite extends FunSuite with BeforeAndAfter {
     }
     sinq.select(T_USER.id, T_USER.name, T_USER.age).from(T_USER).collect().foreach(t => println(s"[id,name,age] id:${t._1} name:${t._2} age:${t._3}"))
     sinq.from(T_USER).collect().foreach(u => println(s"[User] id:${u.getId} name:${u.getName} age:${u.getAge} address:${u.getAddress}"))
-    sinq.select(Count(T_USER.id)).from(T_USER).single().foreach(c => println(s"count:${c}"))
-    sinq.select(Sum(T_USER.age)).from(T_USER).single().foreach(s => println(s"sum:${s}"))
+    sinq.select(Count[Long](T_USER.id)).from(T_USER).single().foreach(c => println(s"count:${c}"))
+    sinq.select(Sum[Long](T_USER.age)).from(T_USER).single().foreach(s => println(s"sum:${s}"))
+    sinq.select(Avg[java.math.BigDecimal](T_USER.age)).from(T_USER).single().foreach(s => println(s"sum:${s}"))
   }
 }
 

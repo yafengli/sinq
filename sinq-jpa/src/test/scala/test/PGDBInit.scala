@@ -1,14 +1,15 @@
 package test
 
+import java.math.BigInteger
 import java.net.InetAddress
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
-import models.postgres.init.T_USER
 import io.sinq.SinqStream
 import io.sinq.func.Count
 import io.sinq.util.JPA
 import jpa.impl.ActiveJPA
-import models.postgres.{User, Address}
+import models.postgres.init.T_USER
+import models.postgres.{Address, User}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -40,8 +41,8 @@ object PGDBInit {
   }
 
   private def dataStore(implicit sinq: SinqStream): Unit = {
-    val count = sinq.select(Count(T_USER.id)).from(T_USER).single().getOrElse(0L)
-    if (count <= 0) {
+    val count = sinq.select(Count[Long](T_USER.id)).from(T_USER).single().getOrElse(0L)
+    if (count.longValue() <= 0) {
       (0 to 2).foreach {
         i =>
           val user = User(s"user-${i}", i)

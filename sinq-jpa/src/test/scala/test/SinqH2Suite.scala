@@ -1,7 +1,9 @@
 package test
 
+import java.math.BigInteger
+
 import io.sinq.expr.{Eq, Ge, In, Le}
-import io.sinq.func.{ASC, Count, Order, Sum}
+import io.sinq.func._
 import models.h2.init._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -39,8 +41,9 @@ class SinqH2Suite extends FunSuite with BeforeAndAfter {
 
     sinq.select(T_PERSON.id, T_PERSON.name, T_PERSON.age).from(T_PERSON).collect().foreach(t => println(s"[id,name,age] id:${t._1} name:${t._2} age:${t._3}"))
     sinq.from(T_PERSON).collect().foreach(u => println(s"[Person] id:${u.id} name:${u.name} age:${u.age} address:${u.zone}"))
-    sinq.select(Count(T_PERSON.id)).from(T_PERSON).single().foreach(c => println(s"count:${c}"))
-    sinq.select(Sum(T_PERSON.age)).from(T_PERSON).single().foreach(s => println(s"sum:${s}"))
+    sinq.select(Count[Long](T_PERSON.id)).from(T_PERSON).single().foreach(c => println(s"count:${c}"))
+    sinq.select(Sum[Long](T_PERSON.age)).from(T_PERSON).single().foreach(s => println(s"sum:${s}"))
+    sinq.select(Avg[Int](T_PERSON.age)).from(T_PERSON).single().foreach(s => println(s"avg:${s}"))
   }
 }
 

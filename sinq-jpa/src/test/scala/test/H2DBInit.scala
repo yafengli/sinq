@@ -1,5 +1,6 @@
 package test
 
+import java.math.BigInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
 import io.sinq.SinqStream
@@ -36,8 +37,8 @@ object H2DBInit {
   }
 
   private def dataStore(implicit sinq: SinqStream): Unit = {
-    val count = sinq.select(Count(T_PERSON.id)).from(T_PERSON).single().getOrElse(0L)
-    if (count <= 0) {
+    val count = sinq.select(Count[Long](T_PERSON.id)).from(T_PERSON).single().getOrElse(0L)
+    if (count.longValue() <= 0) {
       (0 to 2).foreach {
         i =>
           val person = Person(s"user-${i}", i)

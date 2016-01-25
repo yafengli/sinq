@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+    <persistence-unit name="h2" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>models.h2.Person</class>
+        <class>models.h2.Zone</class>
+        <properties>
+            <property name="hibernate.connection.provider_class" value="com.zaxxer.hikari.hibernate.HikariConnectionProvider"/>
+            <!-- hikaricp -->
+            <property name="hibernate.hikari.maximumPoolSize" value="5"/>
+            <property name="hibernate.hikari.idleTimeout" value="30000"/>
+            <property name="hibernate.hikari.dataSourceClassName" value="org.h2.jdbcx.JdbcDataSource"/>
+            <property name="hibernate.hikari.dataSource.url" value="jdbc:h2:mem:test"/>
+            <property name="hibernate.hikari.dataSource.user" value="sa"/>
+            <property name="hibernate.hikari.dataSource.password" value=""/>
+            <!-- hibernate -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <!--
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:testb"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+            -->
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="postgres" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <!-- Converter -->
+        <class>models.postgres.ext.InetJpaConverter</class>
+        <!-- Entity -->
+        <class>models.postgres.Address</class>
+        <class>models.postgres.User</class>
+        <class>models.postgres.Family</class>
+        <properties>
+            <!-- Hibernate -->
+
+            <property name="hibernate.connection.provider_class" value="com.zaxxer.hikari.hibernate.HikariConnectionProvider"/>
+
+            <property name="hibernate.hikari.maximumPoolSize" value="5"/>
+            <property name="hibernate.hikari.idleTimeout" value="30000"/>
+            <property name="hibernate.hikari.driverClassName" value="org.postgresql.Driver"/>
+            <property name="hibernate.hikari.jdbcUrl" value="jdbc:postgresql://127.0.0.1:5432/test"/>
+            <property name="hibernate.hikari.dataSource.user" value="postgres"/>
+            <property name="hibernate.hikari.dataSource.password" value=""/>
+
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <!-- EclipseLink-->
+            <!--
+            <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5432/testdb"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+            -->
+        </properties>
+    </persistence-unit>
+</persistence>
