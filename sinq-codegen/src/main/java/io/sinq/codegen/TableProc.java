@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static io.sinq.codegen.util.FileWriter.withWriter;
 import static io.sinq.codegen.util.FreeMarkerUtil.baseDir;
@@ -128,32 +129,23 @@ public class TableProc {
             data.setEntityClassName(c.getName());
             data.setPkg(outPkg);
             data.setTableName(joinTable.name());
-            Arrays.asList(joinTable.joinColumns()).stream().forEach(jc -> {
+
+            Consumer<JoinColumn> consumer = (JoinColumn t) -> {
                 TableField fd = new TableField();
-                fd.setColumnId(jc.name());
-                fd.setName(jc.name());
+                fd.setColumnId(t.name());
+                fd.setName(t.name());
                 //TODO own id type
-                if (jc.referencedColumnName() != null) {
+                if (t.referencedColumnName() != null) {
 
                 } else {
                 }
                 fd.setTypename("Long");
                 data.getFields().add(fd);
-            });
+            };
+            
+            Arrays.asList(joinTable.joinColumns()).stream().forEach(consumer);
+            Arrays.asList(joinTable.inverseJoinColumns()).stream().forEach(consumer);
 
-            Arrays.asList(joinTable.inverseJoinColumns()).stream().forEach(jc -> {
-                TableField fd = new TableField();
-                fd.setColumnId(jc.name());
-                fd.setName(jc.name());
-                //TODO map id type
-                if (jc.referencedColumnName() != null) {
-
-                } else {
-
-                }
-                fd.setTypename("Long");
-                data.getFields().add(fd);
-            });
             map.put("data", data);
 
             File f = new File(baseDir, outPkg.replace(".", "/") + "/" + data.getName() + ".scala");
