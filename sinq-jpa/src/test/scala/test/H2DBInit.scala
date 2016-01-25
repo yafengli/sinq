@@ -1,11 +1,11 @@
 package test
 
-import java.math.BigInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
 import io.sinq.SinqStream
 import io.sinq.func.Count
 import io.sinq.util.JPA
+import jpa.impl.ActiveJPA
 import models.h2.init.T_PERSON
 import models.h2.{Person, Zone}
 import org.slf4j.LoggerFactory
@@ -18,7 +18,7 @@ object H2DBInit {
   val pn = "h2"
 
   implicit lazy val sinq = SinqStream(pn)
-
+  implicit lazy val ua = ActiveJPA[jpa.entity.User](pn)
   // Test Method Number
   val count = 1
   val latch = new CountDownLatch(count)

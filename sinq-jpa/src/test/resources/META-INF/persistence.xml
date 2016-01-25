@@ -7,6 +7,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>models.h2.Person</class>
         <class>models.h2.Zone</class>
+        <class>jpa.entity.User</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:testb"/>

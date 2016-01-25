@@ -5,10 +5,11 @@ import jpa.impl.ActiveJPA
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.PGDBInit._
+import test.H2DBInit._
 
 @RunWith(classOf[JUnitRunner])
 class ActiveSuite extends FunSuite with BeforeAndAfter {
+
   before {
     init()
   }

@@ -20,7 +20,6 @@ object PGDBInit {
   val pn = "postgres"
 
   implicit lazy val sinq = SinqStream(pn)
-  implicit lazy val ua = ActiveJPA[jpa.entity.User](pn)
 
   // Test Method Number
   val count = 1

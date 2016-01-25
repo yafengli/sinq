@@ -60,8 +60,7 @@ trait Record[T] {
 
   def count(): Long = {
     withEntityManager { em =>
-      val sql = s"select count(0) from ${getType.getName()}"
-      println(s"sql:${sql}")
+      val sql = s"select count(t) from ${getType.getName()} as t"
       val query = em.createQuery(sql)
       query.getSingleResult() match {
         case num: Number => num.longValue()
@@ -97,8 +96,6 @@ trait Record[T] {
       q.select(b).orderBy(cb.desc(b.get(ocn)))
 
       val ql = em.createQuery(q)
-      val sql = ql.unwrap(classOf[org.hibernate.Query]).getQueryString()
-      println(s"sql:${sql}")
       if (limit > 0) ql.setMaxResults(limit)
       ql.getResultList().foreach { e => t += e }
     }
