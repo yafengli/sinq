@@ -7,8 +7,8 @@
         <class>models.Teacher</class>
         <class>models.Husband</class>
         <class>models.Student</class>
-        <class>models.postgres.Address</class>
-        <class>models.postgres.User</class>
+        <class>models.Address</class>
+        <class>models.User</class>
         <properties>
             <!-- provider -->
             <property name="hibernate.connection.provider_class" value="com.zaxxer.hikari.hibernate.HikariConnectionProvider"/>
@@ -16,7 +16,7 @@
             <property name="hibernate.hikari.maximumPoolSize" value="5"/>
             <property name="hibernate.hikari.idleTimeout" value="30000"/>
             <property name="hibernate.hikari.dataSourceClassName" value="org.postgresql.ds.PGSimpleDataSource"/>
-            <property name="hibernate.hikari.dataSource.url" value="jdbc:postgresql://127.0.0.1:5432/test"/>
+            <property name="hibernate.hikari.dataSource.url" value="jdbc:postgresql://127.0.0.1:5432/testdb"/>
             <property name="hibernate.hikari.dataSource.user" value="postgres"/>
             <property name="hibernate.hikari.dataSource.password" value=""/>
             <!-- hibernate -->
