@@ -22,6 +22,9 @@ class Address {
   @Column
   @BeanProperty var num: Int = _
 
+  @Column
+  @BeanProperty var name: String = _
+
   @Column(columnDefinition = "inet")
   @Convert(converter = classOf[InetJpaConverter])
   @BeanProperty
