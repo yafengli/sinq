@@ -7,7 +7,7 @@ import io.sinq.func.{ASC, Order}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import test.PGDBInit._
+import test.H2DB._
 
 @RunWith(classOf[JUnitRunner])
 class StringSuite extends FunSuite with BeforeAndAfter {

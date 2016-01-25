@@ -1,10 +1,9 @@
 package models
 
+import java.util
 import javax.persistence._
-import models.postgres
 
 import scala.beans.BeanProperty
-import java.util
 
 @Entity
 @Table(name = "t_user")
@@ -16,15 +15,15 @@ case class User(@BeanProperty var name: String, @BeanProperty var age: Int) {
 
   @OneToOne(cascade = Array(CascadeType.REMOVE), mappedBy = "user")
   @BeanProperty
-  var address: postgres.Address = _
+  var address: Address = _
 
 
   @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users")
-  var teachers: util.Set[postgres.Family] = new util.HashSet[postgres.Family]()
+  var teachers: util.Set[Family] = new util.HashSet[Family]()
 
   def this() = this(null, -1)
 
-  def this(name: String, age: Int, address: postgres.Address) = {
+  def this(name: String, age: Int, address: Address) = {
     this(name, age)
     this.address = address
   }

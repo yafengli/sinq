@@ -3,8 +3,6 @@ package models
 import java.util
 import javax.persistence._
 
-import models.postgres
-
 import scala.beans.BeanProperty
 
 @Entity
@@ -21,5 +19,5 @@ case class Family(@BeanProperty var name: String, @BeanProperty var age: Int) {
   ), inverseJoinColumns = Array(
     new JoinColumn(name = "u_id")
   ))
-  var users: util.Set[postgres.User] = new util.HashSet[postgres.User]()
+  var users: util.Set[User] = new util.HashSet[User]()
 }
