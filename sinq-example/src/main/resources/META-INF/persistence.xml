@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
+<persistence version="2.1"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-    <persistence-unit name="h2" transaction-type="RESOURCE_LOCAL">
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+    <persistence-unit name="postgres" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>models.Teacher</class>
         <class>models.Husband</class>
@@ -16,7 +17,7 @@
             <property name="hibernate.hikari.maximumPoolSize" value="5"/>
             <property name="hibernate.hikari.idleTimeout" value="30000"/>
             <property name="hibernate.hikari.dataSourceClassName" value="org.postgresql.ds.PGSimpleDataSource"/>
-            <property name="hibernate.hikari.dataSource.url" value="jdbc:postgresql://127.0.0.1:5432/demodb"/>
+            <property name="hibernate.hikari.dataSource.url" value="jdbc:postgresql://127.0.0.1:5432/testdb"/>
             <property name="hibernate.hikari.dataSource.user" value="postgres"/>
             <property name="hibernate.hikari.dataSource.password" value=""/>
             <!-- hibernate -->

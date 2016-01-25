@@ -2,30 +2,27 @@ package test
 
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
-import models.postgres.init.ImplicitsSinq.sinq2Count
 import io.sinq.SinqStream
 import io.sinq.util.JPA
+import models.postgres.init.ImplicitsSinq.sinq2Count
 import models.{Husband, Student, Teacher}
-import org.h2.tools.Server
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object H2DB {
-  // Test Method Number
-  val count = 6
+  val pn = "postgres"
+  implicit lazy val sinq = SinqStream(pn)
+
+  val count = 5
   val latch = new CountDownLatch(count)
-  val server = Server.createTcpServer()
-  lazy val sinq = SinqStream("h2")
 
   def init(): Unit = {
     if (latch.getCount == count) {
-      if (!server.isRunning(false)) {
-        println(s"##########DB Server start.###############")
-      }
-      JPA.initPersistenceName("h2")
+      println(s"##########DB Server start.###############")
+      JPA.initPersistenceName(pn)
       //data models.postgres.init
-      dataStore()
+      dataStore
       Future {
         latch.await(20, TimeUnit.SECONDS)
         JPA.release()
@@ -34,8 +31,7 @@ object H2DB {
     }
   }
 
-  private def dataStore(): Unit = {
-    val sinq = SinqStream("h2")
+  private def dataStore(implicit sinq: SinqStream): Unit = {
     val count = sinq.count(classOf[Student])
     if (count <= 10) {
       val teacher = Teacher("习大大", 999, "BeiJing")

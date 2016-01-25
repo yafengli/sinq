@@ -1,11 +1,10 @@
 package gen
 
-import io.sinq.provider.{Table, Column}
+import io.sinq.provider._
 
-object _STUDENT extends Table[models.Student]("t_student"){
+object T_TEACHER extends Table[models.Teacher]("e_teacher"){
     def name = Column(this,classOf[String],"name")
     def age = Column(this,classOf[Int],"age")
     def address = Column(this,classOf[String],"address")
     def id = Column(this,classOf[java.math.BigInteger],"id")
-    def teacher = Column(this,classOf[java.math.BigInteger],"teacher_id")
 }

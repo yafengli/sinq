@@ -22,6 +22,7 @@ public class TableProc {
 
     private String outPkg;
     private String scanPkg;
+    private String suffix = "T_";
     private Map<String, String> typeDataMap;
 
     public TableProc(String scanPkg, String outPkg, Map<String, String> typeDataMap) {
@@ -29,6 +30,14 @@ public class TableProc {
         this.outPkg = outPkg;
         this.typeDataMap = typeDataMap;
     }
+
+    public TableProc(String scanPkg, String outPkg, String suffix, Map<String, String> typeDataMap) {
+        this.scanPkg = scanPkg;
+        this.outPkg = outPkg;
+        this.suffix = suffix;
+        this.typeDataMap = typeDataMap;
+    }
+
 
     public void proc() {
         try {
@@ -56,7 +65,7 @@ public class TableProc {
                 Table annotation = c.getAnnotation(Table.class);
                 TableData data = new TableData();
                 data.setPkg(outPkg);
-                data.setName("_" + c.getSimpleName().toUpperCase());
+                data.setName(suffix + c.getSimpleName().toUpperCase());
                 data.setEntityClassName(c.getName());
                 data.setTableName(annotation.name());
 

@@ -9,12 +9,17 @@ import scala.beans.BeanProperty
   * Date: 12-12-3
   * Time: 下午1:28
   */
-@Entity @Table(name = "t_husband")
+@Entity
+@Table(name = "e_husband")
 case class Husband(@BeanProperty var name: String, @BeanProperty var age: Int) {
-  @Id @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_t_husband") @TableGenerator(name = "seq_t_husband", table = "seq_t_husband", allocationSize = 1) @BeanProperty
+  @Id
+  @GeneratedValue(strategy = GenerationType.TABLE, generator = "seq_e_husband")
+  @TableGenerator(name = "seq_e_husband", table = "seq_e_husband", allocationSize = 1)
+  @BeanProperty
   var id: Long = _
 
-  @OneToOne(fetch = FetchType.EAGER, optional = false) @BeanProperty
+  @OneToOne(fetch = FetchType.EAGER, optional = false)
+  @BeanProperty
   var teacher: Teacher = _
 
   def this() = this(null, -1)
