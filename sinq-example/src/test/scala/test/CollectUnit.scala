@@ -2,7 +2,7 @@ package test
 
 import gen.T_STUDENT
 import io.sinq.expr._
-import io.sinq.func.{ASC, Order}
+import io.sinq.func.ASC
 import io.sinq.provider.Result
 import models.Student
 import models.postgres.init.ImplicitsSinq.sinq2Count
@@ -16,9 +16,9 @@ object CollectUnit {
 
     proc(sinq.from(T_STUDENT))(_.collect().foreach { t => println(s"id:${t.id} name:${t.name} age:${t.age}") })
 
-    proc(sinq.from(T_STUDENT).where(condition).orderBy(Order(ASC, T_STUDENT.id)).limit(10, 0))(_.collect().foreach(t => println(s"@id:${t.id} name:${t.name} age:${t.age}")))
+    proc(sinq.from(T_STUDENT).where(condition).orderBy(ASC(T_STUDENT.id)).limit(10, 0))(_.collect().foreach(t => println(s"@id:${t.id} name:${t.name} age:${t.age}")))
 
-    proc(sinq.select(T_STUDENT.id, T_STUDENT.name, T_STUDENT.age).from(T_STUDENT).where(condition).orderBy(Order(ASC, T_STUDENT.id)).limit(20, 0))(_.collect().foreach {
+    proc(sinq.select(T_STUDENT.id, T_STUDENT.name, T_STUDENT.age).from(T_STUDENT).where(condition).orderBy(ASC(T_STUDENT.id)).limit(20, 0))(_.collect().foreach {
       case (id, name, age) => println(s"&id:${id} name:${name} age:${age}")
       case _ => println("Error")
     })

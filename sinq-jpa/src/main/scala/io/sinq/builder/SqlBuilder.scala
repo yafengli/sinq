@@ -47,7 +47,7 @@ case class SqlBuilder(val ql: QueryLink) extends Builder {
     if (ql.getOrder != null) {
       buffer.append("order by ")
       buffer.append(linkColumns(tm, false, ql.getOrder.cols: _*)).append(" ")
-      buffer.append(ql.getOrder.orderDesc.identifier()).append(" ")
+      buffer.append(ql.getOrder.identifier()).append(" ")
     }
     //limit offset
     ql.getLimit match {

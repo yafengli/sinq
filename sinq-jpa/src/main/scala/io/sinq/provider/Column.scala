@@ -20,7 +20,7 @@ trait Column[+T] extends Alias {
 }
 
 object Column {
-  def apply[T, K](t: Table[K], ct: Class[T], col: String): Column[T] = new Column[T] {
+  def apply[T, K](t: Table[K], col: String, ct: Class[T]): Column[T] = new Column[T] {
     override def table = t
 
     override def identifier(): String = s"${col}"

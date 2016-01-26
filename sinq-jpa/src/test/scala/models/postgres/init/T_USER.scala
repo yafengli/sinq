@@ -1,14 +1,14 @@
 package models.postgres.init
 
-import io.sinq.provider.{Column, Table}
+import io.sinq.provider.Table
 import models.postgres.User
 
 object T_USER extends Table[User]("t_user") {
-  def id = Column(this, classOf[Long], "id")
+  def id = column("id", classOf[Long])
 
-  def name = Column(this, classOf[String], "name")
+  def name = column("name", classOf[String])
 
-  def age = Column(this, classOf[Int], "age")
+  def age = column("age", classOf[Int])
 }
 
 

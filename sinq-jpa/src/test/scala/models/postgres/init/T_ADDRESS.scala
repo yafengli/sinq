@@ -1,18 +1,21 @@
 package models.postgres.init
 
+import java.net.InetAddress
 import java.util.Date
 
-import io.sinq.provider.{Column, Table}
+import io.sinq.provider.Table
 import models.postgres.Address
 
 object T_ADDRESS extends Table[Address]("t_address") {
-  def id = Column(this, classOf[Long], "id")
+  def id = column("id", classOf[Long])
 
-  def name = Column(this, classOf[String], "name")
+  def name = column("name", classOf[String])
 
-  def createDate = Column(this, classOf[Date], "createdate")
+  def createDate = column("createdate", classOf[Date])
 
-  def num = Column(this, classOf[Int], "num")
+  def ipAddr = column("ipaddr", classOf[InetAddress])
 
-  def u_id = Column(this, classOf[Long], "u_id")
+  def num = column("num", classOf[Int])
+
+  def u_id = column("u_id", classOf[Long])
 }

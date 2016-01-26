@@ -38,7 +38,6 @@ public class TableProc {
         this.typeDataMap = typeDataMap;
     }
 
-
     public void proc() {
         try {
             URL url = Thread.currentThread().getContextClassLoader().getResource(scanPkg.replace(".", "/"));

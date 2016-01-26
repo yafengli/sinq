@@ -11,6 +11,7 @@ class CodeGenSuite extends FunSuite with BeforeAndAfter {
   test("models.postgres.init.") {
     val c = classOf[TableProc]
     println(c.getName + "|" + c.getSimpleName + "|" + c.getCanonicalName)
+
     val tableProc = new TableProc("models", "gen", TypeDataMap.HIBERNATE)
     tableProc.proc()
   }

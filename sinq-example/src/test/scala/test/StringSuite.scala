@@ -3,7 +3,7 @@ package test
 import gen.{T_STUDENT, T_TEACHER}
 import io.sinq.builder.ConditionBuilder
 import io.sinq.expr.{Eq, Ge, In, Le}
-import io.sinq.func.{ASC, Order}
+import io.sinq.func.ASC
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -18,7 +18,7 @@ class StringSuite extends FunSuite with BeforeAndAfter {
     println("sql:" + cb.translate(condition))
     println("params:" + cb.params(condition))
 
-    val query = sinq.from(T_STUDENT).join(T_TEACHER).on(Eq(T_STUDENT.teacher, T_TEACHER.id)).where(condition).orderBy(Order(ASC, T_STUDENT.id)).limit(10, 0)
+    val query = sinq.from(T_STUDENT).join(T_TEACHER).on(Eq(T_STUDENT.teacher, T_TEACHER.id)).where(condition).orderBy(ASC(T_STUDENT.id)).limit(10, 0)
 
     println("sql:" + query.sql())
     println("params:" + query.params())

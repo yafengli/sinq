@@ -1,15 +1,15 @@
 package io.sinq.func
 
-import io.sinq.provider.{Column, Alias}
+import io.sinq.provider.{Alias, Column}
 
-trait OrderDesc extends Alias
+trait Order extends Alias {
+  def cols: Seq[Column[_]]
+}
 
-object ASC extends OrderDesc {
+case class ASC(val cols: Column[_]*) extends Order {
   override def identifier(): String = "ASC"
 }
 
-object DESC extends OrderDesc {
+case class DESC(val cols: Column[_]*) extends Order {
   override def identifier(): String = "DESC"
 }
-
-case class Order(val orderDesc: OrderDesc, val cols: Column[_]*)
