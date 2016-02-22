@@ -34,11 +34,11 @@
 ## 完整的例子
 
 		val sinq = SinqStream("h2")
-		val query = sinq.select(_USER.id,Sum(_USER.age))
-						.from(_USER).join(ADDRESS).on(Eq(_USER.a_id,ADDRESS.id))
-						.where(Ge(_USER.id,1).and(Le(_USER.age,10).or(Gt(_USER.age,2)))
-						.groupBy(Le(_USER.id,10),_USER.id)
-						.orderBy(Order(ASC, _USER.id))
+		val query = sinq.select(T_USER.id,Sum(T_USER.age))
+						.from(T_USER).join(ADDRESS).on(Eq(T_USER.a_id,ADDRESS.id))
+						.where(Ge(T_USER.id,1).and(Le(T_USER.age,10).or(Gt(T_USER.age,2)))
+						.groupBy(Le(T_USER.id,10),T_USER.id)
+						.orderBy(Order(ASC, T_USER.id))
 						.limit(10,0) 
 		println(query.sql())
 		//SQL: select u.id,sum(u.age) from t_user t inner join t_address a on t.a_id = a.id where u.id >= ? and (u.age <= ? or u.age > ?) group by u.id having u.id <= ? order by u.id asc limit 10 offset 0
