@@ -1,5 +1,7 @@
 import Build._
 
+scalaVersion := $("scala")
+
 resolvers += "jcenter" at "http://jcenter.bintray.com"
 
 lazy val sinq = project.in(file(".")).aggregate(sinq_jpa, sinq_codegen, sinq_example)
