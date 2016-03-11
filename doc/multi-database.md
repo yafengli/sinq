@@ -1,5 +1,5 @@
-## �ԣ����ж����ݿ�
-+ `val sinq = SinqStream(JPA.PERSISTENCE.NAME)`��ǰ����sinq���߳�ʹ��`JPA.PERSISTENCE.NAME`���õ����ݿ����ݡ�
+#### 多数据库支持
++ `val sinq = SinqStream(JPA.PERSISTENCE.NAME)`当前创建sinq的线程使用`JPA.PERSISTENCE.NAME`配置的数据库内容。
 + `persistence.xml`:
 
         <?xml version="1.0" encoding="UTF-8"?>
@@ -39,9 +39,13 @@
                 </properties>
             </persistence-unit>
         </persistence>
+        
++ 使用：
 
-+ �����ݿ⣺
+        val sinq_h2 = SinqStream("h2")
 
-        SinqStream("h2").select().from()...         //ʹ��h2�������������Դ
+        sinq_h2.select().from()...         //使用`H2`数据源
+        
+        val sinq_pg = SinqStream("postgres")
 
-        SinqStream("postgres").select().from()...   //ʹ��postgres�������������Դ
+        sinq_pg.select().from()...   //使用`Postgres`数据源

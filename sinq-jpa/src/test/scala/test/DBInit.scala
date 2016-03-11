@@ -26,14 +26,16 @@ object DBInit {
 
   implicit lazy val ua = ActiveJPA[jpa.entity.User](h2)
 
-  val count = 3
+  val count = 4
   val latch = new CountDownLatch(count)
 
   def init(): Unit = {
     if (latch.getCount == count) {
       println(s"##########DB Server start.###############")
-      JPA.initPersistenceName(h2)
-      JPA.initPersistenceName(postgres)
+      //JPA.initPersistenceName(h2)
+      //JPA.initPersistenceName(postgres)
+      println(s"sinq_h2:${sinq_h2}")
+      println(s"sinq_pg:${sinq_pg}")
       //data models.postgres.init
       h2Init(sinq_h2)
       pgInit(sinq_pg)

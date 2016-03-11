@@ -26,13 +26,16 @@ Sinq
 ## 应用步骤
 + 初始化：
 
-        JPA.initPersistenceName("h2","postgresql")       //persistence name 序列
         val sinq = SinqStream("h2")                      //persistence name
 
 + 调用：
 
         sinq.insert(new User("test",12))              //插入
         sinq.select(_USER.id).from(_USER)             //查询
+
++ 销毁：
+
+        JPA.releaseAll()
 
 #### 增删改查(CRUD)
 + 新增`insert(Entity)`

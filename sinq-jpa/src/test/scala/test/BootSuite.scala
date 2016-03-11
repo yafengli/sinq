@@ -17,12 +17,16 @@ class BootSuite extends FunSuite with BeforeAndAfter {
   }
 
   test("Active") {
-    //ActiveUnit.test
+    ActiveUnit.test
   }
   test("H2") {
-    //SinqH2Unit.test(sinq_h2)
+    SinqH2Unit.test(sinq_h2)
   }
   test("Postgres") {
-    SinqPGUnit.test(sinq_pg)
+    //SinqPGUnit.test(sinq_pg)
+  }
+
+  test("Other") {
+    Hello.test()
   }
 }

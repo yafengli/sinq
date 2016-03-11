@@ -25,8 +25,7 @@
           def address = column("address", classOf[String])
         }
 
-+ 初始化数据源：`JPA.initPersistenceName(pns:String)`
-+ 创建stream：`implicit val sinq = SinqStream("h2")`
++ 创建stream：`implicit val sinq = SinqStream("h2")`，`"h2"`是`JPA persistence.xml`中配置的`persistence-unit name`。
 
 ## Single(单对象查询)
 + JPA Entity结果集：
