@@ -20,12 +20,11 @@ object H2DB {
   def init(): Unit = {
     if (latch.getCount == count) {
       println(s"##########DB Server start.###############")
-      JPA.initPersistenceName(pn)
       //data models.postgres.init
       dataStore
       Future {
         latch.await(20, TimeUnit.SECONDS)
-        JPA.release()
+        JPA.releaseAll()
         println(s"##########DB Server closed.###############")
       }
     }
