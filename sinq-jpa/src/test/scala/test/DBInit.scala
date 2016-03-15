@@ -32,8 +32,6 @@ object DBInit {
   def init(): Unit = {
     if (latch.getCount == count) {
       println(s"##########DB Server start.###############")
-      //JPA.initPersistenceName(h2)
-      //JPA.initPersistenceName(postgres)
       println(s"sinq_h2:${sinq_h2}")
       println(s"sinq_pg:${sinq_pg}")
       //data models.postgres.init

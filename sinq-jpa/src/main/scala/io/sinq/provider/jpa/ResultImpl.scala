@@ -25,12 +25,12 @@ abstract class ResultImpl[T] extends Result[T] {
   }
 
   override def single(): Option[T] = link.stream.withEntityManager[T] {
-    em =>
+    em => //collect().headOption.getOrElse(null).asInstanceOf[T]
       val q = if (link.selectFields.size > 0) em.createNativeQuery(sql()) else em.createNativeQuery(sql(), link.fromTables.head.getType)
       (1 to params().length).foreach(i => q.setParameter(i, params()(i - 1)))
+//      q.getResultList
 
-      val r = result(q.getResultList.toList).headOption
-      (if (r.isEmpty) null else r.get).asInstanceOf[T]
+      null.asInstanceOf[T]
   }
 
   private def result[K](list: List[K]): List[T] = {

@@ -9,7 +9,9 @@ import io.sinq.provider.jpa.{JpaAdapter, WhereImpl, FromImpl}
 * @author ya_feng_li@163.com
 * ########
 */
-class SinqStream(val persistenceName: String = "default") extends JpaAdapter {
+case class SinqStream(val persistenceName: String = "default") extends JpaAdapter {
+
+  JPA.initPersistenceName(persistenceName)
 
   def from[T](t: Table[T]): Where[T] = {
     val info = QueryLink(this)
@@ -26,11 +28,4 @@ class SinqStream(val persistenceName: String = "default") extends JpaAdapter {
     FromImpl[(${s.tpe})](info)
   }
   </#list>
-}
-
-object SinqStream {
-  def apply(persistenceName:String):SinqStream = {
-    JPA.initPersistenceName(persistenceName)
-    new SinqStream(persistenceName)
-  }
 }

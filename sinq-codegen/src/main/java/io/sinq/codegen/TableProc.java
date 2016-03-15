@@ -22,23 +22,34 @@ public class TableProc {
 
     private String outPkg;
     private String scanPkg;
+    private File outDir;
     private String suffix = "T_";
     private Map<String, String> typeDataMap;
 
     public TableProc(String scanPkg, String outPkg, Map<String, String> typeDataMap) {
         this.scanPkg = scanPkg;
         this.outPkg = outPkg;
+        this.outDir = baseDir();
         this.typeDataMap = typeDataMap;
     }
 
-    public TableProc(String scanPkg, String outPkg, String suffix, Map<String, String> typeDataMap) {
+
+    public TableProc(String scanPkg, String outPkg, File outDir, Map<String, String> typeDataMap) {
+        this.scanPkg = scanPkg;
+        this.outPkg = outPkg;
+        this.outDir = outDir;
+        this.typeDataMap = typeDataMap;
+    }
+
+    public TableProc(String scanPkg, String outPkg, String suffix, File outDir, Map<String, String> typeDataMap) {
         this.scanPkg = scanPkg;
         this.outPkg = outPkg;
         this.suffix = suffix;
+        this.outDir = outDir;
         this.typeDataMap = typeDataMap;
     }
 
-    public void proc() {
+    public void procByClassLoader() {
         try {
             URL url = Thread.currentThread().getContextClassLoader().getResource(scanPkg.replace(".", "/"));
             System.out.println("url:" + url);
@@ -96,7 +107,7 @@ public class TableProc {
                     } else if (field.isAnnotationPresent(ManyToMany.class)) {
                         if (field.isAnnotationPresent(JoinTable.class)) {
                             JoinTable joinTable = field.getAnnotation(JoinTable.class);
-                            procJoinTable(tpl, c, joinTable, outPkg, baseDir());
+                            procJoinTable(tpl, c, joinTable, outPkg, outDir);
                         }
                     } else {
                         fd.setColumnId(field.getName());
@@ -106,7 +117,7 @@ public class TableProc {
                 });
                 Map<String, TableData> map = new HashMap<>();
                 map.put("data", data);
-                File f = new File(baseDir(), outPkg.replace(".", "/") + "/" + data.getName() + ".scala");
+                File f = new File(outDir, outPkg.replace(".", "/") + "/" + data.getName() + ".scala");
                 withWriter(f, w -> {
                     try {
                         tpl.process(map, w);

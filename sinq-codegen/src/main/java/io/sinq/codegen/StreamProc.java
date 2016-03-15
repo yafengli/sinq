@@ -13,12 +13,16 @@ import static io.sinq.codegen.util.FreeMarkerUtil.template;
 
 public class StreamProc {
 
-    public static void proc() {
+    public static void proc() throws Exception {
+        proc(baseDir());
+    }
+
+    public static void proc(File outDir) {
         try {
             HashMap<String, StreamData> map = new HashMap<>();
             map.put("data", store(22));
 
-            File f = new File(baseDir(), "io/sinq/SinqStream.scala");
+            File f = new File(outDir, "io/sinq/SinqStream.scala");
             withWriter(f, w -> {
                 try {
                     template("stream").process(map, w);

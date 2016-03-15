@@ -8,16 +8,12 @@ import java.io.File;
 public class FreeMarkerUtil {
 
     private static Configuration cfg;
-    private static File baseDir;
 
     static {
         try {
             cfg = new Configuration(Configuration.VERSION_2_3_22);
             cfg.setClassForTemplateLoading(FreeMarkerUtil.class, "/META-INF/ftl");
             cfg.setDefaultEncoding("UTF-8");
-
-            File classDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
-            baseDir = new File(classDir.getParentFile().getParentFile(), "generate-source");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -28,6 +24,14 @@ public class FreeMarkerUtil {
     }
 
     public static File baseDir() {
-        return baseDir;
+        String parent = System.getProperty("user.dir");
+        try {
+            File classDir = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+            if (classDir != null)
+                parent = classDir.getParentFile().getParent();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new File(parent, "generate-source");
     }
 }

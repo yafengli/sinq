@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 
 object WithXXXUnit {
   def testWithEntityManager(): Unit = {
-    val list = sinq.withEntityManager {
+    val list = sinq_pg.withEntityManager {
       em =>
         val query = em.createNativeQuery("select t.id,t.name,t.age from e_student t where t.id between ? and ? or t.name in (?,?,?,?)")
         query.setParameter(1, -1)
@@ -21,14 +21,14 @@ object WithXXXUnit {
   }
 
   def testWithTransaction: Unit = {
-    val list = sinq.withTransaction {
+    val list = sinq_pg.withTransaction {
       em =>
         val teacher = Teacher("YaFengLi", 68, "NanJing")
         println(s"id:${teacher.id}")
-        sinq.insert(teacher)
+        sinq_pg.insert(teacher)
         println(s"id:${teacher.id}")
 
-        if (teacher.id != -999) sinq.delete(teacher)
+        if (teacher.id != -999) sinq_pg.delete(teacher)
     }
   }
 }
