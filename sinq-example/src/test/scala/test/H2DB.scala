@@ -22,17 +22,17 @@ object H2DB {
   def init(): Unit = {
     if (latch.getCount == count) {
       println(s"##########DB Server start.###############")
-      val server = Server.createTcpServer("-tcpPort", "9999")
-      server.start()
+      //val server = Server.createTcpServer("-tcpPort", "9999")
+      //server.start()
+      //println(s"${server.getStatus} ${server.getURL}")
 
-      println(s"${server.getStatus} ${server.getURL}")
       dataStore(sinq_h2)
-      dataStore(sinq_pg)
+      //dataStore(sinq_pg)
 
       Future {
         latch.await(20, TimeUnit.SECONDS)
         JPA.releaseAll()
-        server.stop()
+        //server.stop()
         println(s"##########DB Server closed.###############")
       }
     }
