@@ -11,7 +11,7 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
   scalaVersion := $("scala"),
   libraryDependencies ++= Seq(
     "ch.qos.logback" % "logback-classic" % $("logback"),
-    "org.eclipse.persistence" % "eclipselink" % $("eclipselink"),
+    //"org.eclipse.persistence" % "eclipselink" % $("eclipselink") % "optional",
     "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),
     "javax.transaction" % "jta" % $("jta"),
     "com.zaxxer" % "HikariCP" % $("HikariCP") % "test",
