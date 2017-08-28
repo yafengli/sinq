@@ -4,6 +4,7 @@ logs/
 .project
 *.iml
 .idea*
+*.log
 project/project
 .cache
 *.class
