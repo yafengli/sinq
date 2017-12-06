@@ -21,15 +21,15 @@ lazy val sinq_jpa = project.in(file("sinq-jpa")).settings(
     "org.scalatest" %% "scalatest" % $("scalatest") % "test"
   ))
 
-lazy val sinq_codegen = project.in(file("sinq-codegen")).settings(
+lazy val sinq_codegen = project.in(file("sinq-codegen")).enablePlugins(SbtDistApp).settings(
   name := "sinq-codegen",
   organization := "io.sinq",
   version := $("prod"),
   scalaVersion := $("scala"),
-  mainClass in assembly := Some("io.sinq.codegen.GenerationBoot"),
+  mainClass := Some("io.sinq.codegen.GenerationBoot"),
   libraryDependencies ++= Seq(
     "org.freemarker" % "freemarker" % $("freemarker"),
-    "org.hibernate.javax.persistence" % "hibernate-jpa-2.1-api" % $("jpa-api"),
+    "org.hibernate" % "hibernate-entitymanager" % $("hibernate"),    
     "junit" % "junit" % $("junit") % "test",
     "org.scalatest" %% "scalatest" % $("scalatest") % "test"
   ))
