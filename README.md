@@ -158,7 +158,3 @@ Sinq
                         
         query.single()      //单个对象
         query.collect()     //对象集
-                
-                
-                
-         
